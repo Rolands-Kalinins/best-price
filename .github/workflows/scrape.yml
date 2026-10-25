@@ -1,0 +1,31 @@
+name: scrape
+
+on:
+  schedule:
+    # 04:00 UTC = 06:00 в Риге зимой, 07:00 летом (cron в GitHub только по UTC).
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+jobs:
+  lidl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Ненулевой код выхода при сбое → job падает → GitHub шлёт письмо (FR-15).
+      - run: pnpm --filter @bestprice/scraper-lidl scrape
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      # Сырой ответ магазина сохраняем только при сбое (FR-30).
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: lidl-debug
+          path: packages/scrapers/lidl/debug
+          retention-days: 7
