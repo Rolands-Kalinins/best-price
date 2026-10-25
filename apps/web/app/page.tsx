@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 // Страница всегда персональная, пререндер не нужен.
@@ -18,6 +19,7 @@ export default async function Home() {
         <>
           <h1 className="text-2xl font-semibold">BestPrice</h1>
           <p className="text-muted-foreground text-sm">Вы вошли как {auth.user.email}</p>
+          <Link href="/grocery" className={buttonVariants()}>Акции</Link>
         </>
       ) : (
         <>
