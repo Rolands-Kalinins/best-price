@@ -3,9 +3,10 @@ import { type Offer, type ScrapeResult, offerSchema, rigaIso, uniqueOffers } fro
 
 const ORIGIN = "https://www.maxima.lv";
 // Тот же запрос, что сайт делает по кнопке «ещё»: JSON {html, totalItems}, в html готовые плитки.
-// limit=1000 отдаёт все акции за раз (878 на 2026-10-25), cookies не нужны.
+// limit выше числа акций отдаёт все за раз: потолка в 1000 у сервера нет (limit=2000 вернул все 1136 на 2026-10-27, акций было 878 на 2026-10-25), cookies не нужны.
+// Запас до 5000; если акций станет больше, проверка totalItems в scrape() упадёт, а не потеряет часть молча.
 // /robots.txt закрывает только /fileman/ (проверено 2026-10-25).
-const API = `${ORIGIN}/ajax/salesloadmore?sort_by=newest&limit=1000&ajax=1`;
+const API = `${ORIGIN}/ajax/salesloadmore?sort_by=newest&limit=5000&ajax=1`;
 // Карточек товаров на сайте нет: все плитки ведут на страницу акций.
 const PAGE = `${ORIGIN}/piedavajumi`;
 const USER_AGENT = "BestPriceBot (personal project)";
