@@ -30,8 +30,9 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
-      - run: pnpm test
       # Ключи Supabase для сборки не нужны: страницы с данными строятся при запросе.
       - run: pnpm build
+      # Тесты после сборки: scripts/build-css.test.mjs проверяет CSS собранного сайта (без сборки он пропускается).
+      - run: pnpm test
       - name: Миграции и версия
         run: node scripts/release.mjs check origin/main | tee -a "$GITHUB_STEP_SUMMARY"
