@@ -9,3 +9,4 @@
 | 2026-10-27 | [rest-1000-rows-cap](2026-10-27-rest-1000-rows-cap.md) | `.limit(10000)` не снимает лимит API в 1000 строк: данные обрезаются молча |
 | 2026-10-27 | [maxima-limit-ceiling](2026-10-27-maxima-limit-ceiling.md) | Парсер Maxima упал: акций стало 1136, а `limit=1000` считался «всеми» |
 | 2026-10-27 | [stale-css-vercel-cache](2026-10-27-stale-css-vercel-cache.md) | Боевой сайт стал белым: Vercel собрал старый CSS из восстановленного кэша |
+| 2026-10-27 | [rimi-timeout-without-retry](2026-10-27-rimi-timeout-without-retry.md) | Парсер Rimi упал в Actions: таймаут запроса без повторов сделал единичный сбой фатальным |
