@@ -1,0 +1,731 @@
+{
+ "numFound": 71,
+ "items": [
+  {
+   "code": "11029564",
+   "gridbox": {
+    "data": {
+     "ageRestriction": false,
+     "hasColors": false,
+     "awards": [],
+     "brand": {
+      "name": "QUALITÉ SUISSE",
+      "url": "/q/search?q=qualit%C3%A9+suisse",
+      "showBrand": false
+     },
+     "canonicalPath": "/p/sipoli/p11029564",
+     "canonicalUrl": "/p/sipoli/p11029564",
+     "category": "F+V",
+     "cutoutimageV2": [],
+     "dealOfDay": {
+      "active": false
+     },
+     "designTheme": "default",
+     "disclaimers": [
+      {
+       "id": "code_11029564_4bc6a5c2",
+       "type": "CODE",
+       "value": "Basic"
+      }
+     ],
+     "displayFreeDelivery": false,
+     "energyLabels": [],
+     "erpNumber": "11029564",
+     "flashSales": false,
+     "fullTitle": "Sīpoli",
+     "gs1Attributes": [],
+     "guaranteeLabels": [],
+     "havingPrice": true,
+     "havingThreesixty": false,
+     "havingVideos": false,
+     "highlightedSeals": 0,
+     "ians": [
+      "83325"
+     ],
+     "image": "https://www.lidl.lv/assets/gcp9a8cd11ab09f4dbcb967c4fe24f0692e.png",
+     "image_V1": {
+      "image": "https://www.lidl.lv/assets/gcp9a8cd11ab09f4dbcb967c4fe24f0692e.png",
+      "accessibility": "Vesels un pārgriezts sīpols uz melna fona."
+     },
+     "isLidlGiftCard": false,
+     "isUsedProduct": false,
+     "itemId": 11029564,
+     "imageList": [
+      "https://www.lidl.lv/assets/gcp9a8cd11ab09f4dbcb967c4fe24f0692e.png"
+     ],
+     "imageList_V1": [
+      {
+       "image": "https://www.lidl.lv/assets/gcp9a8cd11ab09f4dbcb967c4fe24f0692e.png",
+       "accessibility": "Vesels un pārgriezts sīpols uz melna fona."
+      }
+     ],
+     "imageList_V2": [
+      {
+       "variants": [
+        {
+         "ratio": "4:3",
+         "sizes": {
+          "mediumUrl": "https://www.lidl.lv/assets/gcp05d4b7cae54b489db8c33d1076385482.png",
+          "smallUrl": "https://www.lidl.lv/assets/gcp9a8cd11ab09f4dbcb967c4fe24f0692e.png"
+         }
+        },
+        {
+         "ratio": "3:4",
+         "sizes": {
+          "mediumUrl": "https://www.lidl.lv/assets/gcp441170cd94094bf3a8adec13dece23e9.png",
+          "smallUrl": "https://www.lidl.lv/assets/gcpbdcd0cbaadb0482e9df713f9ca64decc.png"
+         }
+        }
+       ]
+      }
+     ],
+     "keyfacts": {
+      "analyticsCategory": "F+V",
+      "description": "<ul><li>1 kg</li></ul>",
+      "fullTitle": "Sīpoli",
+      "moreDetails": "Skatīt vairāk",
+      "title": "Sīpoli",
+      "wonCategoryPrimary": "Nepieciešamības pasaules/Pārtika un ēdiena tuvumā/Augļi un dārzeņi/Dārzeņi",
+      "wonCategoryPrimaryPath": "0/17/1710/171011"
+     },
+     "lidlPlus": [],
+     "multipack": false,
+     "nat": "0083325",
+     "online": false,
+     "preventSelling": false,
+     "price": {
+      "currencyCode": "EUR",
+      "currencyCodeSecond": "",
+      "currencySymbol": "€",
+      "currencySymbolSecond": "",
+      "discount": {
+       "absoluteDiscount": 0.24,
+       "deletedPrice": 0.59,
+       "discountHasStar": false,
+       "fromRecommendedPrice": false,
+       "hideBargainHint": false,
+       "bargainHintEnabled": false,
+       "bargainHintText": "BargainHint_Text",
+       "percentageDiscount": 40,
+       "showDiscount": true,
+       "showFrom": false,
+       "showPercentage": true,
+       "showUpTo": false
+      },
+      "displayedCurrency": "€",
+      "hasStar": false,
+      "hasVat": false,
+      "oldPrice": 0.59,
+      "packaging": {
+       "text": "1 kg"
+      },
+      "price": 0.35,
+      "priceTheme": "white_red",
+      "specialTaxes": [],
+      "variantsHaveDifferentPrices": false
+     },
+     "productId": 11029564,
+     "productType": "RETAIL",
+     "productOrigin": "progress_event",
+     "quickAddToCart": false,
+     "regions": [
+      1
+     ],
+     "regionsV2": {
+      "1": {
+       "regionName": "LV Region 1",
+       "isDefault": true,
+       "regionPriceId": "1",
+       "status": "ONLINE",
+       "hasVat": false,
+       "priceHasZeroVat": false
+      }
+     },
+     "regionsPrices": {
+      "1": {
+       "currentPrice": {
+        "basePrice": {
+         "prefix": false
+        },
+        "currencyCode": "EUR",
+        "currencyCodeSecond": "",
+        "currencySymbol": "€",
+        "currencySymbolSecond": "",
+        "discount": {
+         "absoluteDiscount": 0.24,
+         "deletedPrice": 0.59,
+         "discountHasStar": false,
+         "fromNormalPriceForLidlPlus": false,
+         "fromRecommendedPrice": false,
+         "hideBargainHint": false,
+         "bargainHintEnabled": false,
+         "bargainHintText": "BargainHint_Text",
+         "percentageDiscount": 40,
+         "showDiscount": true,
+         "showFrom": false,
+         "showPercentage": true,
+         "showUpTo": false
+        },
+        "displayedCurrency": "€",
+        "endDate": "2026-10-25T21:59:59Z",
+        "endDateExclusive": "2026-10-25T22:00Z",
+        "hasStar": false,
+        "hasVat": true,
+        "oldPrice": 0.59,
+        "packaging": {
+         "text": "1 kg"
+        },
+        "price": 0.35,
+        "priceTheme": "white_red",
+        "specialTaxes": [],
+        "startDate": "2026-10-16T21:00Z",
+        "superscript": "",
+        "variantsHaveDifferentPrices": false
+       },
+       "futureLidlPlusPrices": []
+      }
+     },
+     "ribbons": [],
+     "renderedTs": 1792711272,
+     "seals": [],
+     "stockAvailability": {
+      "availabilityIndicator": 0,
+      "badgeInfo": {
+       "badges": [
+        {
+         "text": "Veikalā no 22.10. līdz 25.10.",
+         "type": "IN_STORE_PAST_DATE_RANGE"
+        }
+       ]
+      },
+      "badgeInfoV2": [
+       {
+        "badges": [
+         {
+          "text": "Veikalā no 22.10. līdz 25.10.",
+          "type": "IN_STORE_PAST_DATE_RANGE"
+         }
+        ],
+        "validFrom": 1792616400,
+        "validUntil": 1792961999
+       }
+      ],
+      "onlineAvailable": false,
+      "minOrderableQuantity": 1,
+      "backInStockNotification": false,
+      "backInStockNotificationSoldOut": false
+     },
+     "store": true,
+     "storeStartDate": 1792616400,
+     "storeEndDate": 1792961999,
+     "title": "Sīpoli",
+     "timezoneId": "Europe/Riga",
+     "zones": {}
+    }
+   }
+  },
+  {
+   "code": "11314475",
+   "gridbox": {
+    "data": {
+     "ageRestriction": false,
+     "hasColors": false,
+     "awards": [],
+     "canonicalPath": "/p/kuti-detas-vistu-olas/p11314475",
+     "canonicalUrl": "/p/kuti-detas-vistu-olas/p11314475",
+     "category": "Food",
+     "cutoutimageV2": [],
+     "dealOfDay": {
+      "active": false
+     },
+     "designTheme": "default",
+     "disclaimers": [
+      {
+       "id": "code_11314475_3fb4cfd2",
+       "type": "CODE",
+       "value": "Basic"
+      }
+     ],
+     "displayFreeDelivery": false,
+     "energyLabels": [],
+     "erpNumber": "11314475",
+     "flashSales": false,
+     "fullTitle": "Kūtī dētas vistu olas",
+     "gs1Attributes": [],
+     "guaranteeLabels": [],
+     "havingPrice": true,
+     "havingThreesixty": false,
+     "havingVideos": false,
+     "highlightedSeals": 0,
+     "ians": [
+      "7804705"
+     ],
+     "image": "https://www.lidl.lv/assets/gcp6b026a1758a5497eb1b64fb979bf1427.png",
+     "image_V1": {
+      "image": "https://www.lidl.lv/assets/gcp6b026a1758a5497eb1b64fb979bf1427.png",
+      "accessibility": "Kūtī dētas vistu olas iepakojumā ar vistas zīmējumu"
+     },
+     "isLidlGiftCard": false,
+     "isUsedProduct": false,
+     "itemId": 11314475,
+     "imageList": [
+      "https://www.lidl.lv/assets/gcp6b026a1758a5497eb1b64fb979bf1427.png",
+      "https://www.lidl.lv/assets/gcp9af120b8fdd04bdfa72fb4552eaeac92.png"
+     ],
+     "imageList_V1": [
+      {
+       "image": "https://www.lidl.lv/assets/gcp6b026a1758a5497eb1b64fb979bf1427.png",
+       "accessibility": "Kūtī dētas vistu olas iepakojumā ar vistas zīmējumu"
+      },
+      {
+       "image": "https://www.lidl.lv/assets/gcp9af120b8fdd04bdfa72fb4552eaeac92.png",
+       "accessibility": "Kūtī dētas vistu olas 10 gab. iepakojumā ar vistas zīmējumu"
+      }
+     ],
+     "imageList_V2": [
+      {
+       "variants": [
+        {
+         "ratio": "3:4",
+         "sizes": {
+          "mediumUrl": "https://www.lidl.lv/assets/gcp4df6473ec3474b91b67f40091f9182b5.png",
+          "smallUrl": "https://www.lidl.lv/assets/gcp9b6511b06996496cbe9bc86ccfa2fcc4.png"
+         }
+        },
+        {
+         "ratio": "4:3",
+         "sizes": {
+          "mediumUrl": "https://www.lidl.lv/assets/gcp588976fa77ad495292546af59a600a72.png",
+          "smallUrl": "https://www.lidl.lv/assets/gcp6b026a1758a5497eb1b64fb979bf1427.png"
+         }
+        }
+       ]
+      },
+      {
+       "variants": [
+        {
+         "ratio": "3:4",
+         "sizes": {
+          "mediumUrl": "https://www.lidl.lv/assets/gcp84a23b78091448ef9be9f9199e157c83.png",
+          "smallUrl": "https://www.lidl.lv/assets/gcp955290f0a5944ca19117716d13424d15.png"
+         }
+        },
+        {
+         "ratio": "4:3",
+         "sizes": {
+          "mediumUrl": "https://www.lidl.lv/assets/gcpfefe947e0f2843df97797aa15d8a4192.png",
+          "smallUrl": "https://www.lidl.lv/assets/gcp9af120b8fdd04bdfa72fb4552eaeac92.png"
+         }
+        }
+       ]
+      }
+     ],
+     "keyfacts": {
+      "analyticsCategory": "Food",
+      "description": "<ul><li>M–L izmērs</li><li>10 gab.</li></ul>",
+      "fullTitle": "Kūtī dētas vistu olas",
+      "moreDetails": "Skatīt vairāk",
+      "title": "Kūtī dētas vistu olas",
+      "wonCategoryPrimary": "Nepieciešamības pasaules/Pārtika un ēdiena tuvumā/Siers, piena produkti un olas/Olas",
+      "wonCategoryPrimaryPath": "0/17/1739/173914"
+     },
+     "lidlPlus": [],
+     "multipack": false,
+     "nat": "7804705",
+     "online": false,
+     "preventSelling": false,
+     "price": {
+      "basePrice": {
+       "prefix": false,
+       "text": "1 gab. = 0,16 €"
+      },
+      "currencyCode": "EUR",
+      "currencyCodeSecond": "",
+      "currencySymbol": "€",
+      "currencySymbolSecond": "",
+      "displayedCurrency": "€",
+      "hasStar": false,
+      "hasVat": false,
+      "packaging": {
+       "text": "10 gab."
+      },
+      "price": 1.59,
+      "priceTheme": "white_red",
+      "specialTaxes": [],
+      "variantsHaveDifferentPrices": false
+     },
+     "productId": 11314475,
+     "productType": "RETAIL",
+     "productOrigin": "progress_event",
+     "quickAddToCart": false,
+     "regions": [
+      1
+     ],
+     "regionsV2": {
+      "1": {
+       "regionName": "LV Region 1",
+       "isDefault": true,
+       "regionPriceId": "1",
+       "status": "ONLINE",
+       "hasVat": false,
+       "priceHasZeroVat": false
+      }
+     },
+     "regionsPrices": {
+      "1": {
+       "currentPrice": {
+        "basePrice": {
+         "prefix": false,
+         "text": "1 gab. = 0,16 €"
+        },
+        "currencyCode": "EUR",
+        "currencyCodeSecond": "",
+        "currencySymbol": "€",
+        "currencySymbolSecond": "",
+        "displayedCurrency": "€",
+        "endDate": "2026-10-25T21:59:59Z",
+        "endDateExclusive": "2026-10-25T22:00Z",
+        "hasStar": false,
+        "hasVat": true,
+        "packaging": {
+         "text": "10 gab."
+        },
+        "price": 1.59,
+        "priceTheme": "white_red",
+        "specialTaxes": [],
+        "startDate": "2026-10-16T21:00Z",
+        "superscript": "",
+        "variantsHaveDifferentPrices": false
+       },
+       "futureLidlPlusPrices": []
+      }
+     },
+     "ribbons": [],
+     "renderedTs": 1792452005,
+     "seals": [],
+     "stockAvailability": {
+      "availabilityIndicator": 0,
+      "badgeInfo": {
+       "badges": [
+        {
+         "text": "Veikalā no 19.10. līdz 25.10.",
+         "type": "IN_STORE_PAST_DATE_RANGE"
+        }
+       ]
+      },
+      "badgeInfoV2": [
+       {
+        "badges": [
+         {
+          "text": "Veikalā no 19.10. līdz 25.10.",
+          "type": "IN_STORE_PAST_DATE_RANGE"
+         }
+        ],
+        "validFrom": 1792357200,
+        "validUntil": 1792961999
+       },
+       {
+        "badges": [
+         {
+          "text": "Veikalā no 16.11. līdz 22.11.",
+          "type": "IN_STORE_FROM_FUTURE_DATE_RANGE"
+         }
+        ],
+        "validFrom": 1794780000,
+        "validUntil": 1795384799
+       },
+       {
+        "badges": [
+         {
+          "text": "Veikalā no 07.12. līdz 13.12.",
+          "type": "IN_STORE_FROM_FUTURE_DATE_RANGE"
+         }
+        ],
+        "validFrom": 1796594400,
+        "validUntil": 1797199199
+       },
+       {
+        "badges": [
+         {
+          "text": "Veikalā no 21.12. līdz 27.12.",
+          "type": "IN_STORE_FROM_FUTURE_DATE_RANGE"
+         }
+        ],
+        "validFrom": 1797804000,
+        "validUntil": 1798408799
+       },
+       {
+        "badges": [
+         {
+          "text": "Veikalā no 04.01. līdz 10.01.",
+          "type": "IN_STORE_FROM_FUTURE_DATE_RANGE"
+         }
+        ],
+        "validFrom": 1799013600,
+        "validUntil": 1799618399
+       }
+      ],
+      "onlineAvailable": false,
+      "minOrderableQuantity": 1,
+      "backInStockNotification": false,
+      "backInStockNotificationSoldOut": false
+     },
+     "store": true,
+     "storeStartDate": 1792357200,
+     "storeEndDate": 1792961999,
+     "title": "Kūtī dētas vistu olas ",
+     "timezoneId": "Europe/Riga",
+     "zones": {}
+    }
+   }
+  },
+  {
+   "code": "11477305",
+   "gridbox": {
+    "data": {
+     "ageRestriction": false,
+     "hasColors": false,
+     "awards": [],
+     "brand": {
+      "name": "PILOS",
+      "url": "/q/search?q=pilos",
+      "showBrand": true
+     },
+     "canonicalPath": "/p/pilos-kupinata-siera-bize/p11477305",
+     "canonicalUrl": "/p/pilos-kupinata-siera-bize/p11477305",
+     "category": "Food",
+     "cutoutimageV2": [],
+     "dealOfDay": {
+      "active": false
+     },
+     "designTheme": "default",
+     "disclaimers": [
+      {
+       "id": "code_11477305_99b38d4d",
+       "type": "CODE",
+       "value": "Basic"
+      }
+     ],
+     "displayFreeDelivery": false,
+     "energyLabels": [],
+     "erpNumber": "11477305",
+     "flashSales": false,
+     "fullTitle": "PILOS Kūpināta siera bize",
+     "gs1Attributes": [],
+     "guaranteeLabels": [],
+     "havingPrice": true,
+     "havingThreesixty": false,
+     "havingVideos": false,
+     "highlightedSeals": 0,
+     "ians": [
+      "7803371"
+     ],
+     "image": "https://www.lidl.lv/assets/gcp0cf333ddffe849b3903f210af3cd411e.png",
+     "image_V1": {
+      "image": "https://www.lidl.lv/assets/gcp0cf333ddffe849b3903f210af3cd411e.png",
+      "accessibility": "Kūpināta siera bize Pilos, 150 g"
+     },
+     "isLidlGiftCard": false,
+     "isUsedProduct": false,
+     "itemId": 11477305,
+     "imageList": [
+      "https://www.lidl.lv/assets/gcp0cf333ddffe849b3903f210af3cd411e.png"
+     ],
+     "imageList_V1": [
+      {
+       "image": "https://www.lidl.lv/assets/gcp0cf333ddffe849b3903f210af3cd411e.png",
+       "accessibility": "Kūpināta siera bize Pilos, 150 g"
+      }
+     ],
+     "imageList_V2": [
+      {
+       "variants": [
+        {
+         "ratio": "4:3",
+         "sizes": {
+          "mediumUrl": "https://www.lidl.lv/assets/gcp7e684bae59594c12abb161e0c5e918d3.png",
+          "smallUrl": "https://www.lidl.lv/assets/gcp0cf333ddffe849b3903f210af3cd411e.png"
+         }
+        },
+        {
+         "ratio": "3:4",
+         "sizes": {
+          "mediumUrl": "https://www.lidl.lv/assets/gcpb8754af7fba14e2ab43471a92b20ff9a.png",
+          "smallUrl": "https://www.lidl.lv/assets/gcpba46a683afd140a3a25986b00a047160.png"
+         }
+        }
+       ]
+      }
+     ],
+     "keyfacts": {
+      "analyticsCategory": "Food",
+      "description": "<ul><li>150 g</li></ul>",
+      "fullTitle": "PILOS Kūpināta siera bize",
+      "moreDetails": "Skatīt vairāk",
+      "title": "Kūpināta siera bize",
+      "wonCategoryPrimary": "Nepieciešamības pasaules/Pārtika un ēdiena tuvumā/Siers, piena produkti un olas/Siers",
+      "wonCategoryPrimaryPath": "0/17/1739/173912"
+     },
+     "lidlPlus": [
+      {
+       "price": {
+        "basePrice": {
+         "prefix": false,
+         "text": "1 kg = 19,27 €"
+        },
+        "displayedCurrency": "€",
+        "hasStar": false,
+        "hasVat": false,
+        "packaging": {
+         "text": "150 g"
+        },
+        "price": 2.89,
+        "priceTheme": "red_yellow",
+        "specialTaxes": [],
+        "superscript": ""
+       },
+       "lidlPlusText": "Ar Lidl Plus"
+      }
+     ],
+     "multipack": false,
+     "nat": "7803371",
+     "online": false,
+     "preventSelling": false,
+     "price": {
+      "currencyCode": "EUR",
+      "currencyCodeSecond": "",
+      "currencySymbol": "€",
+      "currencySymbolSecond": "",
+      "displayedCurrency": "€",
+      "hasStar": false,
+      "hasVat": false,
+      "specialTaxes": [],
+      "variantsHaveDifferentPrices": false
+     },
+     "productId": 11477305,
+     "productType": "RETAIL",
+     "productOrigin": "progress_event",
+     "quickAddToCart": false,
+     "regions": [
+      1
+     ],
+     "regionsV2": {
+      "1": {
+       "regionName": "LV Region 1",
+       "isDefault": true,
+       "regionPriceId": "1",
+       "status": "ONLINE",
+       "hasVat": false,
+       "priceHasZeroVat": false
+      }
+     },
+     "regionsPrices": {
+      "1": {
+       "currentLidlPlusPrice": {
+        "price": {
+         "basePrice": {
+          "prefix": false,
+          "text": "1 kg = 19,27 €"
+         },
+         "currencyCode": "EUR",
+         "currencyCodeSecond": "",
+         "currencySymbol": "€",
+         "currencySymbolSecond": "",
+         "discount": {
+          "absoluteDiscount": 1,
+          "deletedPrice": 3.89,
+          "discountHasStar": false,
+          "fromNormalPriceForLidlPlus": false,
+          "fromRecommendedPrice": false,
+          "hideBargainHint": false,
+          "bargainHintEnabled": false,
+          "bargainHintText": "BargainHint_Text",
+          "percentageDiscount": 25,
+          "showDiscount": true,
+          "showFrom": false,
+          "showPercentage": true,
+          "showUpTo": false
+         },
+         "displayedCurrency": "€",
+         "endDate": "2026-10-25T21:59:59Z",
+         "endDateExclusive": "2026-10-25T22:00Z",
+         "hasStar": false,
+         "hasVat": true,
+         "oldPrice": 3.89,
+         "packaging": {
+          "text": "150 g"
+         },
+         "price": 2.89,
+         "priceTheme": "white_red",
+         "specialTaxes": [],
+         "startDate": "2026-10-16T21:00Z",
+         "superscript": "",
+         "variantsHaveDifferentPrices": false
+        },
+        "lidlPlusText": "Ar Lidl Plus",
+        "highlightText": "-25%"
+       },
+       "futureLidlPlusPrices": []
+      }
+     },
+     "ribbons": [],
+     "renderedTs": 1792711325,
+     "seals": [],
+     "stockAvailability": {
+      "availabilityIndicator": 0,
+      "badgeInfo": {
+       "badges": [
+        {
+         "text": "Veikalā no 22.10. līdz 25.10.",
+         "type": "IN_STORE_PAST_DATE_RANGE"
+        }
+       ]
+      },
+      "badgeInfoV2": [
+       {
+        "badges": [
+         {
+          "text": "Veikalā no 31.12. līdz 03.01.",
+          "type": "IN_STORE_FROM_FUTURE_DATE_RANGE"
+         }
+        ],
+        "validFrom": 1798668000,
+        "validUntil": 1799013599
+       },
+       {
+        "badges": [
+         {
+          "text": "Veikalā no 22.10. līdz 25.10.",
+          "type": "IN_STORE_PAST_DATE_RANGE"
+         }
+        ],
+        "validFrom": 1792616400,
+        "validUntil": 1792961999
+       },
+       {
+        "badges": [
+         {
+          "text": "Veikalā no 19.11. līdz 22.11.",
+          "type": "IN_STORE_FROM_FUTURE_DATE_RANGE"
+         }
+        ],
+        "validFrom": 1795039200,
+        "validUntil": 1795384799
+       }
+      ],
+      "onlineAvailable": false,
+      "minOrderableQuantity": 1,
+      "backInStockNotification": false,
+      "backInStockNotificationSoldOut": false
+     },
+     "store": true,
+     "storeStartDate": 1792616400,
+     "storeEndDate": 1792961999,
+     "title": "Kūpināta siera bize",
+     "timezoneId": "Europe/Riga",
+     "zones": {}
+    }
+   }
+  }
+ ]
+}

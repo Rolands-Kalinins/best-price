@@ -138,6 +138,8 @@ export type Database = {
           brand: string | null
           category: string | null
           condition: string | null
+          discount: number | null
+          discount_percent: number | null
           ean: string | null
           ends_at: string | null
           external_id: string
@@ -146,7 +148,8 @@ export type Database = {
           last_seen_at: string
           old_price: number | null
           packaging: string | null
-          price: number
+          price: number | null
+          search: string
           source_id: number
           starts_at: string | null
           title: string
@@ -158,6 +161,8 @@ export type Database = {
           brand?: string | null
           category?: string | null
           condition?: string | null
+          discount?: never
+          discount_percent?: number | null
           ean?: string | null
           ends_at?: string | null
           external_id: string
@@ -166,7 +171,8 @@ export type Database = {
           last_seen_at?: string
           old_price?: number | null
           packaging?: string | null
-          price: number
+          price?: number | null
+          search?: never
           source_id: number
           starts_at?: string | null
           title: string
@@ -178,6 +184,8 @@ export type Database = {
           brand?: string | null
           category?: string | null
           condition?: string | null
+          discount?: never
+          discount_percent?: number | null
           ean?: string | null
           ends_at?: string | null
           external_id?: string
@@ -186,7 +194,8 @@ export type Database = {
           last_seen_at?: string
           old_price?: number | null
           packaging?: string | null
-          price?: number
+          price?: number | null
+          search?: never
           source_id?: number
           starts_at?: string | null
           title?: string

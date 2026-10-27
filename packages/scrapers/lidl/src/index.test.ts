@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { parse } from "./index";
+import { parse, scrape } from "./index";
 
-test("parse: фикстура с четырьмя плитками", () => {
-  const { offers, invalid } = parse(readFileSync("fixtures/grid.html", "utf8"));
+const fixture = JSON.parse(readFileSync("fixtures/search.json", "utf8"));
+
+test("parse: фикстура с тремя товарами из API", () => {
+  const { offers, invalid } = parse(fixture.items);
   assert.equal(invalid, 0);
   const by = Object.fromEntries(offers.map((o) => [o.externalId, o]));
 
@@ -24,4 +26,29 @@ test("parse: фикстура с четырьмя плитками", () => {
   assert.equal(by["11314475"].unitPrice, null);
   assert.equal(by["11314475"].oldPrice, null);
   assert.ok(by["11314475"].url.startsWith("https://www.lidl.lv/p/"));
+});
+
+test("parse: битый товар считается в invalid, остальные целы", () => {
+  const { offers, invalid } = parse([...fixture.items, { gridbox: { data: {} } }]);
+  assert.equal(offers.length, 3);
+  assert.equal(invalid, 1);
+});
+
+test("scrape: листает API до numFound", async () => {
+  const [a, b, c] = fixture.items;
+  const pages = [[a, b], [c], []];
+  const urls: string[] = [];
+  const real = globalThis.fetch;
+  globalThis.fetch = (async (url: string) => {
+    urls.push(url);
+    return Response.json({ numFound: 3, items: pages[urls.length - 1] });
+  }) as typeof fetch;
+  try {
+    const { offers } = await scrape();
+    assert.equal(offers.length, 3);
+    assert.equal(urls.length, 2); // третий запрос не нужен: 2 + 1 = numFound
+    assert.match(urls[1], /offset=2/);
+  } finally {
+    globalThis.fetch = real;
+  }
 });
