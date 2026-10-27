@@ -99,7 +99,7 @@ test("scrape: один запрос с limit, проверка totalItems", asyn
     const { offers } = await scrape();
     assert.equal(offers.length, 12);
     assert.equal(urls.length, 1);
-    assert.match(urls[0], /limit=1000/);
+    assert.match(urls[0], /limit=5000/);
     // Сервер отдал меньше, чем обещал (лимит урезан): сбой, а не тихая потеря товаров.
     body = { ...fixture, totalItems: "878" };
     await assert.rejects(scrape(), /878/);
@@ -110,6 +110,26 @@ test("scrape: один запрос с limit, проверка totalItems", asyn
     // Формат ответа изменился.
     body = { html: 5 };
     await assert.rejects(scrape(), /формат/);
+  } finally {
+    globalThis.fetch = real;
+  }
+});
+
+test("scrape: акций больше прежнего потолка в 1000 (1136 на 2026-10-27) приходят все", async () => {
+  // Сервер как настоящий: отдаёт не больше limit плиток, totalItems — сколько их всего.
+  const tile = fixture.html.split('<div class="col-third offer-item').slice(1)[0];
+  const total = 1136;
+  const all = Array.from({ length: total }, (_, i) =>
+    '<div class="col-third offer-item' + tile.replace(/data-product-id="\d+"/, `data-product-id="${900000 + i}"`),
+  );
+  const real = globalThis.fetch;
+  globalThis.fetch = (async (url: string) => {
+    const limit = Number(new URL(url).searchParams.get("limit"));
+    return Response.json({ html: all.slice(0, limit).join(""), totalItems: String(total) });
+  }) as typeof fetch;
+  try {
+    const { offers } = await scrape();
+    assert.equal(offers.length, total);
   } finally {
     globalThis.fetch = real;
   }
