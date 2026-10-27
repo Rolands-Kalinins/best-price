@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "pnpm --filter web dev",
     "build": "pnpm --filter web build",
-    "lint": "pnpm -r lint"
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r --if-present test && node --test scripts/*.test.mjs",
+    "release:plan": "node scripts/release.mjs plan",
+    "release:check": "node scripts/release.mjs check"
   }
 }
