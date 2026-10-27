@@ -1,0 +1,49 @@
+name: release
+
+# После слияния в main: тег и релиз GitHub по файлу VERSION, затем проверка, что Vercel задеплоил этот коммит.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  statuses: read
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Тег и релиз, если такой версии ещё нет
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(tr -d '[:space:]' < VERSION)
+          tag="v$version"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Релиз $tag уже есть, пропускаем"
+            exit 0
+          fi
+          gh release create "$tag" --target "$GITHUB_SHA" --title "$tag" --notes "$(node scripts/release.mjs notes "$version")"
+
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Vercel сам собирает main и пишет статус «Vercel» на коммит. Сбой деплоя = сбой этого job = письмо владельцу.
+      - name: Ждём деплой Vercel
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 50); do
+            state=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/status" --jq '[.statuses[] | select(.context == "Vercel")][0].state // "none"')
+            echo "Vercel: $state"
+            case "$state" in
+              success) exit 0 ;;
+              failure|error) echo "Деплой Vercel не удался"; exit 1 ;;
+            esac
+            sleep 15
+          done
+          echo "Деплой Vercel не завершился за 12 минут"
+          exit 1

@@ -1,10 +1,12 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import * as cheerio from "cheerio";
-import { type Offer, type ScrapeResult, offerSchema, unitPrice } from "@bestprice/core";
+import { type Offer, type ScrapeResult, offerSchema, uniqueOffers, unitPrice } from "@bestprice/core";
 
 const ORIGIN = "https://www.lidl.lv";
-// /robots.txt закрывает только /q/search и пути с цифр, эта страница разрешена (проверено вручную).
-const PAGE = `${ORIGIN}/c/aktualie-piedavajumi/a10028219`;
+// JSON-индекс, из которого сайт сам подгружает плитки («Ielādēt vairāk»). Весь индекс = акционные товары.
+// /robots.txt закрывает только /q/search?id=* и пути с цифр, /q/api/search не упомянут (проверено 2026-10-25).
+const API = `${ORIGIN}/q/api/search?locale=lv_LV&assortment=LV&version=2.1.0`;
+// Сервер отдаёт максимум 60 за запрос, больше просить бесполезно.
+const PAGE_SIZE = 60;
 const USER_AGENT = "BestPriceBot (personal project)";
 
 type Price = {
@@ -63,29 +65,43 @@ function toOffer(t: Tile): unknown {
   };
 }
 
-export function parse(html: string): ScrapeResult {
+type Item = { gridbox: { data: Tile } };
+
+export function parse(items: Item[]): ScrapeResult {
   const offers: Offer[] = [];
   let invalid = 0;
-  for (const el of cheerio.load(html)("[data-grid-data]").toArray()) {
+  for (const item of items) {
     try {
-      const parsed = offerSchema.safeParse(toOffer(JSON.parse(el.attribs["data-grid-data"])));
+      const parsed = offerSchema.safeParse(toOffer(item.gridbox.data));
       if (parsed.success) offers.push(parsed.data);
       else invalid++;
     } catch {
       invalid++;
     }
   }
-  return { offers, invalid };
+  return { offers: uniqueOffers(offers), invalid };
 }
 
 export async function scrape(): Promise<ScrapeResult> {
-  const res = await fetch(PAGE, { headers: { "User-Agent": USER_AGENT } });
-  if (!res.ok) throw new Error(`Lidl: HTTP ${res.status}`);
-  const html = await res.text();
+  const items: Item[] = [];
+  let total = Number.POSITIVE_INFINITY;
+  while (items.length < total) {
+    const res = await fetch(`${API}&fetchsize=${PAGE_SIZE}&offset=${items.length}`, {
+      headers: { "User-Agent": USER_AGENT },
+    });
+    if (!res.ok) throw new Error(`Lidl: HTTP ${res.status}`);
+    const body = (await res.json()) as { numFound?: number; items?: Item[] };
+    if (typeof body.numFound !== "number" || !Array.isArray(body.items)) {
+      throw new Error("Lidl: неожиданный ответ API, формат мог измениться");
+    }
+    total = body.numFound;
+    if (body.items.length === 0) break; // сервер отдал меньше, чем обещал: не зацикливаемся
+    items.push(...body.items);
+  }
   // Сырой ответ лежит в debug/: workflow выгружает его артефактом только при сбое (FR-30).
   await mkdir("debug", { recursive: true });
-  await writeFile("debug/lidl.html", html);
-  const result = parse(html);
-  if (result.offers.length === 0) throw new Error("Lidl: ни одной акции, вёрстка могла измениться");
+  await writeFile("debug/lidl.json", JSON.stringify(items));
+  const result = parse(items);
+  if (result.offers.length === 0) throw new Error("Lidl: ни одной акции, формат API мог измениться");
   return result;
 }
