@@ -6,8 +6,10 @@ export const offerSchema = z.object({
   title: z.string().min(1),
   brand: z.string().nullable(),
   packaging: z.string().nullable(),
-  price: z.number().positive(),
+  // null только у скидки на бренд или категорию («−30% на MILKA»): конкретной цены у неё нет.
+  price: z.number().positive().nullable(),
   oldPrice: z.number().positive().nullable(),
+  discountPercent: z.number().int().min(1).max(100).nullable().default(null),
   unitPrice: z.number().positive().nullable(),
   unit: z.enum(["kg", "l"]).nullable(),
   condition: z.string().nullable(),
@@ -17,9 +19,18 @@ export const offerSchema = z.object({
   url: z.url(),
   imageUrl: z.url().nullable(),
   category: z.string().nullable(),
-});
+})
+  .refine((o) => o.price !== null || o.discountPercent !== null, "нужна цена или процент скидки")
+  // Старая цена не выше новой (ошибка разбора или нет скидки): зачёркнутая цена ниже текущей выглядела бы нелепо. Акцию оставляем, цену убираем.
+  .transform((o) => (o.price !== null && o.oldPrice !== null && o.oldPrice <= o.price ? { ...o, oldPrice: null } : o));
 
 export type Offer = z.infer<typeof offerSchema>;
+
+// Магазин может отдать один товар дважды (постраничный обход, блоки на странице). Два одинаковых ключа в одном upsert роняют весь запуск.
+export function uniqueOffers(offers: Offer[]): Offer[] {
+  const seen = new Set<string>();
+  return offers.filter((o) => !seen.has(o.externalId) && seen.add(o.externalId));
+}
 
 // Результат запуска: валидные акции и число отброшенных записей (FR-29).
 export type ScrapeResult = { offers: Offer[]; invalid: number };
