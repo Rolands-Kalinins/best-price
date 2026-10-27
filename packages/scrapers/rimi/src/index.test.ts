@@ -77,19 +77,21 @@ test("parseCard: период по Риге", () => {
 });
 
 // Сервер: страница 1 каждого прохода отдаётся функцией pages(номер прохода), дальше пусто; карточка — cardBody.
-function mockFetch(pages: (pass: number) => string, cardBody: string | null) {
+function mockFetch(pages: (pass: number) => string, cardBody: string | null, failFirst = 0) {
   const real = globalThis.fetch;
   const urls: string[] = [];
   let pass = 0;
   globalThis.fetch = (async (url: string) => {
     urls.push(url);
+    // Сетевой сбой, как таймаут из журнала GitHub Actions: первые failFirst запросов.
+    if (urls.length <= failFirst) throw new DOMException("The operation was aborted due to timeout", "TimeoutError");
     const page = url.match(/currentPage=(\d+)/);
     if (page) return new Response(page[1] === "1" ? pages(++pass) : "<ul></ul>");
     return cardBody === null ? new Response("", { status: 500 }) : new Response(cardBody);
   }) as typeof fetch;
   return { urls, restore: () => (globalThis.fetch = real) };
 }
-const fast = { delayMs: 0 };
+const fast = { delayMs: 0, retryMs: 0 };
 
 test("scrape: проходы объединяются, карточки только для неизвестных", async () => {
   // Порядок нестабилен: в первом проходе нет последних плиток, во втором есть все.
@@ -143,5 +145,38 @@ test("parse: ссылка не путь (@host, //host) — плитка нев�
     const { offers, invalid } = parse(tile.replace(href, bad));
     assert.equal(offers.length, 0, bad);
     assert.equal(invalid, 1, bad);
+  }
+});
+
+test("scrape: единичный сбой сети или таймаут не роняет запуск, запрос повторяется", async () => {
+  const m = mockFetch(() => list, card, 2); // два первых запроса падают, третий проходит
+  try {
+    const { offers } = await scrape(new Map(), { passes: 1, ...fast });
+    assert.equal(offers.length, 8);
+    assert.equal(m.urls.filter((u) => /currentPage=1/.test(u)).length, 3); // страница списка: 2 сбоя и успех
+  } finally {
+    m.restore();
+  }
+});
+
+test("scrape: постоянный сбой после трёх попыток роняет запуск", async () => {
+  const m = mockFetch(() => list, card, 99);
+  try {
+    await assert.rejects(scrape(new Map(), { passes: 1, ...fast }), /timeout/);
+    assert.equal(m.urls.length, 3);
+  } finally {
+    m.restore();
+  }
+});
+
+test("scrape: ошибка 4xx не повторяется (повтор не поможет)", async () => {
+  const real = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = (async () => (calls++, new Response("", { status: 403 }))) as typeof fetch;
+  try {
+    await assert.rejects(scrape(new Map(), { passes: 1, ...fast }), /HTTP 403/);
+    assert.equal(calls, 1);
+  } finally {
+    globalThis.fetch = real;
   }
 });
