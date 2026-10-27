@@ -7,3 +7,5 @@
 | 2026-10-27 | [client-constant-in-server](2026-10-27-client-constant-in-server.md) | `.split is not a function` на сервере: константа импортирована из `"use client"` модуля |
 | 2026-10-27 | [search-escape-backslash](2026-10-27-search-escape-backslash.md) | Поиск «50%» вёл себя как маска, потому что потерялся обратный слэш при записи файла скриптом |
 | 2026-10-27 | [rest-1000-rows-cap](2026-10-27-rest-1000-rows-cap.md) | `.limit(10000)` не снимает лимит API в 1000 строк: данные обрезаются молча |
+| 2026-10-27 | [maxima-limit-ceiling](2026-10-27-maxima-limit-ceiling.md) | Парсер Maxima упал: акций стало 1136, а `limit=1000` считался «всеми» |
+| 2026-10-27 | [stale-css-vercel-cache](2026-10-27-stale-css-vercel-cache.md) | Боевой сайт стал белым: Vercel собрал старый CSS из восстановленного кэша |
