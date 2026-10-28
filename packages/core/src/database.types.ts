@@ -136,6 +136,7 @@ export type Database = {
       offers: {
         Row: {
           brand: string | null
+          cat: string | null
           category: string | null
           condition: string | null
           discount: number | null
@@ -160,6 +161,7 @@ export type Database = {
         }
         Insert: {
           brand?: string | null
+          cat?: string | null
           category?: string | null
           condition?: string | null
           discount?: never
@@ -184,6 +186,7 @@ export type Database = {
         }
         Update: {
           brand?: string | null
+          cat?: string | null
           category?: string | null
           condition?: string | null
           discount?: never
