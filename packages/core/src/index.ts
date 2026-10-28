@@ -1,5 +1,7 @@
 export * from "./ai";
 export * from "./ai-usage";
+export * from "./categories-data";
+export * from "./category";
 export * from "./database.types";
 export * from "./match";
 export * from "./offer";

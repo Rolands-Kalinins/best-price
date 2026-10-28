@@ -32,14 +32,15 @@ test("offerDiscount: процент скидки на бренд важнее р
 });
 
 test("parseQuery: значения по умолчанию и мусор", () => {
-  const def = { q: "", store: null, cond: false, scope: false, sort: "discount", n: 60 };
+  const def = { q: "", store: null, cat: null, cond: false, scope: false, sort: "discount", n: 60 };
   assert.deepEqual(parseQuery(new URLSearchParams("")), def);
-  assert.deepEqual(parseQuery(new URLSearchParams("sort=хаос&store=abc&cond=yes&scope=да")), def);
+  assert.deepEqual(parseQuery(new URLSearchParams("sort=хаос&store=abc&cond=yes&scope=да&cat=nope")), def);
   assert.deepEqual(parseQuery(new URLSearchParams("store=0")), def);
   assert.deepEqual(parseQuery(new URLSearchParams("store=-3")), def);
-  assert.deepEqual(parseQuery(new URLSearchParams("q=pienas&store=2&cond=1&scope=1&sort=price")), {
+  assert.deepEqual(parseQuery(new URLSearchParams("q=pienas&store=2&cat=dairy&cond=1&scope=1&sort=price")), {
     q: "pienas",
     store: 2,
+    cat: "dairy",
     cond: true,
     scope: true,
     sort: "price",

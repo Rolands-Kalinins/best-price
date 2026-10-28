@@ -1,6 +1,6 @@
 "use client";
 
-import { MAX_OFFERS, PAGE_SIZE, type OfferQuery, type OfferSort } from "@bestprice/core";
+import { CATEGORIES, MAX_OFFERS, PAGE_SIZE, type OfferQuery, type OfferSort } from "@bestprice/core";
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -25,6 +25,7 @@ function toSearch(q: OfferQuery) {
   const sp = new URLSearchParams();
   if (q.q) sp.set("q", q.q);
   if (q.store !== null) sp.set("store", String(q.store));
+  if (q.cat) sp.set("cat", q.cat);
   if (q.cond) sp.set("cond", "1");
   if (q.scope) sp.set("scope", "1");
   if (q.sort !== "discount") sp.set("sort", q.sort);
@@ -125,6 +126,20 @@ export function OfferFeed({
             Скидки на бренд или категорию
           </button>
         </div>
+        {/* Категории в одну прокручиваемую строку: их ~20, в несколько рядов они бы вытеснили ленту. */}
+        <div role="group" aria-label="Категории" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+          {[{ slug: null, name: "Все категории" }, ...CATEGORIES].map((c) => (
+            <button
+              key={c.slug ?? "all"}
+              type="button"
+              aria-pressed={query.cat === c.slug}
+              onClick={() => update({ cat: c.slug })}
+              className={cn(chip, query.cat === c.slug ? chipOn : chipOff)}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
         <div className="flex items-center justify-between gap-3">
           <p className="text-muted-foreground text-sm tabular-nums" aria-live="polite">
             Найдено: {total}
@@ -178,7 +193,7 @@ export function OfferFeed({
           <p className="text-muted-foreground text-sm">Ничего не найдено по этим фильтрам.</p>
           <Button variant="outline" size="lg" className="min-h-11" onClick={() => {
               if (input.current) input.current.value = "";
-              update({ q: "", store: null, cond: false, scope: false });
+              update({ q: "", store: null, cat: null, cond: false, scope: false });
             }}>
             Сбросить
           </Button>
