@@ -21,7 +21,7 @@ export default async function MatchesPage() {
 
   const grocery = supabase.schema("grocery");
   const [sugRes, decRes, exclRes, sourcesRes, joinedRes] = await Promise.all([
-    grocery.from("match_suggestions").select("key_a, key_b, offer_ids"),
+    grocery.from("match_suggestions").select("key_a, key_b, offer_ids, ai_same, ai_reason"),
     grocery.from("match_decisions").select("key_a, key_b"),
     grocery.from("match_exclusions").select("offer_id").order("excluded_at", { ascending: false }),
     supabase.from("sources").select("id, name"),
@@ -38,7 +38,11 @@ export default async function MatchesPage() {
 
   // Решённые пары ждут пересчёта и уже не нужны в очереди.
   const decided = new Set((decRes.data ?? []).map((d) => `${d.key_a}\n${d.key_b}`));
-  const pending = (sugRes.data ?? []).filter((s) => !decided.has(`${s.key_a}\n${s.key_b}`)).slice(0, LIMIT);
+  // Сверху те, где Gemini советует «тот же товар»: их быстрее подтвердить (сортировка стабильная, остальной порядок прежний).
+  const pending = (sugRes.data ?? [])
+    .filter((s) => !decided.has(`${s.key_a}\n${s.key_b}`))
+    .sort((a, b) => Number(b.ai_same === true) - Number(a.ai_same === true))
+    .slice(0, LIMIT);
   const excluded = new Set((exclRes.data ?? []).map((e) => e.offer_id));
 
   const ids = [...new Set([...pending.flatMap((s) => s.offer_ids), ...excluded])];
@@ -73,6 +77,12 @@ export default async function MatchesPage() {
         <ul className="space-y-3">
           {shown.map((s) => (
             <li key={`${s.key_a}|${s.key_b}`} className="bg-card space-y-3 rounded-2xl border p-3">
+              {s.ai_same !== null && (
+                <p className="text-muted-foreground text-xs break-words">
+                  Gemini: <b className={s.ai_same ? "text-primary" : ""}>{s.ai_same ? "вероятно тот же" : "вероятно разные"}</b>
+                  {s.ai_reason ? ` — ${s.ai_reason}` : ""}
+                </p>
+              )}
               <ul className="space-y-3 text-sm">
                 {s.ids.map((id) => (
                   <OfferLine key={id} o={offer.get(id)!} storeName={store.get(offer.get(id)!.source_id) ?? ""} />
