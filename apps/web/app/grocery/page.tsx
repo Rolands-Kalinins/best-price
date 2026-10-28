@@ -45,7 +45,7 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
     supabase.rpc("is_member"),
     supabase.rpc("is_admin"),
   ]);
-  const productsRes = merged ? await productsQuery(supabase, query.q) : null;
+  const productsRes = merged ? await productsQuery(supabase, query.q, query.cat) : null;
   const products = (productsRes?.data ?? [])
     .map((p) => ({ id: p.id, title: p.title, offers: storePrices(p.offers) }))
     .filter((p) => p.offers.length >= 2)
@@ -61,6 +61,7 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
   // Скрываем только те акции, что показаны в карточках (по одной на магазин); остальные акции товара остаются в ленте.
   if (products.length) offersQuery = offersQuery.not("id", "in", `(${products.flatMap((p) => p.offers.map((o) => o.id)).join(",")})`);
   if (query.store !== null) offersQuery = offersQuery.eq("source_id", query.store);
+  if (query.cat) offersQuery = offersQuery.eq("cat", query.cat);
   if (query.cond) offersQuery = offersQuery.not("condition", "is", null);
   if (query.scope) offersQuery = offersQuery.is("price", null);
   // Каждое слово ищется по столбцу search (название и бренд без диакритики); маски like searchTerms уже убрал.
@@ -89,7 +90,7 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
   const offers = offersRes.data ?? [];
 
   const total = (offersRes.count ?? offers.length) + products.length;
-  const unfiltered = !query.q && query.store === null && !query.cond && !query.scope;
+  const unfiltered = !query.q && query.store === null && !query.cat && !query.cond && !query.scope;
 
   return (
     <>
@@ -130,12 +131,14 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
 }
 
 // Товары, найденные в нескольких магазинах (products ведёт `pnpm --filter @bestprice/matcher match`). При поиске берём только те,
-// у которых нашлась подходящая акция. ponytail: потолок 200 товаров; пагинация, когда сравниваемых товаров станет больше.
-async function productsQuery(supabase: Awaited<ReturnType<typeof createClient>>, q: string) {
+// у которых нашлась подходящая акция; то же при выбранной категории. ponytail: потолок 200 товаров и 1000 подходящих акций с product_id
+// (сейчас связанных акций ~230 всего); пагинация, когда сравниваемых товаров станет больше.
+async function productsQuery(supabase: Awaited<ReturnType<typeof createClient>>, q: string, cat: string | null) {
   const groups = searchGroups(q);
   let ids: number[] | null = null;
-  if (groups.length) {
+  if (groups.length || cat) {
     let hits = supabase.schema("grocery").from("offers").select("product_id").not("product_id", "is", null).or(activeFilter(new Date()));
+    if (cat) hits = hits.eq("cat", cat);
     for (const g of groups) {
       const or = searchOrClause(g);
       hits = or ? hits.or(or) : hits.like("search", `%${g[0]}%`);

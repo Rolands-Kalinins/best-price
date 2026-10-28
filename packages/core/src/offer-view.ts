@@ -1,4 +1,5 @@
 // Чистые функции показа акций: используются интерфейсом, тестируются отдельно.
+import { CATEGORIES } from "./categories-data";
 import { latvianStems } from "./ru-lv";
 
 /** Скидка в целых процентах; null, если старой цены нет, она не выше новой или скидка меньше 1%. */
@@ -27,7 +28,7 @@ export function safeHttpUrl(url: string | null): string | null {
 export type OfferSort = "discount" | "price" | "ends";
 // scope: только скидки на бренд или категорию (у них нет цены).
 // n: сколько акций показать (растёт кнопкой «Показать ещё»). Потолок 1000 — лимит строк ответа API.
-export type OfferQuery = { q: string; store: number | null; cond: boolean; scope: boolean; sort: OfferSort; n: number };
+export type OfferQuery = { q: string; store: number | null; cat: string | null; cond: boolean; scope: boolean; sort: OfferSort; n: number };
 
 export const PAGE_SIZE = 60; // делится на 2, 3 и 4 колонки сетки: последний ряд не остаётся неполным
 export const MAX_OFFERS = 1000;
@@ -42,6 +43,7 @@ export function parseQuery(sp: URLSearchParams): OfferQuery {
   return {
     q: sp.get("q") ?? "",
     store: Number.isInteger(store) && store > 0 ? store : null,
+    cat: CATEGORIES.some((c) => c.slug === sp.get("cat")) ? sp.get("cat") : null,
     cond: sp.get("cond") === "1",
     scope: sp.get("scope") === "1",
     sort: SORTS.includes(sort) ? sort : "discount",
