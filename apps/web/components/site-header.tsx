@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu } from "@base-ui/react/menu";
-import { GitMerge, LogOut, ShoppingBasket, User } from "lucide-react";
+import { Gauge, GitMerge, LogOut, ShoppingBasket, User } from "lucide-react";
 import Link from "next/link";
 
 export function SiteHeader({ email, isAdmin = false }: { email: string; isAdmin?: boolean }) {
@@ -24,13 +24,22 @@ export function SiteHeader({ email, isAdmin = false }: { email: string; isAdmin?
               <Menu.Popup className="bg-popover text-popover-foreground w-64 origin-top-right rounded-xl border p-1 shadow-lg transition duration-150 data-[starting-style]:scale-95 data-[starting-style]:opacity-0 motion-reduce:transition-none">
                 <p className="text-muted-foreground truncate px-3 py-2 text-sm">{email}</p>
                 {isAdmin && (
-                  <Menu.Item
-                    render={<Link href="/grocery/admin/matches" />}
-                    className="data-[highlighted]:bg-muted flex min-h-11 w-full cursor-default items-center gap-2 rounded-lg px-3 text-left text-sm outline-none"
-                  >
-                    <GitMerge className="size-4" aria-hidden />
-                    Сопоставление товаров
-                  </Menu.Item>
+                  <>
+                    <Menu.Item
+                      render={<Link href="/grocery/admin/matches" />}
+                      className="data-[highlighted]:bg-muted flex min-h-11 w-full cursor-default items-center gap-2 rounded-lg px-3 text-left text-sm outline-none"
+                    >
+                      <GitMerge className="size-4" aria-hidden />
+                      Сопоставление товаров
+                    </Menu.Item>
+                    <Menu.Item
+                      render={<Link href="/grocery/admin/ai" />}
+                      className="data-[highlighted]:bg-muted flex min-h-11 w-full cursor-default items-center gap-2 rounded-lg px-3 text-left text-sm outline-none"
+                    >
+                      <Gauge className="size-4" aria-hidden />
+                      Лимиты Gemini
+                    </Menu.Item>
+                  </>
                 )}
                 <form action="/auth/signout" method="post">
                   <Menu.Item
