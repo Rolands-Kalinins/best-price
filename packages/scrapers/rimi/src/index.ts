@@ -10,6 +10,7 @@ const MAX_PAGES = 100;
 const USER_AGENT = "BestPriceBot (personal project)";
 const CARD = "Ar MansRimi karti";
 const MAX_INVALID = 0.05;
+const ATTEMPTS = 3;
 
 export type Period = { startsAt: string | null; endsAt: string | null };
 
@@ -102,26 +103,40 @@ export function parseCard(html: string): Period | null {
   return { startsAt: rigaIso(y1, m1, d1, 0, 0, 0), endsAt: rigaIso(y2, m2, d2, 23, 59, 59) };
 }
 
-async function get(url: string): Promise<string> {
-  // Таймаут: зависший запрос не должен подвесить прогон на ~4 тыс. запросов.
-  const res = await fetch(url, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(30_000) });
-  if (!res.ok) throw new Error(`Rimi: HTTP ${res.status} ${url}`);
-  return res.text();
-}
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// Таймаут: зависший запрос не должен подвесить прогон на ~4 тыс. запросов. Но одиночный сбой сети или медленный ответ
+// (один таймаут уже убил запуск в GitHub Actions) не должен ронять весь прогон: три попытки с нарастающей паузой.
+// Повторяем сетевые ошибки и HTTP 5xx/429; остальные 4xx (403, 404) повтор не исправит.
+async function get(url: string, retryMs: number): Promise<string> {
+  for (let attempt = 1; ; attempt++) {
+    let failure: unknown;
+    try {
+      const res = await fetch(url, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(30_000) });
+      if (res.ok) return await res.text();
+      failure = new Error(`Rimi: HTTP ${res.status} ${url}`);
+      if (res.status < 500 && res.status !== 429) throw failure;
+    } catch (e) {
+      if (e === failure) throw e;
+      failure = e;
+    }
+    if (attempt === ATTEMPTS) throw failure;
+    await wait(retryMs * attempt);
+  }
+}
 
 // known: периоды уже сохранённых действующих акций (по externalId), чтобы не ходить за карточкой повторно.
 // Порядок на сервере нестабилен (один проход теряет ~1% товаров, а часть показывает дважды), поэтому проходов несколько.
 // ponytail: карточки по одной с паузой (первый запуск ~3,9 тыс. запросов); период известной акции не обновляем до её конца.
-export async function scrape(known: Map<string, Period>, opts: { passes?: number; delayMs?: number } = {}): Promise<ScrapeResult> {
-  const { passes = 3, delayMs = 250 } = opts;
+export async function scrape(known: Map<string, Period>, opts: { passes?: number; delayMs?: number; retryMs?: number } = {}): Promise<ScrapeResult> {
+  const { passes = 3, delayMs = 250, retryMs = 3000 } = opts;
   const byId = new Map<string, Offer>();
   let invalid = 0;
   for (let pass = 1; pass <= passes; pass++) {
     let passInvalid = 0;
     for (let page = 1; ; page++) {
       if (page > MAX_PAGES) throw new Error(`Rimi: больше ${MAX_PAGES} страниц, пагинация могла измениться`);
-      const html = await get(`${LIST}?pageSize=${PAGE_SIZE}&currentPage=${page}`);
+      const html = await get(`${LIST}?pageSize=${PAGE_SIZE}&currentPage=${page}`, retryMs);
       // Сырая первая страница лежит в debug/: workflow выгружает её артефактом только при сбое (FR-30).
       if (pass === 1 && page === 1) {
         await mkdir("debug", { recursive: true });
@@ -153,7 +168,7 @@ export async function scrape(known: Map<string, Period>, opts: { passes?: number
     }
     // Сбой карточки не роняет запуск: акция без дат считается действующей (как в веб-выборке).
     try {
-      Object.assign(o, parseCard(await get(o.url)));
+      Object.assign(o, parseCard(await get(o.url, retryMs)));
     } catch {}
     if (++fetched % 500 === 0) console.log(`Rimi: карточек ${fetched}`);
     await wait(delayMs);
