@@ -1,0 +1,19 @@
+{
+  "name": "@bestprice/matcher",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "match": "node --env-file-if-exists=../../.env --import tsx src/run.ts",
+    "dry": "node --env-file-if-exists=../../.env --import tsx src/run.ts --dry"
+  },
+  "dependencies": {
+    "@bestprice/core": "workspace:*",
+    "@supabase/supabase-js": "^2.118.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}
