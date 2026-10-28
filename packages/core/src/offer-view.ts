@@ -1,4 +1,5 @@
 // Чистые функции показа акций: используются интерфейсом, тестируются отдельно.
+import { latvianStems } from "./ru-lv";
 
 /** Скидка в целых процентах; null, если старой цены нет, она не выше новой или скидка меньше 1%. */
 export function discountPercent(price: number, oldPrice: number | null): number | null {
@@ -55,7 +56,18 @@ export const SEARCH_TO = "acegiklnsuzaouo";
 /** Слова поиска: без регистра и диакритики, «Šokolāde» и «sokolade» — одно слово. */
 export function searchTerms(q: string): string[] {
   const plain = [...q.toLowerCase()].map((c) => (SEARCH_FROM.includes(c) ? SEARCH_TO[SEARCH_FROM.indexOf(c)] : c)).join("");
-  return plain.replace(/[%_\\*]/g, " ").split(/\s+/).filter(Boolean);
+  return plain.replace(/[%_\\*^]/g, " ").split(/\s+/).filter(Boolean);
+}
+
+/** Слова поиска как группы вариантов: русское слово из словаря → латышские основы (достаточно любой), остальные как есть. Группы связаны «и». */
+export function searchGroups(q: string): string[][] {
+  return searchTerms(q).map((w) => latvianStems(w) ?? [w]);
+}
+
+/** Условие or() PostgREST для группы из словаря («^основа» = с начала слова); null — обычное слово, его ищут через like. */
+export function searchOrClause(group: string[]): string | null {
+  if (group.length === 1 && !group[0].startsWith("^")) return null;
+  return group.flatMap((s) => (s.startsWith("^") ? [`search.like.${s.slice(1)}%`, `search.like.% ${s.slice(1)}%`] : [`search.like.%${s}%`])).join(",");
 }
 
 const STALE_DAYS = 3;

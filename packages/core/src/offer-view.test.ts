@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
-import { activeFilter, discountPercent, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchTerms, storePrices } from "./offer-view";
+import { activeFilter, discountPercent, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchGroups, searchOrClause, searchTerms, storePrices } from "./offer-view";
+import { RU_LV } from "./ru-lv";
 
 test("safeHttpUrl: только http(s)", () => {
   assert.equal(safeHttpUrl("https://www.lidl.lv/p/1"), "https://www.lidl.lv/p/1");
@@ -58,6 +59,39 @@ test("searchTerms: без регистра и диакритики, по сло�
   assert.deepEqual(searchTerms("   "), []);
   // Маски like (% _ \ и * в PostgREST) в слове не работают как маски: экранирование через API не срабатывает, поэтому они просто убираются.
   assert.deepEqual(searchTerms("50% a_b c\\d *"), ["50", "a", "b", "c", "d"]);
+});
+
+test("searchGroups: русское слово раскрывается в латышские основы, остальное как есть", () => {
+  assert.deepEqual(searchGroups("молоко"), [["pien"]]);
+  assert.deepEqual(searchGroups("Молочный  Valio"), [["pien"], ["valio"]]);
+  assert.deepEqual(searchGroups("Мёд"), [["medus"]]); // ё = е
+  assert.deepEqual(searchGroups("колбаса"), [["desa"]]);
+  assert.deepEqual(searchGroups("лимонад"), [["limonad"]]); // длинный ключ побеждает «лимон»
+  assert.deepEqual(searchGroups("лимон"), [["citron"]]);
+  assert.deepEqual(searchGroups("масло"), [["sviest", "saulespuku", "olivu"]]);
+  assert.deepEqual(searchGroups("Šokolāde"), [["sokolade"]]);
+  assert.deepEqual(searchGroups("абракадабра"), [["абракадабра"]]); // нет в словаре: ищется как есть
+  assert.deepEqual(searchGroups("  "), []);
+});
+
+test("RU_LV: основы латышские, безопасны для or() PostgREST", () => {
+  for (const [ru, lv] of Object.entries(RU_LV)) {
+    assert.match(ru, /^[а-яе]+$/, ru);
+    assert.ok(lv.length > 0, ru);
+    for (const w of lv) assert.match(w, /^\^?[a-z]{3,}( [a-z]+)*$/, `${ru}: ${w}`); // без запятых, скобок и точек: or() их не переживёт
+  }
+});
+
+test("searchOrClause: обычное слово — null, группа и «^» — условия or()", () => {
+  assert.equal(searchOrClause(["valio"]), null);
+  assert.equal(searchOrClause(["pien"]), null);
+  assert.equal(searchOrClause(["sviest", "malta gala"]), "search.like.%sviest%,search.like.%malta gala%");
+  assert.equal(searchOrClause(["^sula"]), "search.like.sula%,search.like.% sula%");
+  assert.equal(searchOrClause(["^pica", "coca"]), "search.like.pica%,search.like.% pica%,search.like.%coca%");
+});
+
+test("searchTerms: «^» из ввода убирается, пользователь не включит поиск с начала слова", () => {
+  assert.deepEqual(searchTerms("^sula a,b"), ["sula", "a,b"]);
 });
 
 test("activeFilter: действующие по дате, без даты — только если товар виден в последних запусках", () => {
