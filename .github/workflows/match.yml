@@ -28,3 +28,6 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Gemini помогает с брендом и советами; без ключа или при сбое матчер работает с кэшем. Потолок запросов за запуск.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MAX_REQUESTS: 30
