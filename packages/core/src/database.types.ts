@@ -250,9 +250,21 @@ export type Database = {
         ]
       }
       match_suggestions: {
-        Row: { key_a: string; key_b: string; offer_ids: number[] }
-        Insert: { key_a: string; key_b: string; offer_ids: number[] }
-        Update: { key_a?: string; key_b?: string; offer_ids?: number[] }
+        Row: { ai_reason: string | null; ai_same: boolean | null; key_a: string; key_b: string; offer_ids: number[] }
+        Insert: { ai_reason?: string | null; ai_same?: boolean | null; key_a: string; key_b: string; offer_ids: number[] }
+        Update: { ai_reason?: string | null; ai_same?: boolean | null; key_a?: string; key_b?: string; offer_ids?: number[] }
+        Relationships: []
+      }
+      pair_verdicts: {
+        Row: { key_a: string; key_b: string; prompt_version: number; reason: string; same: boolean }
+        Insert: { key_a: string; key_b: string; prompt_version: number; reason: string; same: boolean }
+        Update: { key_a?: string; key_b?: string; prompt_version?: number; reason?: string; same?: boolean }
+        Relationships: []
+      }
+      title_attrs: {
+        Row: { brand: string | null; prompt_version: number; title_key: string }
+        Insert: { brand?: string | null; prompt_version: number; title_key: string }
+        Update: { brand?: string | null; prompt_version?: number; title_key?: string }
         Relationships: []
       }
       price_history: {
