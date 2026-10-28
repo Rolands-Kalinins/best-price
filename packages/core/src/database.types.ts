@@ -149,6 +149,7 @@ export type Database = {
           old_price: number | null
           packaging: string | null
           price: number | null
+          product_id: number | null
           search: string
           source_id: number
           starts_at: string | null
@@ -172,6 +173,7 @@ export type Database = {
           old_price?: number | null
           packaging?: string | null
           price?: number | null
+          product_id?: number | null
           search?: never
           source_id: number
           starts_at?: string | null
@@ -195,6 +197,7 @@ export type Database = {
           old_price?: number | null
           packaging?: string | null
           price?: number | null
+          product_id?: number | null
           search?: never
           source_id?: number
           starts_at?: string | null
@@ -205,6 +208,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "offers_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "offers_source_id_fkey"
             columns: ["source_id"]
             isOneToOne: false
@@ -212,6 +222,38 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      products: {
+        Row: { id: number; key: string; title: string }
+        Insert: { id?: never; key: string; title: string }
+        Update: { id?: never; key?: string; title?: string }
+        Relationships: []
+      }
+      match_decisions: {
+        Row: { key_a: string; key_b: string; same: boolean; decided_at: string }
+        Insert: { key_a: string; key_b: string; same: boolean; decided_at?: string }
+        Update: { key_a?: string; key_b?: string; same?: boolean; decided_at?: string }
+        Relationships: []
+      }
+      match_exclusions: {
+        Row: { offer_id: number; excluded_at: string }
+        Insert: { offer_id: number; excluded_at?: string }
+        Update: { offer_id?: number; excluded_at?: string }
+        Relationships: [
+          {
+            foreignKeyName: "match_exclusions_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: true
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_suggestions: {
+        Row: { key_a: string; key_b: string; offer_ids: number[] }
+        Insert: { key_a: string; key_b: string; offer_ids: number[] }
+        Update: { key_a?: string; key_b?: string; offer_ids?: number[] }
+        Relationships: []
       }
       price_history: {
         Row: {

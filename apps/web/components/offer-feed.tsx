@@ -4,7 +4,7 @@ import { MAX_OFFERS, PAGE_SIZE, type OfferQuery, type OfferSort } from "@bestpri
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useTransition } from "react";
+import { useEffect, useRef, useTransition, type ReactNode } from "react";
 import { OfferCard, type OfferRow } from "@/components/offer-card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -42,11 +42,13 @@ export function OfferFeed({
   total,
   stores,
   query,
+  compare,
 }: {
   offers: OfferRow[];
   total: number;
   stores: { id: number; name: string }[];
   query: OfferQuery;
+  compare?: ReactNode;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -142,6 +144,7 @@ export function OfferFeed({
         </div>
       </div>
 
+      {compare}
       {offers.length ? (
         <>
           <ul
