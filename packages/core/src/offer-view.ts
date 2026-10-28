@@ -68,3 +68,19 @@ export function activeFilter(now: Date): string {
   const stale = new Date(now.getTime() - STALE_DAYS * 86_400_000).toISOString();
   return `ends_at.gt.${now.toISOString()},and(ends_at.is.null,last_seen_at.gt.${stale})`;
 }
+
+/** Сравнение цен товара: в каждом магазине одна самая дешёвая акция, от дешёвой к дорогой. Скидки без цены не участвуют. */
+export function storePrices<T extends { source_id: number; price: number | null }>(offers: T[]): (T & { price: number })[] {
+  const best = new Map<number, T & { price: number }>();
+  for (const o of offers) {
+    if (o.price === null) continue;
+    const cur = best.get(o.source_id);
+    if (!cur || o.price < cur.price) best.set(o.source_id, o as T & { price: number });
+  }
+  return [...best.values()].sort((a, b) => a.price - b.price);
+}
+
+/** На сколько цена выше лучшей: в евро и процентах от лучшей (округление до целых процентов). */
+export function priceGap(price: number, best: number): { eur: number; pct: number } {
+  return { eur: Math.round((price - best) * 100) / 100, pct: best > 0 ? Math.round((price / best - 1) * 100) : 0 };
+}

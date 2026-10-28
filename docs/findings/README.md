@@ -10,3 +10,6 @@
 | 2026-10-27 | [maxima-limit-ceiling](2026-10-27-maxima-limit-ceiling.md) | Парсер Maxima упал: акций стало 1136, а `limit=1000` считался «всеми» |
 | 2026-10-27 | [stale-css-vercel-cache](2026-10-27-stale-css-vercel-cache.md) | Боевой сайт стал белым: Vercel собрал старый CSS из восстановленного кэша |
 | 2026-10-27 | [rimi-timeout-without-retry](2026-10-27-rimi-timeout-without-retry.md) | Парсер Rimi упал в Actions: таймаут запроса без повторов сделал единичный сбой фатальным |
+| 2026-10-28 | [matching-hidden-offers](2026-10-28-matching-hidden-offers.md) | Сопоставление: акции товаров вне карточек пропадали из ленты; незнакомое условие считалось «без условия»; колляция БД и порядок ключей в JS |
+| 2026-10-28 | [upsert-needs-update-grant](2026-10-28-upsert-needs-update-grant.md) | Кнопка «Убрать» падала `permission denied`: `upsert` требует UPDATE, а роли дали только select, insert, delete; проверка сервисным ключом это не показала |
+| 2026-10-28 | [matching-review-round2](2026-10-28-matching-review-round2.md) | Сопоставление: решения и исключения читались без постраничности (потолок 1000), защита сравнивала разные единицы, вторая акция магазина пропадала из ленты |

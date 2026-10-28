@@ -1,0 +1,30 @@
+name: match
+
+# Сопоставление товаров между магазинами (FR-37…FR-39): после ночных парсеров и вручную (например, после решений админа).
+on:
+  workflow_run:
+    workflows: [scrape]
+    types: [completed]
+  workflow_dispatch:
+
+concurrency:
+  group: match
+  cancel-in-progress: false
+
+jobs:
+  match:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Сбой одного парсера не повод не пересчитывать остальные, поэтому запускаем и после неуспешного scrape.
+      - run: pnpm --filter @bestprice/matcher match
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
