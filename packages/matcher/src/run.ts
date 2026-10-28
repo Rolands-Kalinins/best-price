@@ -7,12 +7,16 @@ import {
   brandPrompt,
   buildMatches,
   diffLinks,
+  emptyUsage,
   isSuspiciousRun,
   needBrand,
   normalizeBrand,
+  pacificDay,
   parseBrandReply,
   parseVerdictReply,
   PROMPT_VERSION,
+  recordFailure,
+  recordSuccess,
   titleKey,
   VERDICT_SCHEMA,
   verdictPrompt,
@@ -20,7 +24,7 @@ import {
   type MatchItem,
   type Verdict,
 } from "@bestprice/core";
-import { askGemini } from "./gemini";
+import { askGemini, GeminiError } from "./gemini";
 
 const DRY = process.argv.includes("--dry");
 
@@ -70,19 +74,44 @@ const maxRequests = Number.isFinite(maxEnv) && maxEnv > 0 ? maxEnv : 30; // пу
 // Потолок действует отдельно на бренды и на советы (счётчик обнуляется между фазами), иначе первый большой прогон брендов съел бы советы.
 let requests = 0;
 let totalRequests = 0;
+// Учёт суточной квоты (админка /grocery/admin/ai). Счётчики пишутся в базу после каждой фазы (flushUsage), чтобы сбой дальше не потерял расход.
+// ponytail: день берётся в момент записи; запуск, пересёкший полночь по Лос-Анджелесу, запишет остаток фазы в новый день. Ставить день на запрос, если это начнёт мешать.
+let usage = emptyUsage();
 let down = false; // после первой окончательной неудачи (неверный ключ или модель, исчерпанная квота) остальные запросы этого запуска не делаем
 async function ask(prompt: string, schema: object): Promise<string | null> {
   if (!apiKey || down || requests >= maxRequests) return null;
   requests++;
   totalRequests++;
   try {
-    return await askGemini(prompt, schema, { apiKey, model });
+    const r = await askGemini(prompt, schema, { apiKey, model });
+    recordSuccess(usage, r);
+    return r.text;
   } catch (e) {
     down = true;
+    recordFailure(usage, e instanceof Error ? e : { message: String(e) }, new Date());
     const msg = `Gemini: ${e instanceof Error ? e.message : e}. Дальше в этом запуске без Gemini (модель ${model}).`;
     console.warn(process.env.GITHUB_ACTIONS ? `::warning::${msg}` : msg); // в Actions виден аннотацией, зелёный запуск не прячет сбой
     return null;
   }
+}
+
+// Расход квоты пишем и в --dry: он тратит настоящие запросы. Сбой записи учёта не должен ронять матчер.
+async function flushUsage() {
+  const u = usage;
+  usage = emptyUsage();
+  if (!u.requests && !u.errors) return;
+  const { error } = await grocery.rpc("add_ai_usage", {
+    p_day: pacificDay(new Date()),
+    p_model: model,
+    p_requests: u.requests,
+    p_tokens_in: u.tokensIn,
+    p_tokens_out: u.tokensOut,
+    p_errors: u.errors,
+    p_quota_hits: u.quotaHits,
+    p_last_error: u.lastError,
+    p_quota_hit_at: u.quotaHitAt,
+  });
+  if (error) console.warn(`учёт квоты Gemini не записан: ${error.message}`);
 }
 
 // Бренд из названия для акций, где магазин его не отдаёт (Rimi, Maxima). Модель отвечает пачками, ответ кэшируется по названию.
@@ -109,6 +138,7 @@ for (const part of batches(needBrand(priced, new Set(attrs.keys())), BATCH_SIZE)
   asked.push(...answered);
   if (!DRY) check(await grocery.from("title_attrs").upsert(out, { onConflict: "title_key,prompt_version" }));
 }
+await flushUsage();
 
 // Бренды берём из полей магазинов: у Etop заполнено 94%, у Lidl 71%; у остальных из названия через Gemini.
 const brands = new Set(rows.flatMap((r) => (r.brand ? [normalizeBrand(r.brand)] : [])).filter(Boolean));
@@ -149,6 +179,8 @@ for (const part of batches(suggestions.filter((s) => !verdicts.has(pairKey(s.key
   for (const o of out) verdicts.set(pairKey(o.key_a, o.key_b), { same: o.same, reason: o.reason });
   if (!DRY) check(await grocery.from("pair_verdicts").upsert(out, { onConflict: "key_a,key_b,prompt_version" }));
 }
+
+await flushUsage();
 
 console.log(`акций ${rows.length}, брендов ${brands.size}, групп ${groups.length}, предположений ${suggestions.length}; Gemini: запросов ${totalRequests}, названий спрошено ${asked.length}`);
 if (DRY) {

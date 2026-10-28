@@ -255,6 +255,18 @@ export type Database = {
         Update: { ai_reason?: string | null; ai_same?: boolean | null; key_a?: string; key_b?: string; offer_ids?: number[] }
         Relationships: []
       }
+      ai_limits: {
+        Row: { model: string; rpd: number; rpm: number; tpm: number }
+        Insert: { model: string; rpd: number; rpm: number; tpm: number }
+        Update: { model?: string; rpd?: number; rpm?: number; tpm?: number }
+        Relationships: []
+      }
+      ai_usage: {
+        Row: { day: string; errors: number; last_error: string | null; last_quota_hit_at: string | null; model: string; quota_hits: number; requests: number; tokens_in: number; tokens_out: number; updated_at: string }
+        Insert: { day: string; errors?: number; last_error?: string | null; last_quota_hit_at?: string | null; model: string; quota_hits?: number; requests?: number; tokens_in?: number; tokens_out?: number; updated_at?: string }
+        Update: { day?: string; errors?: number; last_error?: string | null; last_quota_hit_at?: string | null; model?: string; quota_hits?: number; requests?: number; tokens_in?: number; tokens_out?: number; updated_at?: string }
+        Relationships: []
+      }
       pair_verdicts: {
         Row: { key_a: string; key_b: string; prompt_version: number; reason: string; same: boolean }
         Insert: { key_a: string; key_b: string; prompt_version: number; reason: string; same: boolean }
@@ -298,7 +310,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_ai_usage: {
+        Args: { p_day: string; p_errors: number; p_last_error: string | null; p_model: string; p_quota_hit_at: string | null; p_quota_hits: number; p_requests: number; p_tokens_in: number; p_tokens_out: number }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
