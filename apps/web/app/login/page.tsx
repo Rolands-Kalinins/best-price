@@ -6,6 +6,32 @@ import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
+// Вход по паролю только в `pnpm dev`: в боевой сборке NODE_ENV другой, ветка вырезается.
+const devLogin = process.env.NODE_ENV === "development";
+
+function PasswordForm() {
+  const signIn = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget);
+    const { error } = await createClient().auth.signInWithPassword({
+      email: String(f.get("email")),
+      password: String(f.get("password")),
+    });
+    location.assign(error ? "/login?error=1" : "/");
+  };
+
+  return (
+    <form onSubmit={signIn} className="space-y-3 border-t pt-6 text-left">
+      <p className="text-muted-foreground text-xs">Только локальная разработка</p>
+      <input name="email" type="email" placeholder="Email" required className="bg-background w-full rounded-lg border px-3 py-2 text-sm" />
+      <input name="password" type="password" placeholder="Пароль" required className="bg-background w-full rounded-lg border px-3 py-2 text-sm" />
+      <Button type="submit" variant="outline" className="min-h-11 w-full">
+        Войти по паролю
+      </Button>
+    </form>
+  );
+}
+
 function LoginForm() {
   const failed = useSearchParams().get("error");
 
@@ -33,6 +59,7 @@ function LoginForm() {
         <Button onClick={signIn} size="lg" className="min-h-11 w-full">
           Войти через Google
         </Button>
+        {devLogin && <PasswordForm />}
       </div>
     </main>
   );
