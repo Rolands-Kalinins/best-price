@@ -1,4 +1,4 @@
-import { activeFilter, parseQuery, priceGap, searchTerms, storePrices } from "@bestprice/core";
+import { activeFilter, parseQuery, priceGap, searchGroups, searchOrClause, storePrices } from "@bestprice/core";
 import { redirect } from "next/navigation";
 import { OfferFeed } from "@/components/offer-feed";
 import { ProductCard } from "@/components/product-card";
@@ -64,7 +64,11 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
   if (query.cond) offersQuery = offersQuery.not("condition", "is", null);
   if (query.scope) offersQuery = offersQuery.is("price", null);
   // Каждое слово ищется по столбцу search (название и бренд без диакритики); маски like searchTerms уже убрал.
-  for (const w of searchTerms(query.q)) offersQuery = offersQuery.like("search", `%${w}%`);
+  // Русское слово из словаря даёт группу латышских основ: хватает любой (or). Основы без запятых и скобок, пользовательский текст в or() не попадает.
+  for (const g of searchGroups(query.q)) {
+    const or = searchOrClause(g);
+    offersQuery = or ? offersQuery.or(or) : offersQuery.like("search", `%${g[0]}%`);
+  }
   const { column, ascending } = ORDER[query.sort];
 
   const [offersRes, [sourcesRes, runsRes, memberRes, adminRes]] = await Promise.all([
@@ -128,11 +132,14 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
 // Товары, найденные в нескольких магазинах (products ведёт `pnpm --filter @bestprice/matcher match`). При поиске берём только те,
 // у которых нашлась подходящая акция. ponytail: потолок 200 товаров; пагинация, когда сравниваемых товаров станет больше.
 async function productsQuery(supabase: Awaited<ReturnType<typeof createClient>>, q: string) {
-  const terms = searchTerms(q);
+  const groups = searchGroups(q);
   let ids: number[] | null = null;
-  if (terms.length) {
+  if (groups.length) {
     let hits = supabase.schema("grocery").from("offers").select("product_id").not("product_id", "is", null).or(activeFilter(new Date()));
-    for (const w of terms) hits = hits.like("search", `%${w}%`);
+    for (const g of groups) {
+      const or = searchOrClause(g);
+      hits = or ? hits.or(or) : hits.like("search", `%${g[0]}%`);
+    }
     const { data, error } = await hits.order("id").limit(1000);
     if (error) return { data: null, error };
     ids = [...new Set(data.map((r) => r.product_id!))];
