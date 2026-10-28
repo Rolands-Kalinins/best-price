@@ -59,13 +59,6 @@ async function readAll<T>(page: (from: number, to: number) => PromiseLike<{ data
     if (data!.length < 1000) return all;
   }
 }
-// Кэш Gemini: в --dry допустимо читать до миграции (таблиц ещё нет), в боевом режиме их отсутствие — ошибка.
-const readCache = <T>(page: Parameters<typeof readAll<T>>[0]) =>
-  readAll(page).catch((e) => {
-    if (!DRY) throw e;
-    console.warn(`кэш Gemini не прочитан (${e.message}), для --dry считаем его пустым`);
-    return [] as T[];
-  });
 const decisions = await readAll((a, b) => grocery.from("match_decisions").select("key_a,key_b,same").order("key_a").order("key_b").range(a, b));
 const exclusions = await readAll((a, b) => grocery.from("match_exclusions").select("offer_id").order("offer_id").range(a, b));
 
@@ -96,7 +89,7 @@ async function ask(prompt: string, schema: object): Promise<string | null> {
 // acceptBrand принимает бренд, только если он дословно есть в названии. В режиме --dry в БД ничего не пишется.
 const priced = rows.filter((r) => r.price !== null);
 const attrs = new Map(
-  (await readCache((a, b) => grocery.from("title_attrs").select("title_key,brand").eq("prompt_version", PROMPT_VERSION).order("title_key").range(a, b))).map((r) => [r.title_key, r.brand]),
+  (await readAll((a, b) => grocery.from("title_attrs").select("title_key,brand").eq("prompt_version", PROMPT_VERSION).order("title_key").range(a, b))).map((r) => [r.title_key, r.brand]),
 );
 const asked: { title: string; brand: string | null }[] = [];
 for (const part of batches(needBrand(priced, new Set(attrs.keys())), BATCH_SIZE)) {
@@ -136,7 +129,7 @@ const { groups, suggestions } = buildMatches(toItems(true), brands, decisionList
 const titleOf = new Map(rows.map((r) => [r.id, r.title]));
 const pairKey = (a: string, b: string) => `${a}\n${b}`;
 const verdicts = new Map<string, Verdict>(
-  (await readCache((a, b) => grocery.from("pair_verdicts").select("key_a,key_b,same,reason").eq("prompt_version", PROMPT_VERSION).order("key_a").order("key_b").range(a, b))).map((v) => [
+  (await readAll((a, b) => grocery.from("pair_verdicts").select("key_a,key_b,same,reason").eq("prompt_version", PROMPT_VERSION).order("key_a").order("key_b").range(a, b))).map((v) => [
     pairKey(v.key_a, v.key_b),
     { same: v.same, reason: v.reason },
   ]),
