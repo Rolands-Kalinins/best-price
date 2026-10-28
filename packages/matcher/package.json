@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "node --import tsx --test src/*.test.ts",
     "match": "node --env-file-if-exists=../../.env --import tsx src/run.ts",
     "dry": "node --env-file-if-exists=../../.env --import tsx src/run.ts --dry"
   },
