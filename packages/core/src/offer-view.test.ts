@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
-import { activeFilter, discountPercent, offerDiscount, parseQuery, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchTerms } from "./offer-view";
+import { activeFilter, discountPercent, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchTerms, storePrices } from "./offer-view";
 
 test("safeHttpUrl: только http(s)", () => {
   assert.equal(safeHttpUrl("https://www.lidl.lv/p/1"), "https://www.lidl.lv/p/1");
@@ -72,4 +72,19 @@ test("замены поиска в JS и в миграции offers_scale сов
   const sql = readFileSync("../../supabase/migrations/20261027120000_offers_scale.sql", "utf8");
   assert.ok(sql.includes(`translate(title || ' ' || coalesce(brand, ''), '${SEARCH_FROM}', '${SEARCH_TO}')`));
   assert.equal([...SEARCH_FROM].length, SEARCH_TO.length);
+});
+
+test("storePrices: одна самая дешёвая акция на магазин, по возрастанию, без цены отбрасывается", () => {
+  const r = storePrices([
+    { id: 1, source_id: 1, price: 1.5 },
+    { id: 2, source_id: 1, price: 1.2 },
+    { id: 3, source_id: 2, price: 1.0 },
+    { id: 4, source_id: 3, price: null },
+  ]);
+  assert.deepEqual(r.map((o) => o.id), [3, 2]);
+});
+
+test("priceGap: разница в евро и процентах от лучшей цены", () => {
+  assert.deepEqual(priceGap(1.2, 1), { eur: 0.2, pct: 20 });
+  assert.deepEqual(priceGap(1, 1), { eur: 0, pct: 0 });
 });
