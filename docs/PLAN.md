@@ -9,7 +9,7 @@
 | Фронтенд | Next.js (App Router), Tailwind, shadcn/ui, Vercel Hobby |
 | БД и авторизация | Supabase free: Postgres, Google OAuth, RLS. Запросы через `supabase-js` и сгенерированные типы, без ORM |
 | Парсеры | TypeScript, `fetch` + cheerio, валидация zod. Playwright только если сайт без него не открывается |
-| Запуск парсеров | GitHub Actions по cron, раз в сутки в 06:00 (Рига). Ручной запуск через интерфейс GitHub |
+| Запуск парсеров | GitHub Actions по cron, раз в сутки в 22:17 UTC (00:17 Рига зимой); GitHub опаздывает на 5–6 ч, ночной запуск гарантирует свежие данные к утру. Ручной запуск через интерфейс GitHub |
 | Репозиторий | Один приватный monorepo, pnpm workspaces: `apps/web`, `packages/core`, `packages/scrapers/*` |
 
 ## Архитектура
