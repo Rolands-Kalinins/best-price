@@ -31,8 +31,9 @@ jobs:
           # Gemini помогает с брендом и советами; без ключа или при сбое матчер работает с кэшем. Потолок запросов за запуск.
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MAX_REQUESTS: 30
-      # Категории для фильтра (offers.cat) раскладывает словарь, без Gemini и без квот.
-      - run: pnpm --filter @bestprice/matcher categorize
+      # Категории для фильтра (offers.cat) раскладывает словарь, без Gemini и без квот. Запускаем и после сбоя match: категории от него не зависят.
+      - if: ${{ !cancelled() }}
+        run: pnpm --filter @bestprice/matcher categorize
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
