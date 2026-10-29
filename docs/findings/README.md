@@ -13,3 +13,4 @@
 | 2026-10-28 | [matching-hidden-offers](2026-10-28-matching-hidden-offers.md) | Сопоставление: акции товаров вне карточек пропадали из ленты; незнакомое условие считалось «без условия»; колляция БД и порядок ключей в JS |
 | 2026-10-28 | [upsert-needs-update-grant](2026-10-28-upsert-needs-update-grant.md) | Кнопка «Убрать» падала `permission denied`: `upsert` требует UPDATE, а роли дали только select, insert, delete; проверка сервисным ключом это не показала |
 | 2026-10-28 | [matching-review-round2](2026-10-28-matching-review-round2.md) | Сопоставление: решения и исключения читались без постраничности (потолок 1000), защита сравнивала разные единицы, вторая акция магазина пропадала из ленты |
+| 2026-10-29 | [categorize-skipped-after-match-failure](2026-10-29-categorize-skipped-after-match-failure.md) | Документация обещала «categorize выполняется и при сбое match», а в workflow не было `if`: шаг пропускался |
