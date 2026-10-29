@@ -111,10 +111,30 @@ export function parse(html: string): ScrapeResult {
   return { offers: uniqueOffers(offers), invalid };
 }
 
-export async function scrape(): Promise<ScrapeResult> {
-  const res = await fetch(API, { headers: { "User-Agent": USER_AGENT } });
-  if (!res.ok) throw new Error(`Maxima: HTTP ${res.status}`);
-  const body = (await res.json()) as { html?: unknown; totalItems?: unknown };
+const ATTEMPTS = 3;
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// Запрос один и весит ≈4 МБ: единичный обрыв («terminated», 2026-10-29) нельзя делать фатальным.
+// Повторяем сетевые ошибки (в том числе обрыв при чтении тела), 5xx и 429; остальные 4xx повтор не лечит.
+async function get(retryMs: number): Promise<{ html?: unknown; totalItems?: unknown }> {
+  for (let attempt = 1; ; attempt++) {
+    let failure: unknown;
+    try {
+      const res = await fetch(API, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(60_000) });
+      if (res.ok) return await res.json();
+      failure = new Error(`Maxima: HTTP ${res.status}`);
+      if (res.status < 500 && res.status !== 429) throw failure;
+    } catch (e) {
+      if (e === failure) throw e;
+      failure = e;
+    }
+    if (attempt === ATTEMPTS) throw failure;
+    await wait(retryMs * attempt);
+  }
+}
+
+export async function scrape(opts: { retryMs?: number } = {}): Promise<ScrapeResult> {
+  const body = await get(opts.retryMs ?? 3000);
   // Сайт отдаёт totalItems строкой ("878"), поэтому приводим к числу.
   const total = Number(body.totalItems);
   if (typeof body.html !== "string" || !Number.isInteger(total)) {
