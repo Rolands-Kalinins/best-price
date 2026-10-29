@@ -134,3 +134,30 @@ test("scrape: акций больше прежнего потолка в 1000 (1
     globalThis.fetch = real;
   }
 });
+
+test("scrape: обрыв соединения повторяется, постоянный сбой и 4xx нет", async () => {
+  const real = globalThis.fetch;
+  let calls = 0;
+  const drop = () => Promise.reject(new TypeError("terminated"));
+  // Обрыв посреди тела ответа: заголовки пришли, res.json() падает (так упал запуск 2026-10-29).
+  const cutBody = () => Promise.resolve(new Response(new ReadableStream({ pull: (c) => c.error(new TypeError("terminated")) })));
+  const replies = [drop, cutBody, () => Promise.resolve(Response.json(fixture))];
+  globalThis.fetch = (() => replies[calls++]()) as typeof fetch;
+  try {
+    const { offers } = await scrape({ retryMs: 0 });
+    assert.equal(offers.length, 12);
+    assert.equal(calls, 3);
+
+    calls = 0;
+    replies.splice(0, 3, drop, drop, drop);
+    await assert.rejects(scrape({ retryMs: 0 }), /terminated/);
+    assert.equal(calls, 3);
+
+    calls = 0;
+    replies.splice(0, 3, () => Promise.resolve(new Response("", { status: 403 })));
+    await assert.rejects(scrape({ retryMs: 0 }), /HTTP 403/);
+    assert.equal(calls, 1);
+  } finally {
+    globalThis.fetch = real;
+  }
+});
