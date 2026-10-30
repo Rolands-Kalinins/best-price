@@ -41,7 +41,7 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
   // двух магазинов (акция кончилась после пересчёта) или который не влез в лимит, показывается в ленте как обычные акции.
   const sideRes = Promise.all([
     supabase.from("sources").select("id, name").eq("module", "grocery").eq("enabled", true),
-    supabase.from("scrape_runs").select("source_id, finished_at").eq("status", "success").order("finished_at", { ascending: false }).limit(50),
+    supabase.rpc("last_scrape_success"), // журнал запусков виден только админу (RLS), участнику отдаётся лишь время последнего успеха
     supabase.rpc("is_member"),
     supabase.rpc("is_admin"),
   ]);
@@ -83,8 +83,7 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
   const failed = offersRes.error ?? sourcesRes.error ?? runsRes.error ?? productsRes?.error;
   if (failed) throw new Error(failed.message);
 
-  const lastRun = new Map<number, string>();
-  runsRes.data?.forEach((r) => lastRun.has(r.source_id) || lastRun.set(r.source_id, r.finished_at));
+  const lastRun = new Map((runsRes.data ?? []).map((r) => [r.source_id, r.finished_at]));
   const stores = (sourcesRes.data ?? []).map((s) => ({ ...s, lastRun: lastRun.get(s.id) ?? null }));
   const storeName = new Map(stores.map((s) => [s.id, s.name]));
   const offers = offersRes.data ?? [];

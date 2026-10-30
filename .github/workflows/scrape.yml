@@ -7,9 +7,21 @@ on:
     # Минута 17, а не 0: круглые часы самые загруженные.
     - cron: "17 22 * * *"
   workflow_dispatch:
+    inputs:
+      source:
+        description: Какой парсер запустить
+        type: choice
+        default: all
+        options: [all, lidl, maxima, rimi, etop]
+
+# Один запуск за раз: двойной клик по кнопке в админке не даст двух одинаковых парсеров.
+concurrency:
+  group: scrape
+  cancel-in-progress: false
 
 jobs:
   lidl:
+    if: github.event_name != 'workflow_dispatch' || inputs.source == 'all' || inputs.source == 'lidl'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,6 +45,7 @@ jobs:
           retention-days: 7
 
   maxima:
+    if: github.event_name != 'workflow_dispatch' || inputs.source == 'all' || inputs.source == 'maxima'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -54,6 +67,7 @@ jobs:
           retention-days: 7
 
   rimi:
+    if: github.event_name != 'workflow_dispatch' || inputs.source == 'all' || inputs.source == 'rimi'
     runs-on: ubuntu-latest
     # Первый прогон ≈50 минут (≈4 тыс. карточек по одной), дальше только новые товары; запас вдвое.
     timeout-minutes: 120
@@ -77,6 +91,7 @@ jobs:
           retention-days: 7
 
   etop:
+    if: github.event_name != 'workflow_dispatch' || inputs.source == 'all' || inputs.source == 'etop'
     runs-on: ubuntu-latest
     # Живой прогон: 3 запроса, секунды; запас с избытком.
     timeout-minutes: 10
