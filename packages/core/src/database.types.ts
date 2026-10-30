@@ -122,6 +122,7 @@ export type Database = {
     Functions: {
       is_admin: { Args: never; Returns: boolean }
       is_member: { Args: never; Returns: boolean }
+      last_scrape_success: { Args: never; Returns: { source_id: number; finished_at: string }[] }
     }
     Enums: {
       [_ in never]: never

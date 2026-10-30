@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu } from "@base-ui/react/menu";
-import { Gauge, GitMerge, LogOut, ShoppingBasket, User } from "lucide-react";
+import { Activity, Gauge, GitMerge, LogOut, ShoppingBasket, User } from "lucide-react";
 import Link from "next/link";
 
 export function SiteHeader({ email, isAdmin = false }: { email: string; isAdmin?: boolean }) {
@@ -38,6 +38,13 @@ export function SiteHeader({ email, isAdmin = false }: { email: string; isAdmin?
                     >
                       <Gauge className="size-4" aria-hidden />
                       Лимиты Gemini
+                    </Menu.Item>
+                    <Menu.Item
+                      render={<Link href="/grocery/admin/scrapers" />}
+                      className="data-[highlighted]:bg-muted flex min-h-11 w-full cursor-default items-center gap-2 rounded-lg px-3 text-left text-sm outline-none"
+                    >
+                      <Activity className="size-4" aria-hidden />
+                      Парсеры
                     </Menu.Item>
                   </>
                 )}
