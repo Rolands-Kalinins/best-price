@@ -11,6 +11,7 @@
     "db:stop": "npx --yes supabase@2.122.0 stop",
     "db:reset": "npx --yes supabase@2.122.0 db reset",
     "db:status": "npx --yes supabase@2.122.0 status",
+    "db:pull": "node scripts/db-pull.mjs",
     "release:plan": "node scripts/release.mjs plan",
     "release:check": "node scripts/release.mjs check"
   }
