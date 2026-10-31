@@ -43,10 +43,12 @@ test("changedCategories: только изменившиеся, по катег�
     { id: 5, title: "Rotaļlieta", category: null, cat: "other" }, // уже other
     { id: 6, title: "Jogurts", category: "Konfekšu kārbas", cat: "dairy" }, // категория магазина главнее слов в названии (вкус не определяет товар)
     { id: 7, title: "Jogurts", category: "SH-10-1", cat: null }, // код без слов (Rimi): решает название
+    { id: 8, title: "Rotaļlieta", category: "Piena produkti / Zivju konservi", cat: null }, // путь «верх / низ» (Barbora): решает последний уровень, а не слова верхних
   ];
   assert.deepEqual([...changedCategories(CATS, rows)], [
     ["dairy", [1, 7]],
     ["sweets", [3, 6]],
     ["other", [4]],
+    ["fish", [8]],
   ]);
 });

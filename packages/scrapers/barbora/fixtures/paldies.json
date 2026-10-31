@@ -1,0 +1,186 @@
+{
+ "count": 2,
+ "offset": 0,
+ "limit": 200,
+ "inventories": [
+  {
+   "id": "000000000000790928",
+   "shopCode": "R600",
+   "title": "Skābais krējums VALMIERA 20% 450g",
+   "inFavorites": false,
+   "image": "https://cdn.barbora.lv/products/0d2d3f0e-ed37-432f-8298-9c4c42c0439c_s.png",
+   "imagesOriginal": [
+    "https://cdn.barbora.lv/products/0d2d3f0e-ed37-432f-8298-9c4c42c0439c.png"
+   ],
+   "url": "skabais-krejums-valmiera-20-proc-450-g",
+   "categoryPathUrl": "c/X2HL/piena-produkti-un-olas/skabais-un-saldais-krejums/skabais-krejums-un-ta-izstradajumi",
+   "categoryShortId": "X2HL",
+   "categoryId": "00000000-0000-0000-0000-000000000000",
+   "price": 1.99,
+   "promotion": {
+    "oldPrice": 2.39,
+    "oldComparativeRateGross": 5.31,
+    "oldComparativeRateNet": 5.31,
+    "percentage": 17,
+    "discountType": "loyaltyPrice",
+    "id": "3884757",
+    "type": "Discount",
+    "loyaltyCardRequired": true,
+    "mixAndMatch": false,
+    "validTo": null
+   },
+   "container": null,
+   "expirationDays": null,
+   "productAttributes": [
+    "promoLabel",
+    "promoPrice"
+   ],
+   "comparativeUnit": {
+    "type": "kg",
+    "price": 4.42,
+    "priceNet": 4.42,
+    "showNetPrice": true
+   },
+   "unit": {
+    "type": "units",
+    "min": 1,
+    "max": 10,
+    "step": 1,
+    "initialValue": 1
+   },
+   "pickingAction": null,
+   "status": "active",
+   "ageLimitation": null,
+   "isAlcohol": false,
+   "inventoryType": "regular",
+   "popupText": null,
+   "brand": "VALMIERA"
+  },
+  {
+   "id": "000000000000561798",
+   "shopCode": "R600",
+   "title": "Kūtī dētas olas ZEMNIEKU A kategorija 10gab.",
+   "inFavorites": false,
+   "image": "https://cdn.barbora.lv/products/8ce746f0-80a5-4bdf-8715-d896a9c848e5_s.png",
+   "imagesOriginal": [
+    "https://cdn.barbora.lv/products/8ce746f0-80a5-4bdf-8715-d896a9c848e5.png"
+   ],
+   "url": "kuti-detas-olas-zemnieku-a-kateg-10-gab",
+   "categoryPathUrl": "c/ZEX6/piena-produkti-un-olas/olas/vistu-olas",
+   "categoryShortId": "ZEX6",
+   "categoryId": "00000000-0000-0000-0000-000000000000",
+   "price": 1.79,
+   "promotion": {
+    "oldPrice": 2.69,
+    "oldComparativeRateGross": 0.27,
+    "oldComparativeRateNet": 0.27,
+    "percentage": 33,
+    "discountType": "loyaltyPrice",
+    "id": "3899980",
+    "type": "Discount",
+    "loyaltyCardRequired": true,
+    "mixAndMatch": false,
+    "validTo": null
+   },
+   "container": null,
+   "expirationDays": null,
+   "productAttributes": [
+    "promoLabel",
+    "promoPrice"
+   ],
+   "comparativeUnit": {
+    "type": "units",
+    "price": 0.18,
+    "priceNet": 0.18,
+    "showNetPrice": false
+   },
+   "unit": {
+    "type": "units",
+    "min": 1,
+    "max": 2,
+    "step": 1,
+    "initialValue": 1
+   },
+   "pickingAction": null,
+   "status": "active",
+   "ageLimitation": null,
+   "isAlcohol": false,
+   "inventoryType": "regular",
+   "popupText": null,
+   "brand": "ZEMNIEKU"
+  }
+ ],
+ "categoryTree": [
+  {
+   "url": "",
+   "count": 1932,
+   "shortId": "all",
+   "names": [],
+   "children": [
+    {
+     "url": "c/URAL/piena-produkti-un-olas",
+     "count": 235,
+     "shortId": "URAL",
+     "names": [
+      {
+       "name": "Piena produkti un olas",
+       "language": "lv"
+      }
+     ],
+     "children": [
+      {
+       "url": "c/WV4D/piena-produkti-un-olas/skabais-un-saldais-krejums",
+       "count": 12,
+       "shortId": "WV4D",
+       "names": [
+        {
+         "name": "Skābais un saldais krējums",
+         "language": "lv"
+        }
+       ],
+       "children": [
+        {
+         "url": "c/X2HL/piena-produkti-un-olas/skabais-un-saldais-krejums/skabais-krejums-un-ta-izstradajumi",
+         "count": 8,
+         "shortId": "X2HL",
+         "names": [
+          {
+           "name": "Skābais krējums un tā izstrādājumi",
+           "language": "lv"
+          }
+         ],
+         "children": []
+        }
+       ]
+      },
+      {
+       "url": "c/ATPC/piena-produkti-un-olas/olas",
+       "count": 1,
+       "shortId": "ATPC",
+       "names": [
+        {
+         "name": "Olas ",
+         "language": "lv"
+        }
+       ],
+       "children": [
+        {
+         "url": "c/ZEX6/piena-produkti-un-olas/olas/vistu-olas",
+         "count": 1,
+         "shortId": "ZEX6",
+         "names": [
+          {
+           "name": "Vistu olas",
+           "language": "lv"
+          }
+         ],
+         "children": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
