@@ -24,7 +24,7 @@
 ## Окружения
 
 - **Прод:** облачный проект Supabase `best-price` (Vercel, парсеры в GitHub Actions). Бесплатный тариф даёт 2 активных проекта (оба заняты: `finance-helper`, `best-price`), а ветки БД платные, поэтому второго облачного проекта нет.
-- **Разработка:** локальный Supabase в Docker (`pnpm db:start`, `pnpm db:reset`). Миграции из `supabase/migrations` применяются сами, `supabase/seed.sql` заводит тестового админа `dev@bestprice.local` / `dev-password-123` (пароль публичный, в облако сид не попадает). Остановка: `pnpm db:stop`.
+- **Разработка:** локальный Supabase в Docker (`pnpm db:start`, `pnpm db:reset`). Миграции из `supabase/migrations` применяются сами, `supabase/seed.sql` заводит тестового админа `dev@bestprice.local` / `dev-password-123` (пароль публичный, в облако сид не попадает). Остановка: `pnpm db:stop`. Боевые данные в локальную БД копирует `pnpm db:pull` (только чтение боевой, ключ из `.env.prod`; без `users` и `allowed_emails`): запускать перед проверкой страниц и парсеров, чтобы на localhost было то же, что на Vercel.
 - **Подключение:** `apps/web/.env.local` смотрит на `http://127.0.0.1:54321` с локальным publishable-ключом (`pnpm db:status` покажет ключи). Форма входа по паролю есть только при `NODE_ENV=development` (`apps/web/app/login/page.tsx`), в боевой сборке её нет.
 - **Данные:** локальная база пуста; парсер пишет туда, если подставить локальные `NEXT_PUBLIC_SUPABASE_URL` и `SUPABASE_SERVICE_ROLE_KEY` (корневой `.env` с боевым ключом перекрывать нельзя: `--env-file-if-exists` читает его, но переменные окружения оболочки приоритетнее).
 - **Миграции:** сначала на локальной базе (`pnpm db:reset`), потом бэкап и применение к проду (см. `docs/RELEASE.md`).
