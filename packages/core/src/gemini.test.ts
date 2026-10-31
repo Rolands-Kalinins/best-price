@@ -21,6 +21,26 @@ test("askGemini: ключ только в заголовке, температу
   assert.equal(body.contents[0].parts[0].text, "prompt");
 });
 
+test("askGemini: attempts=1 — один запрос без повторов (запасная модель подхватит), статус и счётчик в ошибке", async () => {
+  let calls = 0;
+  await assert.rejects(
+    askGemini("p", schema, { ...opts(async () => (calls++, new Response("busy", { status: 503 }))), attempts: 1 }),
+    (e: unknown) => e instanceof GeminiError && e.status === 503 && e.attempts === 1,
+  );
+  assert.equal(calls, 1);
+});
+
+test("askGemini: картинка уходит отдельной частью inline_data после текста; без картинки частей одна", async () => {
+  let init: RequestInit = {};
+  const spy = async (_u: unknown, i?: RequestInit) => ((init = i!), ok("[]"));
+  await askGemini("p", schema, { ...opts(spy), image: { mimeType: "image/jpeg", data: "QUJD" } });
+  const parts = JSON.parse(String(init.body)).contents[0].parts;
+  assert.equal(parts.length, 2);
+  assert.deepEqual(parts[1], { inline_data: { mime_type: "image/jpeg", data: "QUJD" } });
+  await askGemini("p", schema, opts(spy));
+  assert.equal(JSON.parse(String(init.body)).contents[0].parts.length, 1);
+});
+
 test("askGemini: токены из usageMetadata (вывод = всего − вход, мысли модели входят в вывод); нет метаданных — нули", async () => {
   const a = await askGemini("p", schema, opts(async () => ok("[]", { promptTokenCount: 154, candidatesTokenCount: 123, totalTokenCount: 300 })));
   assert.deepEqual([a.tokensIn, a.tokensOut], [154, 146]);

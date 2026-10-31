@@ -15,3 +15,5 @@
 | 2026-10-28 | [matching-review-round2](2026-10-28-matching-review-round2.md) | Сопоставление: решения и исключения читались без постраничности (потолок 1000), защита сравнивала разные единицы, вторая акция магазина пропадала из ленты |
 | 2026-10-29 | [categorize-skipped-after-match-failure](2026-10-29-categorize-skipped-after-match-failure.md) | Документация обещала «categorize выполняется и при сбое match», а в workflow не было `if`: шаг пропускался |
 | 2026-10-29 | [maxima-fetch-no-retry](2026-10-29-maxima-fetch-no-retry.md) | Парсер Maxima упал `terminated`: единичный обрыв соединения при чтении 4 МБ ответа без повторов |
+| 2026-10-31 | [leaflet-optional-fields](2026-10-31-leaflet-optional-fields.md) | Парсер буклета принял 1 запись из 7: модель не возвращала цены, когда поля схемы необязательны (и переводила названия) |
+| 2026-10-31 | [leaflet-lidl-plus-multibuy](2026-10-31-leaflet-lidl-plus-multibuy.md) | Парсер буклета: цена по карте Lidl Plus читалась как обычная (слабая модель не следовала прозе), акции «2+1» отбрасывались |
