@@ -144,10 +144,12 @@ export type Database = {
           discount_percent: number | null
           ean: string | null
           ends_at: string | null
+          edited_at: string | null
           external_id: string
           id: number
           image_url: string | null
           last_seen_at: string
+          locked_fields: string[]
           old_price: number | null
           packaging: string | null
           price: number | null
@@ -169,10 +171,12 @@ export type Database = {
           discount_percent?: number | null
           ean?: string | null
           ends_at?: string | null
+          edited_at?: string | null
           external_id: string
           id?: never
           image_url?: string | null
           last_seen_at?: string
+          locked_fields?: string[]
           old_price?: number | null
           packaging?: string | null
           price?: number | null
@@ -194,10 +198,12 @@ export type Database = {
           discount_percent?: number | null
           ean?: string | null
           ends_at?: string | null
+          edited_at?: string | null
           external_id?: string
           id?: never
           image_url?: string | null
           last_seen_at?: string
+          locked_fields?: string[]
           old_price?: number | null
           packaging?: string | null
           price?: number | null
@@ -277,6 +283,90 @@ export type Database = {
         Update: { key_a?: string; key_b?: string; prompt_version?: number; reason?: string; same?: boolean }
         Relationships: []
       }
+      leaflet_offers: {
+        Row: {
+          brand: string | null
+          condition: string | null
+          discount_percent: number | null
+          ends_at: string
+          external_id: string
+          flyer_id: string
+          id: number
+          last_seen_at: string
+          model: string | null
+          old_price: number | null
+          packaging: string | null
+          page: number
+          page_image_url: string | null
+          photo_box: number[] | null
+          price: number | null
+          price_card: number | null
+          price_second: number | null
+          source_id: number
+          starts_at: string
+          title: string
+          unit: string | null
+          unit_price: number | null
+          url: string
+        }
+        Insert: {
+          brand?: string | null
+          condition?: string | null
+          discount_percent?: number | null
+          ends_at: string
+          external_id: string
+          flyer_id: string
+          id?: number
+          last_seen_at?: string
+          model?: string | null
+          old_price?: number | null
+          packaging?: string | null
+          page: number
+          page_image_url?: string | null
+          photo_box?: number[] | null
+          price?: number | null
+          price_card?: number | null
+          price_second?: number | null
+          source_id: number
+          starts_at: string
+          title: string
+          unit?: string | null
+          unit_price?: number | null
+          url: string
+        }
+        Update: {
+          brand?: string | null
+          condition?: string | null
+          discount_percent?: number | null
+          ends_at?: string
+          external_id?: string
+          flyer_id?: string
+          id?: number
+          last_seen_at?: string
+          model?: string | null
+          old_price?: number | null
+          packaging?: string | null
+          page?: number
+          page_image_url?: string | null
+          photo_box?: number[] | null
+          price?: number | null
+          price_card?: number | null
+          price_second?: number | null
+          source_id?: number
+          starts_at?: string
+          title?: string
+          unit?: string | null
+          unit_price?: number | null
+          url?: string
+        }
+        Relationships: []
+      }
+      leaflet_thumbs: {
+        Row: { external_id: string; photo: string; source_id: number }
+        Insert: { external_id: string; photo: string; source_id: number }
+        Update: { external_id?: string; photo?: string; source_id?: number }
+        Relationships: []
+      }
       title_attrs: {
         Row: { brand: string | null; prompt_version: number; title_key: string }
         Insert: { brand?: string | null; prompt_version: number; title_key: string }
@@ -311,7 +401,10 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      leaflet_flyers: {
+        Row: { ends_at: string | null; flyer_id: string | null; offers: number | null; pages: number | null; source_id: number | null; starts_at: string | null }
+        Relationships: []
+      }
     }
     Functions: {
       add_ai_usage: {

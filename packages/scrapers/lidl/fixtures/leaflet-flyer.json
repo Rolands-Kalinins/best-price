@@ -1,0 +1,22 @@
+{
+  "flyer": {
+    "id": "01a16a1b-4f0f-7ad8-9f06-8236cdcf0726",
+    "name": "Aktuālais akciju buklets",
+    "offerStartDate": "2026-10-26",
+    "offerEndDate": "2026-11-01",
+    "pages": [
+      {
+        "number": 1,
+        "width": 1441,
+        "height": 2400,
+        "zoom": "https://imgproxy.leaflets.schwarz/VqpKZHqUUMJBGqN0bk28a_ShW3_4MZim9eBi6095PFY/rs:fit:2400:2400:1/g:no/czM6Ly9sZWFmbGV0cy9pbWFnZXMvMDFhMTZhMWItNGYwZi03YWQ4LTlmMDYtODIzNmNkY2YwNzI2L3BhZ2UtMDFfNWE5OWE2ZmVkMWZhN2VlMGYyYTkxY2IyMjU2ZGI5Y2UucG5n.jpg"
+      },
+      {
+        "number": 2,
+        "width": 1441,
+        "height": 2400,
+        "zoom": "https://imgproxy.leaflets.schwarz/6BxdYoVTZJ3gwKajfVL79fep69zBQx2R1GCvP2CwiXA/rs:fit:2400:2400:1/g:no/czM6Ly9sZWFmbGV0cy9pbWFnZXMvMDFhMTZhMWItNGYwZi03YWQ4LTlmMDYtODIzNmNkY2YwNzI2L3BhZ2UtMDJfYzNmNDQ5ZmJiODQyZDBmMGM1OGNjZjhlZGVlYzcwNGQucG5n.jpg"
+      }
+    ]
+  }
+}
