@@ -1,6 +1,5 @@
 import { pacificDay, secondsUntilReset, usagePercent } from "@bestprice/core";
 import { redirect } from "next/navigation";
-import { SiteHeader } from "@/components/site-header";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
@@ -34,8 +33,7 @@ export default async function AiUsagePage() {
 
   return (
     <>
-      <SiteHeader email={auth.user.email ?? ""} isAdmin />
-      <main className="mx-auto w-full max-w-3xl space-y-4 p-4">
+      <div className="mx-auto w-full max-w-3xl space-y-4 p-4">
         <h1 className="text-2xl font-semibold">Лимиты Gemini</h1>
         <p className="text-muted-foreground text-sm">
           Считаются только запросы сопоставления товаров (ночной запуск и ручные). Всё, что идёт через тот же проект Google (AI Studio, другие
@@ -102,7 +100,7 @@ export default async function AiUsagePage() {
             </section>
           );
         })}
-      </main>
+      </div>
     </>
   );
 }

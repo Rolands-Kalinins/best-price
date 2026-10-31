@@ -24,7 +24,7 @@ import {
   type MatchItem,
   type Verdict,
 } from "@bestprice/core";
-import { askGemini, GeminiError } from "./gemini";
+import { askGemini, GeminiError } from "@bestprice/core";
 
 const DRY = process.argv.includes("--dry");
 

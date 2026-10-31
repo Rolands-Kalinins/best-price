@@ -1,7 +1,6 @@
 import { nextScrapeAt } from "@bestprice/core";
 import { redirect } from "next/navigation";
 import { Countdown } from "@/components/countdown";
-import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { runScrapers } from "./actions";
@@ -42,8 +41,7 @@ export default async function ScrapersPage({ searchParams }: { searchParams: Pro
 
   return (
     <>
-      <SiteHeader email={auth.user.email ?? ""} isAdmin />
-      <main className="mx-auto w-full max-w-3xl space-y-4 p-4">
+      <div className="mx-auto w-full max-w-3xl space-y-4 p-4">
         <h1 className="text-2xl font-semibold">Парсеры</h1>
         <div className="bg-card flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-3">
           <p className="text-sm">
@@ -104,7 +102,7 @@ export default async function ScrapersPage({ searchParams }: { searchParams: Pro
             </section>
           );
         })}
-      </main>
+      </div>
     </>
   );
 }

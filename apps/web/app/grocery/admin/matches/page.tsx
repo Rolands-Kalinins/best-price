@@ -1,7 +1,6 @@
 import { activeFilter, safeHttpUrl } from "@bestprice/core";
 import { eur } from "@/lib/format";
 import { redirect } from "next/navigation";
-import { SiteHeader } from "@/components/site-header";
 import { ZoomImage } from "@/components/zoom-image";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
@@ -66,8 +65,7 @@ export default async function MatchesPage() {
 
   return (
     <>
-      <SiteHeader email={auth.user.email ?? ""} isAdmin />
-      <main className="mx-auto w-full max-w-3xl space-y-4 p-4">
+      <div className="mx-auto w-full max-w-3xl space-y-4 p-4">
         <h1 className="text-2xl font-semibold">Сопоставление товаров</h1>
         <p className="text-muted-foreground text-sm">
           Алгоритм думает, что эти акции — один товар, но не уверен. Лишнюю акцию уберите кнопкой «Убрать», остальные подтвердите
@@ -144,7 +142,7 @@ export default async function MatchesPage() {
             </ul>
           </section>
         )}
-      </main>
+      </div>
     </>
   );
 }

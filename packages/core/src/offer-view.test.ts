@@ -4,6 +4,11 @@ import { readFileSync } from "node:fs";
 import { activeFilter, discountPercent, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchGroups, searchOrClause, searchTerms, storePrices } from "./offer-view";
 import { RU_LV } from "./ru-lv";
 
+test("safeHttpUrl: наша миниатюра /grocery/img/<магазин>/<ключ> разрешена, любой другой относительный путь нет", () => {
+  assert.equal(safeHttpUrl("/grocery/img/1/ab12cd"), "/grocery/img/1/ab12cd");
+  for (const bad of ["/grocery/img/1/../x", "//evil.test/a", "/other", "/grocery/img/x/ab", "/grocery/img/1/AB?x=1"]) assert.equal(safeHttpUrl(bad), null);
+});
+
 test("safeHttpUrl: только http(s)", () => {
   assert.equal(safeHttpUrl("https://www.lidl.lv/p/1"), "https://www.lidl.lv/p/1");
   assert.equal(safeHttpUrl("http://x.lv/a"), "http://x.lv/a");
