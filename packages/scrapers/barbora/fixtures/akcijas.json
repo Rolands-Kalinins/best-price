@@ -1,0 +1,746 @@
+{
+ "count": 9,
+ "offset": 0,
+ "limit": 200,
+ "inventories": [
+  {
+   "id": "000000000001343205",
+   "shopCode": "R600",
+   "title": "Krēmsiers WELL DONE 57,5% 200g",
+   "inFavorites": false,
+   "image": "https://cdn.barbora.lv/products/05430cef-dc7e-4fda-9889-0fbe0d6746e2_s.png",
+   "imagesOriginal": [
+    "https://cdn.barbora.lv/products/05430cef-dc7e-4fda-9889-0fbe0d6746e2.png"
+   ],
+   "url": "kremsiers-well-done-57-5-proc-200-g",
+   "categoryPathUrl": "c/R5TD/piena-produkti-un-olas/siers/kremveida-siers",
+   "categoryShortId": "R5TD",
+   "categoryId": "00000000-0000-0000-0000-000000000000",
+   "price": 1.39,
+   "promotion": {
+    "oldPrice": 1.59,
+    "oldComparativeRateGross": 7.95,
+    "oldComparativeRateNet": 7.95,
+    "percentage": 13,
+    "discountType": "discountPrice",
+    "id": "3907630",
+    "type": "Discount",
+    "loyaltyCardRequired": false,
+    "mixAndMatch": false,
+    "validTo": "2026-11-02T00:00:00Z"
+   },
+   "container": null,
+   "expirationDays": null,
+   "productAttributes": [
+    "promoLabel",
+    "promoPrice"
+   ],
+   "comparativeUnit": {
+    "type": "kg",
+    "price": 6.95,
+    "priceNet": 6.95,
+    "showNetPrice": true
+   },
+   "unit": {
+    "type": "units",
+    "min": 1,
+    "max": 12,
+    "step": 1,
+    "initialValue": 1
+   },
+   "pickingAction": null,
+   "status": "active",
+   "ageLimitation": null,
+   "isAlcohol": false,
+   "inventoryType": "regular",
+   "popupText": null,
+   "brand": "WELL DONE"
+  },
+  {
+   "id": "000000000001350054",
+   "shopCode": "R600",
+   "title": "Universālā līme STALWART",
+   "inFavorites": false,
+   "image": "https://cdn.barbora.lv/products/9d61be77-b91c-4361-9517-a9d4501e136d_s.png",
+   "imagesOriginal": [
+    "https://cdn.barbora.lv/products/9d61be77-b91c-4361-9517-a9d4501e136d.png"
+   ],
+   "url": "universala-lime-stalwart",
+   "categoryPathUrl": "c/52JL/majai-un-atputai/kancelejas-preces/lime-un-limlentes",
+   "categoryShortId": "52JL",
+   "categoryId": "00000000-0000-0000-0000-000000000000",
+   "price": 0.47,
+   "promotion": {
+    "oldPrice": 0.79,
+    "oldComparativeRateGross": 0.79,
+    "oldComparativeRateNet": 0.79,
+    "percentage": 40,
+    "discountType": "discountPercentage",
+    "id": "3898045",
+    "type": "Discount",
+    "loyaltyCardRequired": false,
+    "mixAndMatch": true,
+    "validTo": "2026-11-02T00:00:00Z"
+   },
+   "container": null,
+   "expirationDays": null,
+   "productAttributes": [
+    "promoLabel",
+    "promoPrice"
+   ],
+   "comparativeUnit": {
+    "type": "units",
+    "price": 0.47,
+    "priceNet": 0.47,
+    "showNetPrice": false
+   },
+   "unit": {
+    "type": "units",
+    "min": 1,
+    "max": 14,
+    "step": 1,
+    "initialValue": 1
+   },
+   "pickingAction": null,
+   "status": "active",
+   "ageLimitation": null,
+   "isAlcohol": false,
+   "inventoryType": "regular",
+   "popupText": null,
+   "brand": "STALWART"
+  },
+  {
+   "id": "000000000001304176",
+   "shopCode": "R600",
+   "title": "Kartupeļu čipsi tomātu ĀDAŽU 130g",
+   "inFavorites": false,
+   "image": "https://cdn.barbora.lv/products/1234272b-f0e9-4d4f-b832-f2a048b0591f_s.png",
+   "imagesOriginal": [
+    "https://cdn.barbora.lv/products/1234272b-f0e9-4d4f-b832-f2a048b0591f.png",
+    "https://cdn.barbora.lv/products/37e9fa09-c705-451e-b0f7-6305a183ecf3.png",
+    "https://cdn.barbora.lv/products/5e84ea4f-5562-4407-8ddf-52ae8187d8e5.png"
+   ],
+   "url": "kartupelu-cipsi-tomatu-adazu-130-g",
+   "categoryPathUrl": "c/FJ4U/bakaleja/uzkodas/kartupelu-un-kukuruzas-cipsi",
+   "categoryShortId": "FJ4U",
+   "categoryId": "00000000-0000-0000-0000-000000000000",
+   "price": 2.49,
+   "promotion": {
+    "quantity": 2,
+    "groupPrice": 0,
+    "promotionPrice": 2,
+    "status": "activated",
+    "id": "3907657",
+    "type": "XForY",
+    "loyaltyCardRequired": false,
+    "mixAndMatch": false,
+    "validTo": "2026-11-02T00:00:00Z"
+   },
+   "container": null,
+   "expirationDays": null,
+   "productAttributes": [
+    "promoLabel",
+    "promoPrice",
+    "vegetarian"
+   ],
+   "comparativeUnit": {
+    "type": "kg",
+    "price": 19.15,
+    "priceNet": 19.15,
+    "showNetPrice": true
+   },
+   "unit": {
+    "type": "units",
+    "min": 1,
+    "max": 4,
+    "step": 1,
+    "initialValue": 1
+   },
+   "pickingAction": null,
+   "status": "active",
+   "ageLimitation": null,
+   "isAlcohol": false,
+   "inventoryType": "regular",
+   "popupText": null,
+   "brand": "ĀDAŽU"
+  },
+  {
+   "id": "000000000001287795",
+   "shopCode": "R600",
+   "title": "Surimi nūjiņas atdzesētas PORTLITE 150g",
+   "inFavorites": false,
+   "image": "https://cdn.barbora.lv/products/8f79db5b-109e-45ec-a827-f390a08ae2c9_s.png",
+   "imagesOriginal": [
+    "https://cdn.barbora.lv/products/8f79db5b-109e-45ec-a827-f390a08ae2c9.png"
+   ],
+   "url": "surimi-nujinas-atdzesetas-portlite-150-g",
+   "categoryPathUrl": "c/06FA/gala-zivs-un-gatava-kulinarija/zivju-produkti/krabju-nujinas",
+   "categoryShortId": "06FA",
+   "categoryId": "00000000-0000-0000-0000-000000000000",
+   "price": 1.89,
+   "promotion": {
+    "quantity": 2,
+    "groupPrice": 0,
+    "promotionPrice": 1.89,
+    "status": "activated",
+    "id": "3921425",
+    "type": "XForY",
+    "loyaltyCardRequired": false,
+    "mixAndMatch": false,
+    "validTo": "2026-11-02T00:00:00Z"
+   },
+   "container": null,
+   "expirationDays": null,
+   "productAttributes": [
+    "promoLabel",
+    "promoPrice"
+   ],
+   "comparativeUnit": {
+    "type": "kg",
+    "price": 12.6,
+    "priceNet": 12.6,
+    "showNetPrice": true
+   },
+   "unit": {
+    "type": "units",
+    "min": 1,
+    "max": 10,
+    "step": 1,
+    "initialValue": 1
+   },
+   "pickingAction": null,
+   "status": "active",
+   "ageLimitation": null,
+   "isAlcohol": false,
+   "inventoryType": "regular",
+   "popupText": null,
+   "brand": "PORTLITE"
+  },
+  {
+   "id": "000000000001359321",
+   "shopCode": "R600",
+   "title": "Tortiljas WELL DONE 6gab. 370g ",
+   "inFavorites": false,
+   "image": "https://cdn.barbora.lv/products/0d1e7106-a8cf-4a49-a4af-2e8de96d3fb3_s.png",
+   "imagesOriginal": [
+    "https://cdn.barbora.lv/products/0d1e7106-a8cf-4a49-a4af-2e8de96d3fb3.png"
+   ],
+   "url": "tortiljas-well-done-6-gab-370-g",
+   "categoryPathUrl": "c/5A6P/bakaleja/pasaules-virtuve/meksikanu-virtuve",
+   "categoryShortId": "5A6P",
+   "categoryId": "00000000-0000-0000-0000-000000000000",
+   "price": 1.56,
+   "promotion": {
+    "percentage": 30,
+    "minQuantity": 2,
+    "orMore": true,
+    "status": "activated",
+    "id": "3898043",
+    "type": "CategoryPercentage",
+    "loyaltyCardRequired": false,
+    "mixAndMatch": true,
+    "validTo": "2026-11-02T00:00:00Z"
+   },
+   "container": null,
+   "expirationDays": null,
+   "productAttributes": [
+    "promoLabel",
+    "promoPrice"
+   ],
+   "comparativeUnit": {
+    "type": "kg",
+    "price": 4.22,
+    "priceNet": 4.22,
+    "showNetPrice": true
+   },
+   "unit": {
+    "type": "units",
+    "min": 1,
+    "max": 10,
+    "step": 1,
+    "initialValue": 1
+   },
+   "pickingAction": null,
+   "status": "active",
+   "ageLimitation": null,
+   "isAlcohol": false,
+   "inventoryType": "regular",
+   "popupText": null,
+   "brand": "WELL DONE"
+  },
+  {
+   "id": "000000000000011861",
+   "shopCode": "R600",
+   "title": "Batoniņš Serenāde LAIMA 40g",
+   "inFavorites": false,
+   "image": "https://cdn.barbora.lv/products/35839631-e128-4125-b343-9caf71f8a74e_s.png",
+   "imagesOriginal": [
+    "https://cdn.barbora.lv/products/35839631-e128-4125-b343-9caf71f8a74e.png",
+    "https://cdn.barbora.lv/products/a2beeb34-5cf8-4450-83f1-de2d316ffbb1.png"
+   ],
+   "url": "sokolades-batonins-serenade-laima-40-g",
+   "categoryPathUrl": "c/KH1U/bakaleja/saldumi/sokolades-batonini",
+   "categoryShortId": "KH1U",
+   "categoryId": "00000000-0000-0000-0000-000000000000",
+   "price": 0.67,
+   "promotion": {
+    "oldPrice": 0.89,
+    "oldComparativeRateGross": 22.25,
+    "oldComparativeRateNet": 22.25,
+    "percentage": 25,
+    "discountType": "discountPrice",
+    "id": "3850457",
+    "type": "Discount",
+    "loyaltyCardRequired": false,
+    "mixAndMatch": false,
+    "validTo": "2026-11-02T00:00:00Z"
+   },
+   "container": null,
+   "expirationDays": null,
+   "productAttributes": [
+    "promoLabel",
+    "promoPrice"
+   ],
+   "comparativeUnit": {
+    "type": "kg",
+    "price": 16.75,
+    "priceNet": 16.75,
+    "showNetPrice": true
+   },
+   "unit": {
+    "type": "units",
+    "min": 1,
+    "max": 30,
+    "step": 1,
+    "initialValue": 1
+   },
+   "pickingAction": null,
+   "status": "outOfStock",
+   "ageLimitation": null,
+   "isAlcohol": false,
+   "inventoryType": "regular",
+   "popupText": null,
+   "brand": "LAIMA"
+  },
+  {
+   "id": "000000000001256199",
+   "shopCode": "R600",
+   "title": "Raudzēts piena produkts Graudi LAKTO avene-granola 270g",
+   "inFavorites": false,
+   "image": "https://cdn.barbora.lv/products/9bf6e5c6-b56a-40f3-9730-c0998e390f5b_s.png",
+   "imagesOriginal": [
+    "https://cdn.barbora.lv/products/9bf6e5c6-b56a-40f3-9730-c0998e390f5b.png"
+   ],
+   "url": "jogurts-lakto-graudi-avene-granola-270-g",
+   "categoryPathUrl": "c/L0QV/piena-produkti-un-olas/jogurti-un-deserti/dzeramie-jogurti",
+   "categoryShortId": "L0QV",
+   "categoryId": "00000000-0000-0000-0000-000000000000",
+   "price": 1.59,
+   "promotion": null,
+   "container": null,
+   "expirationDays": null,
+   "productAttributes": [],
+   "comparativeUnit": {
+    "type": "kg",
+    "price": 5.89,
+    "priceNet": 5.89,
+    "showNetPrice": true
+   },
+   "unit": {
+    "type": "units",
+    "min": 1,
+    "max": 8,
+    "step": 1,
+    "initialValue": 1
+   },
+   "pickingAction": null,
+   "status": "active",
+   "ageLimitation": null,
+   "isAlcohol": false,
+   "inventoryType": "regular",
+   "popupText": null,
+   "brand": "LAKTO"
+  },
+  {
+   "id": "000000000001336912",
+   "shopCode": "R600",
+   "title": "Lāpstiņa un cepumu formiņa ILAJA",
+   "inFavorites": false,
+   "image": "https://cdn.barbora.lv/products/3b741c52-6e31-4a01-a63d-44d09c266824_s.png",
+   "imagesOriginal": [
+    "https://cdn.barbora.lv/products/3b741c52-6e31-4a01-a63d-44d09c266824.png"
+   ],
+   "url": "lapstina-un-cepumu-formina-ilaja",
+   "categoryPathUrl": null,
+   "categoryShortId": null,
+   "categoryId": "00000000-0000-0000-0000-000000000000",
+   "price": 2.39,
+   "promotion": {
+    "oldPrice": 3.99,
+    "oldComparativeRateGross": 3.99,
+    "oldComparativeRateNet": 3.99,
+    "percentage": 40,
+    "discountType": "discountPercentage",
+    "id": "3921563",
+    "type": "Discount",
+    "loyaltyCardRequired": false,
+    "mixAndMatch": true,
+    "validTo": "2026-11-02T00:00:00Z"
+   },
+   "container": null,
+   "expirationDays": null,
+   "productAttributes": [
+    "promoLabel",
+    "promoPrice"
+   ],
+   "comparativeUnit": {
+    "type": "units",
+    "price": 2.39,
+    "priceNet": 2.39,
+    "showNetPrice": false
+   },
+   "unit": {
+    "type": "units",
+    "min": 1,
+    "max": 8,
+    "step": 1,
+    "initialValue": 1
+   },
+   "pickingAction": null,
+   "status": "active",
+   "ageLimitation": null,
+   "isAlcohol": false,
+   "inventoryType": "regular",
+   "popupText": null,
+   "brand": "ILAJA"
+  },
+  {
+   "id": "000000000000180990",
+   "shopCode": "R600",
+   "title": "Sīpoli 45+ kg",
+   "inFavorites": false,
+   "image": "https://cdn.barbora.lv/products/d74c9d15-7fb0-4483-9ac3-cdb56368c172_s.png",
+   "imagesOriginal": [
+    "https://cdn.barbora.lv/products/d74c9d15-7fb0-4483-9ac3-cdb56368c172.png"
+   ],
+   "url": "sipoli-45-kg",
+   "categoryPathUrl": "c/5ABS/augli-un-darzeni/darzeni/sipoli-puravi-un-kiploki",
+   "categoryShortId": "5ABS",
+   "categoryId": "00000000-0000-0000-0000-000000000000",
+   "price": 0.45,
+   "promotion": {
+    "oldPrice": 0.59,
+    "oldComparativeRateGross": 0.59,
+    "oldComparativeRateNet": 0.59,
+    "percentage": 24,
+    "discountType": "discountPrice",
+    "id": "3937419",
+    "type": "Discount",
+    "loyaltyCardRequired": false,
+    "mixAndMatch": false,
+    "validTo": "2026-11-02T00:00:00Z"
+   },
+   "container": null,
+   "expirationDays": null,
+   "productAttributes": [
+    "promoLabel",
+    "promoPrice"
+   ],
+   "comparativeUnit": {
+    "type": "kg",
+    "price": 0.45,
+    "priceNet": 0.45,
+    "showNetPrice": true
+   },
+   "unit": {
+    "type": "kg",
+    "min": 0.6,
+    "max": 5,
+    "step": 0.2,
+    "initialValue": 0.6
+   },
+   "pickingAction": null,
+   "status": "active",
+   "ageLimitation": null,
+   "isAlcohol": false,
+   "inventoryType": "regular",
+   "popupText": null,
+   "brand": ""
+  }
+ ],
+ "categoryTree": [
+  {
+   "url": "",
+   "count": 1742,
+   "shortId": "all",
+   "names": [],
+   "children": [
+    {
+     "url": "c/URAL/piena-produkti-un-olas",
+     "count": 35,
+     "shortId": "URAL",
+     "names": [
+      {
+       "name": "Piena produkti un olas",
+       "language": "lv"
+      }
+     ],
+     "children": [
+      {
+       "url": "c/BQ9O/piena-produkti-un-olas/siers",
+       "count": 9,
+       "shortId": "BQ9O",
+       "names": [
+        {
+         "name": "Siers",
+         "language": "lv"
+        }
+       ],
+       "children": [
+        {
+         "url": "c/R5TD/piena-produkti-un-olas/siers/kremveida-siers",
+         "count": 4,
+         "shortId": "R5TD",
+         "names": [
+          {
+           "name": "Krēmveida siers",
+           "language": "lv"
+          }
+         ],
+         "children": []
+        }
+       ]
+      },
+      {
+       "url": "c/BQJ9/piena-produkti-un-olas/jogurti-un-deserti",
+       "count": 13,
+       "shortId": "BQJ9",
+       "names": [
+        {
+         "name": "Jogurti un deserti",
+         "language": "lv"
+        }
+       ],
+       "children": [
+        {
+         "url": "c/L0QV/piena-produkti-un-olas/jogurti-un-deserti/dzeramie-jogurti",
+         "count": 3,
+         "shortId": "L0QV",
+         "names": [
+          {
+           "name": "Dzeramie jogurti",
+           "language": "lv"
+          }
+         ],
+         "children": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "url": "c/ATQ4/augli-un-darzeni",
+     "count": 42,
+     "shortId": "ATQ4",
+     "names": [
+      {
+       "name": "Augļi un dārzeņi",
+       "language": "lv"
+      }
+     ],
+     "children": [
+      {
+       "url": "c/ZEUT/augli-un-darzeni/darzeni",
+       "count": 20,
+       "shortId": "ZEUT",
+       "names": [
+        {
+         "name": "Dārzeņi",
+         "language": "lv"
+        }
+       ],
+       "children": [
+        {
+         "url": "c/5ABS/augli-un-darzeni/darzeni/sipoli-puravi-un-kiploki",
+         "count": 1,
+         "shortId": "5ABS",
+         "names": [
+          {
+           "name": "Sīpoli, puravi un ķiploki",
+           "language": "lv"
+          }
+         ],
+         "children": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "url": "c/8ZUX/gala-zivs-un-gatava-kulinarija",
+     "count": 172,
+     "shortId": "8ZUX",
+     "names": [
+      {
+       "name": "Gaļa, zivs un gatavā kulinārija",
+       "language": "lv"
+      }
+     ],
+     "children": [
+      {
+       "url": "c/D9EP/gala-zivs-un-gatava-kulinarija/zivju-produkti",
+       "count": 60,
+       "shortId": "D9EP",
+       "names": [
+        {
+         "name": "Zivju produkti",
+         "language": "lv"
+        }
+       ],
+       "children": [
+        {
+         "url": "c/06FA/gala-zivs-un-gatava-kulinarija/zivju-produkti/krabju-nujinas",
+         "count": 3,
+         "shortId": "06FA",
+         "names": [
+          {
+           "name": "Krabju nūjiņas",
+           "language": "lv"
+          }
+         ],
+         "children": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "url": "c/5AAZ/bakaleja",
+     "count": 661,
+     "shortId": "5AAZ",
+     "names": [
+      {
+       "name": "Bakaleja",
+       "language": "lv"
+      }
+     ],
+     "children": [
+      {
+       "url": "c/9477/bakaleja/pasaules-virtuve",
+       "count": 191,
+       "shortId": "9477",
+       "names": [
+        {
+         "name": "Pasaules virtuve",
+         "language": "lv"
+        }
+       ],
+       "children": [
+        {
+         "url": "c/5A6P/bakaleja/pasaules-virtuve/meksikanu-virtuve",
+         "count": 22,
+         "shortId": "5A6P",
+         "names": [
+          {
+           "name": "Meksikāņu virtuve",
+           "language": "lv"
+          }
+         ],
+         "children": []
+        }
+       ]
+      },
+      {
+       "url": "c/KH1F/bakaleja/saldumi",
+       "count": 266,
+       "shortId": "KH1F",
+       "names": [
+        {
+         "name": "Saldumi",
+         "language": "lv"
+        }
+       ],
+       "children": [
+        {
+         "url": "c/KH1U/bakaleja/saldumi/sokolades-batonini",
+         "count": 19,
+         "shortId": "KH1U",
+         "names": [
+          {
+           "name": "Šokolādes batoniņi",
+           "language": "lv"
+          }
+         ],
+         "children": []
+        }
+       ]
+      },
+      {
+       "url": "c/5AHW/bakaleja/uzkodas",
+       "count": 19,
+       "shortId": "5AHW",
+       "names": [
+        {
+         "name": "Uzkodas",
+         "language": "lv"
+        }
+       ],
+       "children": [
+        {
+         "url": "c/FJ4U/bakaleja/uzkodas/kartupelu-un-kukuruzas-cipsi",
+         "count": 13,
+         "shortId": "FJ4U",
+         "names": [
+          {
+           "name": "Kartupeļu un kukurūzas čipsi",
+           "language": "lv"
+          }
+         ],
+         "children": []
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "url": "c/ODX9/majai-un-atputai",
+     "count": 583,
+     "shortId": "ODX9",
+     "names": [
+      {
+       "name": "Mājai un atpūtai",
+       "language": "lv"
+      }
+     ],
+     "children": [
+      {
+       "url": "c/LG9K/majai-un-atputai/kancelejas-preces",
+       "count": 4,
+       "shortId": "LG9K",
+       "names": [
+        {
+         "name": "Kancelejas preces",
+         "language": "lv"
+        }
+       ],
+       "children": [
+        {
+         "url": "c/52JL/majai-un-atputai/kancelejas-preces/lime-un-limlentes",
+         "count": 4,
+         "shortId": "52JL",
+         "names": [
+          {
+           "name": "Līme un līmlentes",
+           "language": "lv"
+          }
+         ],
+         "children": []
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

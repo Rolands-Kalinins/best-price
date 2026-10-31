@@ -12,7 +12,7 @@ on:
         description: Какой парсер запустить
         type: choice
         default: all
-        options: [all, lidl, maxima, rimi, etop]
+        options: [all, lidl, maxima, barbora, rimi, etop]
 
 # Один запуск за раз: двойной клик по кнопке в админке не даст двух одинаковых парсеров.
 concurrency:
@@ -72,6 +72,30 @@ jobs:
         with:
           name: maxima-debug
           path: packages/scrapers/maxima/debug
+          retention-days: 7
+
+  barbora:
+    if: github.event_name != 'workflow_dispatch' || inputs.source == 'all' || inputs.source == 'barbora'
+    runs-on: ubuntu-latest
+    # Живой прогон: ≈20 запросов, около 8 секунд; запас с избытком.
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @bestprice/scraper-barbora scrape
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: barbora-debug
+          path: packages/scrapers/barbora/debug
           retention-days: 7
 
   rimi:
