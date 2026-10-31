@@ -37,7 +37,8 @@ export function changedCategories(
 ): Map<string, number[]> {
   const out = new Map<string, number[]>();
   for (const r of rows) {
-    const slug = (r.category && categorize(cats, r.category)) || categorize(cats, r.title) || OTHER;
+    // Путь «верх / середина / низ» (Barbora): слова верхних уровней сбивают («Saldējums un ledus» → напитки), решает последний.
+    const slug = (r.category && categorize(cats, r.category.split(" / ").at(-1)!)) || categorize(cats, r.title) || OTHER;
     if (slug !== r.cat) out.set(slug, [...(out.get(slug) ?? []), r.id]);
   }
   return out;
