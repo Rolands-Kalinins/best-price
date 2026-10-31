@@ -20,9 +20,14 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Lidl читается только по буклету: в буклете 240+ акций, на сайте ~70 (docs/PLAN.md, «Буклеты магазинов»). Gemini читает страницы-картинки.
+  # Запуск идемпотентный: прочитанные страницы пропускаются без квоты, поэтому ночной запуск каждый день сам подхватывает новый буклет
+  # (Lidl выкладывает следующий с пятницы), а упавший на квоте дочитывается на следующую ночь.
   lidl:
     if: github.event_name != 'workflow_dispatch' || inputs.source == 'all' || inputs.source == 'lidl'
     runs-on: ubuntu-latest
+    # Основная модель gemini-3.5-flash читает страницу ≈60 с: буклет ≈45 минут, два буклета ≈90, запас вдвое.
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -32,11 +37,14 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # Ненулевой код выхода при сбое → job падает → GitHub шлёт письмо (FR-15).
-      - run: pnpm --filter @bestprice/scraper-lidl scrape
+      - run: pnpm --filter @bestprice/scraper-lidl leaflet
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      # Сырой ответ магазина сохраняем только при сбое (FR-30).
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # Суточный лимит бесплатного уровня 500 запросов, общий с матчером; два буклета ~85, потолок защищает от зацикливания.
+          GEMINI_MAX_REQUESTS: 120
+      # Сырые ответы модели по страницам (что она прочитала) сохраняем только при сбое (FR-30).
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

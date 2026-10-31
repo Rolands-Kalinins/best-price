@@ -17,6 +17,7 @@ export function offerDiscount(o: { price: number | null; old_price: number | nul
 /** Ссылка и картинка приходят из парсера: пропускаем только абсолютные http(s), остальное (javascript:, data:) отбрасываем. */
 export function safeHttpUrl(url: string | null): string | null {
   if (!url) return null;
+  if (/^\/grocery\/img\/\d+\/[0-9a-f]+$/.test(url)) return url; // наша миниатюра (leaflet_thumbs), см. siteOffers
   try {
     const { protocol } = new URL(url);
     return protocol === "http:" || protocol === "https:" ? url : null;
