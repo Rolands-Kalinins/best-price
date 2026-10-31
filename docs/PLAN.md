@@ -93,6 +93,17 @@
 - Риски CI у e-LaTS: прогон ≈15 с (`timeout-minutes: 10` с запасом); разметка плиток не обещана стабильной (защита: zod, порог отброшенных 5%, минимум 200 акций против 438 обычных, потому что страница с ошибкой и кодом 200 выглядит как конец списка); блокировка IP GitHub подтвердилась (403, см. ниже); не проверено, зависят ли цены от выбранного пункта выдачи (Imanta, Mežciems, Purvciems). Запасной вариант: запуск с ПК (FR-31).
 - **Запуск e-LaTS с ПК (с 1.12.0.1, FR-31).** Первый боевой запуск в Actions 2026-10-31 дал `e-latts: HTTP 403`: сайт блокирует адреса GitHub (с домашнего адреса тот же запрос с `BestPriceBot` отвечает 200). Защиту не обходим. Job `e-latts` в `scrape.yml` теперь только ручной (`workflow_dispatch`, `source=e-latts`) и в ночной «all» не входит, чтобы не слать ночные письма о сбое. Парсер идёт с ПК: `scripts/scrape-e-latts.ps1` (ключи из `.env.prod` кладёт в окружение процесса, журнал `packages/scrapers/e-latts/debug/pc-run.log`), ночью задача Планировщика Windows «BestPrice e-latts» в 23:30, до ночного `scrape` в Actions (≈00:17 по Риге), чтобы матчер после него видел свежие акции; пропущенный запуск выполняется при включении ПК. Сбой пишется в `scrape_runs` (админка), письма нет: FR-15 работает только для Actions. ПК должен быть включён. Первый боевой запуск с ПК: 438 акций, 0 отброшено.
 
+  Создать задачу один раз (PowerShell, от своего пользователя):
+
+  ```powershell
+  $a = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument '-NoProfile -ExecutionPolicy Bypass -File "C:\Projects\BestPrice\scripts\scrape-e-latts.ps1"' -WorkingDirectory 'C:\Projects\BestPrice'
+  $t = New-ScheduledTaskTrigger -Daily -At '23:30'
+  $s = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 15) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+  Register-ScheduledTask -TaskName 'BestPrice e-latts' -Action $a -Trigger $t -Settings $s -Force
+  ```
+
+  Проверка: `Start-ScheduledTask 'BestPrice e-latts'`, затем последняя строка `packages\scrapers\e-latts\debug\pc-run.log` и `exit 0`. Удалить: `Unregister-ScheduledTask 'BestPrice e-latts' -Confirm:$false`.
+
 ## Буклеты магазинов (Gemini, с 1.9.0.0)
 
 В буклетах акций больше, чем на сайтах (Lidl: в API 71 товар). Структурированных данных нет, поэтому страницы-картинки читает Gemini (vision) и пишет в `grocery.leaflet_offers` (одна таблица на все магазины, магазин в `source_id`). Таблица не смешивается с `grocery.offers`: данные с картинки надёжнее проверять сравнением с ценами сайта, чем объединять. Пока готов только Lidl (`packages/scrapers/lidl/src/leaflet*.ts`, skill `.claude/skills/lidl-leaflet`, job `lidl` в `scrape.yml`).
