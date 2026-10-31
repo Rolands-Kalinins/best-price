@@ -18,3 +18,4 @@
 | 2026-10-31 | [leaflet-optional-fields](2026-10-31-leaflet-optional-fields.md) | Парсер буклета принял 1 запись из 7: модель не возвращала цены, когда поля схемы необязательны (и переводила названия) |
 | 2026-10-31 | [leaflet-lidl-plus-multibuy](2026-10-31-leaflet-lidl-plus-multibuy.md) | Парсер буклета: цена по карте Lidl Plus читалась как обычная (слабая модель не следовала прозе), акции «2+1» отбрасывались |
 | 2026-10-31 | [barbora-condition-format](2026-10-31-barbora-condition-format.md) | Парсер Barbora: условие «Pērkot 2 vai vairāk» не распознавалось `conditionKind`, 358 акций не склеились бы с другими магазинами |
+| 2026-10-31 | [elatts-title-class](2026-10-31-elatts-title-class.md) | Парсер e-latts: 4 акции с длинным названием (`-oTitle -sLong`) отбрасывались, фикстура не покрывала вариант разметки |
