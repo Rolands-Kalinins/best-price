@@ -1,11 +1,11 @@
 "use client";
 
-import { MAX_OFFERS, PAGE_SIZE, PHARMACY_CATEGORIES, type PharmacyQuery, type PharmacySort } from "@bestprice/core";
+import { type GroupMember, MAX_OFFERS, PAGE_SIZE, PHARMACY_CATEGORIES, type PharmacyQuery, type PharmacySort } from "@bestprice/core";
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useTransition } from "react";
-import { type Compare, PharmacyCard, type PharmacyRow } from "@/components/pharmacy-card";
+import { PharmacyCard, type PharmacyRow } from "@/components/pharmacy-card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { num } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -42,13 +42,13 @@ const href = (q: PharmacyQuery) => {
 export function PharmacyFeed({
   products,
   total,
-  compare,
+  members,
   stores,
   query,
 }: {
   products: PharmacyRow[];
   total: number;
-  compare: Record<number, Compare>;
+  members: Record<number, GroupMember[]>;
   stores: { id: number; name: string }[];
   query: PharmacyQuery;
 }) {
@@ -156,7 +156,7 @@ export function PharmacyFeed({
           >
             {products.map((p) => (
               <li key={p.id} className="flex">
-                <PharmacyCard product={p} storeName={storeName.get(p.source_id) ?? ""} compare={compare[p.id]} stores={storeName} />
+                <PharmacyCard product={p} storeName={storeName.get(p.source_id) ?? ""} members={p.group_id === null ? undefined : members[p.group_id]} stores={storeName} />
               </li>
             ))}
           </ul>

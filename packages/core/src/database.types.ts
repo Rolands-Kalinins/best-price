@@ -452,6 +452,8 @@ export type Database = {
           image_url: string | null
           in_stock: boolean
           last_seen_at: string
+          group_id: number | null
+          group_rep: boolean
           old_price: number | null
           packaging: string | null
           prescription: boolean
@@ -478,6 +480,8 @@ export type Database = {
           image_url?: string | null
           in_stock?: boolean
           last_seen_at?: string
+          group_id?: number | null
+          group_rep?: boolean
           old_price?: number | null
           packaging?: string | null
           prescription?: boolean
@@ -504,6 +508,8 @@ export type Database = {
           image_url?: string | null
           in_stock?: boolean
           last_seen_at?: string
+          group_id?: number | null
+          group_rep?: boolean
           old_price?: number | null
           packaging?: string | null
           prescription?: boolean
@@ -529,9 +535,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      compare_prices: {
-        Args: { eans: string[] }
-        Returns: { ean: string; in_stock: boolean; price: number; source_id: number; url: string | null }[]
+      group_members: {
+        Args: { gids: number[] }
+        Returns: { card_condition: string | null; card_ends_at: string | null; card_price: number | null; card_starts_at: string | null; discount: number | null; group_id: number; id: number; image_url: string | null; old_price: number | null; prescription: boolean; price: number; source_id: number; title: string; url: string | null }[]
+      }
+      set_groups: {
+        Args: { gids: (number | null)[]; ids: number[]; reps: boolean[] }
+        Returns: undefined
       }
     }
     Enums: {

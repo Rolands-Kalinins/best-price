@@ -7,6 +7,7 @@
     "test": "node --import tsx --test src/*.test.ts",
     "match": "node --env-file-if-exists=../../.env --import tsx src/run.ts",
     "categorize": "node --env-file-if-exists=../../.env --import tsx src/categorize.ts",
+    "pharmacy-groups": "node --env-file-if-exists=../../.env --import tsx src/pharmacy-groups.ts",
     "dry": "node --env-file-if-exists=../../.env --import tsx src/run.ts --dry"
   },
   "dependencies": {
