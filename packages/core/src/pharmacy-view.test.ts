@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { MAX_OFFERS, PAGE_SIZE } from "./offer-view";
-import { cardActive, freshSince, parsePharmacyQuery } from "./pharmacy-view";
+import { cardActive, comparePrices, freshSince, groupByEan, parsePharmacyQuery } from "./pharmacy-view";
 
 const q = (s: string) => parsePharmacyQuery(new URLSearchParams(s));
 
@@ -35,4 +35,24 @@ test("cardActive: цена по карте показывается в её ср
   assert.equal(cardActive({ ...p, card_ends_at: "2026-11-01T21:59:00.000Z" }, now), false); // закончилась
   assert.equal(cardActive({ ...p, card_starts_at: "2026-11-20T00:00:00.000Z" }, now), false); // ещё не началась
   assert.equal(cardActive({ ...p, card_price: null }, now), false);
+});
+
+const row = (source_id: number, price: number, in_stock = true) => ({ ean: "1", source_id, price, in_stock, url: "https://x" });
+
+test("comparePrices: другие аптеки по возрастанию цены, дешевле нас — cheaper, в наличии только", () => {
+  const r = comparePrices({ source_id: 1, price: 10 }, [row(1, 10), row(2, 12), row(3, 8), row(4, 5, false)]);
+  assert.deepEqual(r.others.map((o) => o.source_id), [3, 2]);
+  assert.equal(r.cheaper?.source_id, 3);
+});
+
+test("comparePrices: мы самые дешёвые или других нет — cheaper пусто; равная цена не дешевле", () => {
+  assert.equal(comparePrices({ source_id: 1, price: 10 }, [row(1, 10), row(2, 10), row(3, 12)]).cheaper, null);
+  assert.deepEqual(comparePrices({ source_id: 1, price: 10 }, [row(1, 10)]).others, []);
+  assert.deepEqual(comparePrices({ source_id: 1, price: 10 }, []).others, []);
+});
+
+test("groupByEan: строки раскладываются по штрихкоду", () => {
+  const g = groupByEan([{ ...row(1, 1), ean: "a" }, { ...row(2, 2), ean: "a" }, { ...row(3, 3), ean: "b" }]);
+  assert.equal(g.get("a")?.length, 2);
+  assert.equal(g.get("b")?.length, 1);
 });
