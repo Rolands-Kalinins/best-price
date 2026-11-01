@@ -21,6 +21,17 @@ test("категории аптек по смыслу: путь категори
   assert.equal(cat("preces-majdzivniekiem/barība"), "pets");
 });
 
+test("категории аптек: разделы Euroaptieka", () => {
+  assert.equal(cat("maminas-un-berni/kosmetika-berniem"), "baby"); // детская косметика остаётся детской
+  assert.equal(cat("maminas-un-berni/higienas-preces"), "baby");
+  assert.equal(cat("bezrecepsu-medikamenti/sapes/galvassapes"), "medicine");
+  assert.equal(cat("uztura-bagatinataji-vitamini/vitamini/kompleksie-vitamini"), "supplements");
+  assert.equal(cat("adas-un-matu-kosmetika/sejas-adas-kopsana"), "skincare");
+  assert.equal(cat("mutes-higiena/zobu-pastas"), "hygiene");
+  assert.equal(cat("higiena/intima-higiena"), "hygiene");
+  assert.equal(cat("medicinas-preces/termometri"), "medical");
+});
+
 test("категории аптек: без пути решает название, иначе other", () => {
   assert.equal(cat(null, "TENA Discreet uroloģiskie ieliktņi, 6 gab."), "hygiene");
   assert.equal(cat(null, "Kaut kas nezināms"), "other");
