@@ -37,3 +37,9 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      # Категории аптек (pharmacy.products.cat) тем же словарём. Раньше их ставили вручную, и на боевой базе они были пустыми.
+      - if: ${{ !cancelled() }}
+        run: pnpm --filter @bestprice/matcher categorize --pharmacy
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
