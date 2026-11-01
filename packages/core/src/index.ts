@@ -10,6 +10,7 @@ export * from "./match";
 export * from "./offer";
 export * from "./offer-view";
 export * from "./pharmacy-categories";
+export * from "./pharmacy-view";
 export * from "./product";
 export * from "./riga";
 export * from "./scrape-schedule";
