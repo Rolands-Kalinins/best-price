@@ -419,4 +419,105 @@ export type Database = {
       [_ in never]: never
     }
   }
+  pharmacy: {
+    Tables: {
+      price_history: {
+        Row: { day: string; price: number; product_id: number }
+        Insert: { day?: string; price: number; product_id: number }
+        Update: { day?: string; price?: number; product_id?: number }
+        Relationships: [
+          {
+            foreignKeyName: "price_history_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          brand: string | null
+          cat: string | null
+          category: string | null
+          ean: string | null
+          ends_at: string | null
+          external_id: string
+          id: number
+          image_url: string | null
+          in_stock: boolean
+          last_seen_at: string
+          old_price: number | null
+          packaging: string | null
+          prescription: boolean
+          price: number
+          source_id: number
+          starts_at: string | null
+          title: string
+          url: string | null
+        }
+        Insert: {
+          brand?: string | null
+          cat?: string | null
+          category?: string | null
+          ean?: string | null
+          ends_at?: string | null
+          external_id: string
+          id?: never
+          image_url?: string | null
+          in_stock?: boolean
+          last_seen_at?: string
+          old_price?: number | null
+          packaging?: string | null
+          prescription?: boolean
+          price: number
+          source_id: number
+          starts_at?: string | null
+          title: string
+          url?: string | null
+        }
+        Update: {
+          brand?: string | null
+          cat?: string | null
+          category?: string | null
+          ean?: string | null
+          ends_at?: string | null
+          external_id?: string
+          id?: never
+          image_url?: string | null
+          in_stock?: boolean
+          last_seen_at?: string
+          old_price?: number | null
+          packaging?: string | null
+          prescription?: boolean
+          price?: number
+          source_id?: number
+          starts_at?: string | null
+          title?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
 }
