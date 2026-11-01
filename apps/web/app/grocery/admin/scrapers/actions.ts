@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { adminSupabase } from "@/lib/admin";
 
 const WORKFLOW = "scrape.yml";
 const REPO = process.env.GITHUB_REPO ?? "Rolands-Kalinins/best-price";
@@ -12,9 +12,7 @@ export async function runScrapers(formData: FormData) {
   const source = formData.get("source");
   if (typeof source !== "string" || !/^[a-z0-9-]{1,32}$/.test(source)) return;
 
-  const supabase = await createClient();
-  const { data: isAdmin } = await supabase.rpc("is_admin");
-  if (!isAdmin) redirect("/grocery");
+  const supabase = await adminSupabase();
   if (source !== "all") {
     const { data } = await supabase.from("sources").select("id").eq("slug", source).eq("enabled", true).maybeSingle();
     if (!data) return;
