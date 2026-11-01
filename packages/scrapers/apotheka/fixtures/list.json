@@ -1,0 +1,129 @@
+[
+ {
+  "id": "38894",
+  "sku": "PMM0174017LV",
+  "type": "simple",
+  "name": "KLORANE SOS serums ar peonijām jūtīgai galvas ādai, 100ml",
+  "url": "https://www.apotheka.lv/klorane-sos-serums-ar-peonijam-jutigai-galvas-adai-100ml-pmm0174017lv",
+  "isDisableQtyIncrease": false,
+  "price": "\n    <span class=\"price-item\" data-testid=product-card-price-crossed>\n                    <span class=\"label\" aria-hidden=\"true\">Cena </span>\n                            <del aria-label=\"Cena\" class=\"value\">22,70 €</del>\n                    </span>\n    <span class=\"price-item special\" data-testid=product-card-price-crossed>\n                    <span class=\"label\" aria-hidden=\"true\">\n                                    <span class=\"label\" aria-hidden=\"true\">Cena ar atlaidi </span>\n                            </span>\n            <ins aria-label=\"Cena ar atlaidi\" class=\"value\">\n                <data value=\"9.08\">9,08 €</data>\n            </ins>\n                    </span>\n",
+  "priceSimple": 9.08,
+  "image": {
+   "image_url": "https://www.apotheka.lv/media/catalog/product/cache/b40488bd01a4e3ef64104ffa50fb0b7d/0/8/08668cc3868e1021c62a65e94225f4a4.webp"
+  },
+  "preTitle": null,
+  "description": "",
+  "activeSubstance": "",
+  "brand": "klorane",
+  "itemCategory": "toniki, putas matiem",
+  "priceOld": "22,70 €",
+  "discountPercent": 60,
+  "badges": [
+   {
+    "label": "Īss derīguma termiņš",
+    "className": "theme02font-size:12",
+    "name": "Īss derīguma termiņš nov 2026",
+    "tooltip": ""
+   }
+  ],
+  "isMedicine": false,
+  "actions": {
+   "isSalable": true
+  }
+ },
+ {
+  "id": "46126",
+  "sku": "PMM0192729LV",
+  "type": "simple",
+  "name": "DUCRAY Anaphase+ Reactive šampūns, 400 ml",
+  "url": "https://www.apotheka.lv/ducray-anaphase-reactive-sampuns-400-ml-pmm0192729lv",
+  "isDisableQtyIncrease": false,
+  "price": "\n    <span class=\"price-item\" data-testid=product-card-price>\n                    <span class=\"label\" aria-hidden=\"true\">Cena </span>\n                                            <ins aria-label=\"Cena\" class=\"value\">\n                    <data value=\"27.1\">27,10 €</data>\n                </ins>\n                                </span>\n    <span class=\"price-item special\" data-testid=product-card-price>\n                    <span class=\"label\" aria-hidden=\"true\">\n                <img loading=\"lazy\" src=\"https://www.apotheka.lv/static/version12345/frontend/Opus/apotheka/lv_LV/images/icon_loyalty.svg\" alt=\"Cena reģistrētiem lietotājiem\" height=\"12\" width=\"12\">\n                                    <span class=\"label\" aria-hidden=\"true\">Cena reģistrētiem lietotājiem </span>\n                            </span>\n                            <span class=\"value\" aria-label=\"Cena reģistrētiem lietotājiem\">\n                    <data value=\"17.62\">17,62 €</data>\n                </span>\n                                </span>\n",
+  "priceSimple": 27.1,
+  "image": {
+   "image_url": "https://www.apotheka.lv/media/catalog/product/cache/b40488bd01a4e3ef64104ffa50fb0b7d/5/9/593520024a1b3e2299502e55f528143d.webp"
+  },
+  "preTitle": null,
+  "description": "",
+  "activeSubstance": "",
+  "brand": "ducray",
+  "itemCategory": "šampūni šampūni pret izkrišanu",
+  "priceOld": "27,10 €",
+  "discountPercent": 35,
+  "isMedicine": false,
+  "actions": {
+   "isSalable": true
+  }
+ },
+ {
+  "id": "16",
+  "sku": "PMM0010086LV",
+  "type": "simple",
+  "name": "TESTS GRŪTNIECĪBAS NOTEIKŠANAI LĪGO N1",
+  "url": "https://www.apotheka.lv/tests-grutniecibas-noteiksanai-ligo-n1-pmm0010086lv",
+  "isDisableQtyIncrease": false,
+  "price": "    <span class=\"price-item\" data-testid=product-card-price>\n                <span class=\"label\" aria-hidden=\"true\">Cena </span>\n                <ins aria-label=\"Cena\" class=\"value\">\n            <data value=\"1.03\">1,03 €</data>\n        </ins>\n            </span>\n\n",
+  "priceSimple": 1.03,
+  "image": {
+   "image_url": "https://www.apotheka.lv/media/catalog/product/cache/b40488bd01a4e3ef64104ffa50fb0b7d/7/5/75d56136d413c5f3ce6520c5d7bdec88.webp"
+  },
+  "preTitle": null,
+  "description": "",
+  "activeSubstance": "",
+  "brand": "ligo",
+  "itemCategory": "grūtniecības un ovulācijas testi",
+  "priceOld": "1,03 €",
+  "isMedicine": false,
+  "actions": {
+   "isSalable": true
+  }
+ },
+ {
+  "id": "2",
+  "sku": "PMM0010010LV",
+  "type": "simple",
+  "name": "EXODERIL šķīdums, 10 ml",
+  "url": "https://www.apotheka.lv/exoderil-skidums-10-ml-pmm0010010lv",
+  "isDisableQtyIncrease": false,
+  "price": "    <span class=\"price-item\" data-testid=product-card-price>\n                <span class=\"label\" aria-hidden=\"true\">Cena </span>\n                <ins aria-label=\"Cena\" class=\"value\">\n            <data value=\"9.96\">9,96 €</data>\n        </ins>\n            </span>\n\n",
+  "priceSimple": 9.96,
+  "image": {
+   "image_url": "https://www.apotheka.lv/media/catalog/product/cache/b40488bd01a4e3ef64104ffa50fb0b7d/c/f/cf2c46bf5c376e08151b778d8fad48ec.webp"
+  },
+  "preTitle": null,
+  "description": "        <p class=\"box-product__description-primary\">\n        Bezrecepšu zāles    </p>\n    <p class=\"box-product__description-secondary\">\n        <span>Naftifini hydrochloridum</span>\n    </p>\n",
+  "activeSubstance": "Naftifini hydrochloridum",
+  "brand": "exoderil",
+  "itemCategory": null,
+  "priceOld": "9,96 €",
+  "attrSetLabel": "Bezrecepšu zāles",
+  "isMedicine": true,
+  "actions": {
+   "isSalable": false
+  }
+ },
+ {
+  "id": "3",
+  "sku": "PMM0010015LV",
+  "type": "simple",
+  "name": "DUOFILM ŠĶĪDUMS KĀRPU ĀRSTĒŠANAI 15ML",
+  "url": "https://www.apotheka.lv/duofilm-skidums-karpu-arstesanai-15ml-pmm0010015lv",
+  "isDisableQtyIncrease": false,
+  "price": "    <span class=\"price-item\" data-testid=product-card-price>\n                <span class=\"label\" aria-hidden=\"true\">Cena </span>\n                <ins aria-label=\"Cena\" class=\"value\">\n            <data value=\"13.99\">13,99 €</data>\n        </ins>\n            </span>\n\n",
+  "priceSimple": 13.99,
+  "image": {
+   "image_url": "https://www.apotheka.lv/media/catalog/product/cache/b40488bd01a4e3ef64104ffa50fb0b7d/3/7/37b6ccadc534268aae64141a2330b8ae.webp"
+  },
+  "preTitle": null,
+  "description": "        <p class=\"box-product__description-primary\">\n        Bezrecepšu zāles    </p>\n    <p class=\"box-product__description-secondary\">\n        <span>Acidum salicylicum, Acidum lacticum</span>\n    </p>\n",
+  "activeSubstance": "Acidum salicylicum, Acidum lacticum",
+  "brand": "DUOFILM",
+  "itemCategory": null,
+  "priceOld": "14,24 €",
+  "attrSetLabel": "Bezrecepšu zāles",
+  "isMedicine": true,
+  "actions": {
+   "isSalable": true
+  }
+ }
+]
