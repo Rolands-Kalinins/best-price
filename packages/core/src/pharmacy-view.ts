@@ -38,17 +38,29 @@ export function cardActive(p: { card_price: number | null; card_starts_at: strin
   return (p.card_starts_at === null || new Date(p.card_starts_at).getTime() <= t) && (p.card_ends_at === null || new Date(p.card_ends_at).getTime() > t);
 }
 
-/** Строка сравнения цен: тот же товар (по штрихкоду) в одной из аптек. Отдаёт pharmacy.compare_prices. */
-export type PriceRow = { ean: string; source_id: number; price: number; in_stock: boolean; url: string | null };
-
-export const groupByEan = (rows: PriceRow[]): Map<string, PriceRow[]> => {
-  const m = new Map<string, PriceRow[]>();
-  for (const r of rows) m.set(r.ean, [...(m.get(r.ean) ?? []), r]);
-  return m;
+/** Товар группы (один и тот же в разных аптеках): строка pharmacy.group_members. */
+export type GroupMember = {
+  id: number;
+  group_id: number;
+  source_id: number;
+  title: string;
+  price: number;
+  old_price: number | null;
+  discount: number | null;
+  card_price: number | null;
+  card_condition: string | null;
+  card_starts_at: string | null;
+  card_ends_at: string | null;
+  prescription: boolean;
+  url: string | null;
+  image_url: string | null;
 };
 
-/** Тот же товар в других аптеках (только в наличии, от дешёвых) и самая дешёвая из них, если она дешевле нашей цены. */
-export function comparePrices(own: { source_id: number; price: number }, rows: PriceRow[]): { others: PriceRow[]; cheaper: PriceRow | null } {
-  const others = rows.filter((r) => r.source_id !== own.source_id && r.in_stock).sort((a, b) => a.price - b.price);
-  return { others, cheaper: others[0] && others[0].price < own.price ? others[0] : null };
+/** Участники по номеру группы, от дешёвых (id как ничья). Не в наличии сюда не попадают: функция отдаёт только товары в наличии. */
+export function groupMembers(rows: GroupMember[]): Map<number, GroupMember[]> {
+  const out = new Map<number, GroupMember[]>();
+  for (const r of [...rows].sort((a, b) => a.price - b.price || a.id - b.id)) {
+    out.set(r.group_id, [...(out.get(r.group_id) ?? []), r]);
+  }
+  return out;
 }

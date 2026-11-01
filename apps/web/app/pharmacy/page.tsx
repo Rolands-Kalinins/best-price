@@ -1,4 +1,4 @@
-import { comparePrices, freshSince, groupByEan, parsePharmacyQuery, searchGroups, searchOrClause } from "@bestprice/core";
+import { freshSince, groupMembers, parsePharmacyQuery, searchGroups, searchOrClause } from "@bestprice/core";
 import { redirect } from "next/navigation";
 import { PharmacyFeed } from "@/components/pharmacy-feed";
 import { SiteHeader } from "@/components/site-header";
@@ -10,7 +10,7 @@ export const instant = false;
 
 // Без служебных search и external_id: ответ с сотнями карточек остаётся лёгким. Должны совпадать с PharmacyRow в components/pharmacy-card.tsx.
 const COLUMNS =
-  "id, source_id, ean, title, brand, price, old_price, discount, card_price, card_condition, card_starts_at, card_ends_at, prescription, in_stock, url, image_url" as const;
+  "id, source_id, group_id, title, brand, price, old_price, discount, card_price, card_condition, card_starts_at, card_ends_at, prescription, url, image_url" as const;
 
 export default async function PharmacyPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const supabase = await createClient();
@@ -26,8 +26,9 @@ export default async function PharmacyPage({ searchParams }: { searchParams: Pro
   const iso = now.toISOString();
 
   // Каталог хранится целиком, пропавший из магазина товар сам не удаляется: показываем только виденное парсером за последние дни.
-  let products = supabase.schema("pharmacy").from("products").select(COLUMNS, { count: "exact" }).gt("last_seen_at", freshSince(now));
-  if (query.store !== null) products = products.eq("source_id", query.store);
+  let products = supabase.schema("pharmacy").from("products").select(COLUMNS, { count: "exact" }).gt("last_seen_at", freshSince(now)).eq("in_stock", true);
+  // Один товар в нескольких аптеках показываем одной карточкой (самый дешёвый). С выбранной аптекой показываем все её товары, группа видна внутри карточки.
+  products = query.store !== null ? products.eq("source_id", query.store) : products.eq("group_rep", true);
   if (query.cat) products = products.eq("cat", query.cat);
   if (query.sale) products = products.not("discount", "is", null);
   // Цена по карте в свой срок (пустая дата = без ограничения); два or() соединяются через «и».
@@ -43,12 +44,11 @@ export default async function PharmacyPage({ searchParams }: { searchParams: Pro
     products = or ? products.or(or) : products.like("search", `%${g[0]}%`);
   }
   // id вторым ключом, иначе «Показать ещё» может повторять и терять строки.
-  // Недоступные товары в конец выдачи: «лучшая цена» на товар, которого нет в наличии, бесполезна.
   const ordered =
     query.sort === "discount"
-      ? products.order("in_stock", { ascending: false }).order("discount", { ascending: false, nullsFirst: false }).order("price")
+      ? products.order("discount", { ascending: false, nullsFirst: false }).order("price")
       : query.sort === "price"
-        ? products.order("in_stock", { ascending: false }).order("price")
+        ? products.order("price")
         : products.order("title");
 
   const [productsRes, sourcesRes, runsRes, memberRes, adminRes] = await Promise.all([
@@ -65,17 +65,11 @@ export default async function PharmacyPage({ searchParams }: { searchParams: Pro
   const failed = productsRes.error ?? sourcesRes.error ?? runsRes.error;
   if (failed) throw new Error(failed.message);
 
-  // Тот же товар (по штрихкоду) в других аптеках: один запрос на все показанные товары. У кого нет пары, в compare не попадает.
-  const eans = [...new Set(productsRes.data?.flatMap((p) => (p.ean ? [p.ean] : [])))];
-  const compareRes = eans.length ? await supabase.schema("pharmacy").rpc("compare_prices", { eans }) : null;
-  if (compareRes?.error) throw new Error(compareRes.error.message);
-  const byEan = groupByEan((compareRes?.data ?? []).map((r) => ({ ...r, price: Number(r.price) })));
-  const compare = Object.fromEntries(
-    (productsRes.data ?? []).flatMap((p) => {
-      const c = p.ean ? comparePrices(p, byEan.get(p.ean) ?? []) : null;
-      return c?.others.length ? [[p.id, c]] : [];
-    }),
-  );
+  // Один и тот же товар в разных аптеках (group_id ставит matcher): карточка показывает все цены. Один запрос на все показанные карточки.
+  const gids = [...new Set(productsRes.data?.flatMap((p) => (p.group_id === null ? [] : [p.group_id])))];
+  const membersRes = gids.length ? await supabase.schema("pharmacy").rpc("group_members", { gids }) : null;
+  if (membersRes?.error) throw new Error(membersRes.error.message);
+  const members = Object.fromEntries(groupMembers((membersRes?.data ?? []).map((r) => ({ ...r, price: Number(r.price), old_price: r.old_price === null ? null : Number(r.old_price), card_price: r.card_price === null ? null : Number(r.card_price) }))));
 
   const lastRun = new Map((runsRes.data ?? []).map((r) => [r.source_id, r.finished_at]));
   const stores = (sourcesRes.data ?? []).map((s) => ({ ...s, lastRun: lastRun.get(s.id) ?? null }));
@@ -95,7 +89,7 @@ export default async function PharmacyPage({ searchParams }: { searchParams: Pro
           </p>
         ) : (
           // Чипы аптек только для тех, у кого был успешный запуск: пустой чип ничего не покажет.
-          <PharmacyFeed products={rows} total={total} compare={compare} stores={stores.filter((s) => s.lastRun)} query={query} />
+          <PharmacyFeed products={rows} total={total} members={members} stores={stores.filter((s) => s.lastRun)} query={query} />
         )}
       </main>
     </>
