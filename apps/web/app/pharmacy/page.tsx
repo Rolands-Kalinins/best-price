@@ -5,6 +5,8 @@ import { SiteHeader } from "@/components/site-header";
 import { StoreStatus } from "@/components/store-status";
 import { createClient } from "@/lib/supabase/server";
 
+export const metadata = { title: "Аптеки" };
+
 // Страница персональная (RLS по сессии), пререндер не нужен.
 export const instant = false;
 
@@ -80,7 +82,7 @@ export default async function PharmacyPage({ searchParams }: { searchParams: Pro
   return (
     <>
       <SiteHeader email={auth.user.email ?? ""} isAdmin={adminRes.data === true} />
-      <main className="mx-auto w-full max-w-6xl space-y-4 p-4">
+      <main id="main" className="mx-auto w-full max-w-7xl space-y-4 p-4">
         <h1 className="text-2xl font-semibold">Аптеки</h1>
         <StoreStatus stores={stores} />
         {total === 0 && unfiltered ? (

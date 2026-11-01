@@ -1,12 +1,12 @@
 "use client";
 
 import { CATEGORIES, MAX_OFFERS, PAGE_SIZE, type OfferQuery, type OfferSort } from "@bestprice/core";
-import { Search } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useTransition, type ReactNode } from "react";
+import type { ReactNode } from "react";
+import { FeedFilters, useFeed } from "@/components/feed-filters";
 import { OfferCard, type OfferRow } from "@/components/offer-card";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { num } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 const SORT_LABELS: Record<OfferSort, string> = {
@@ -14,11 +14,6 @@ const SORT_LABELS: Record<OfferSort, string> = {
   price: "Сначала дешёвые",
   ends: "Скоро закончатся",
 };
-
-const chip =
-  "inline-flex min-h-11 shrink-0 items-center rounded-full border px-4 text-sm font-medium outline-none transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:transition-none";
-const chipOn = "border-primary bg-primary text-primary-foreground";
-const chipOff = "bg-card hover:bg-muted";
 
 // Параметры без значений по умолчанию не пишем: ссылка остаётся короткой.
 function toSearch(q: OfferQuery) {
@@ -28,6 +23,7 @@ function toSearch(q: OfferQuery) {
   if (q.cat) sp.set("cat", q.cat);
   if (q.cond) sp.set("cond", "1");
   if (q.scope) sp.set("scope", "1");
+  if (q.all) sp.set("all", "1");
   if (q.sort !== "discount") sp.set("sort", q.sort);
   if (q.n > PAGE_SIZE) sp.set("n", String(q.n));
   return sp.toString();
@@ -37,7 +33,7 @@ const href = (q: OfferQuery) => {
   return search ? `/grocery?${search}` : "/grocery";
 };
 
-// Фильтры, поиск и сортировка живут в адресе, акции отбирает сервер: в базе тысячи строк, в браузер идёт только показанная часть.
+// Акции отбирает сервер: в базе тысячи строк. Фильтры и поиск общие с аптеками (feed-filters.tsx).
 export function OfferFeed({
   offers,
   total,
@@ -51,120 +47,34 @@ export function OfferFeed({
   query: OfferQuery;
   compare?: ReactNode;
 }) {
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
-  const storeName = new Map(stores.map((s) => [s.id, s.name]));
-
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const input = useRef<HTMLInputElement>(null);
-  useEffect(() => () => clearTimeout(timer.current), []);
-
-  // Поле поиска неуправляемое: после «Назад» или перехода по ссылке подставляем в него текст из адреса (пока в нём не печатают).
-  useEffect(() => {
-    const el = input.current;
-    if (el && el !== document.activeElement && el.value !== query.q) el.value = query.q;
-  }, [query.q]);
-
-  // Любое изменение условий начинает список заново (n сбрасывается до одной страницы).
-  // Не ушедший на сервер текст из поля берём сразу и отменяем отложенный поиск: иначе он потом затёр бы только что выбранный фильтр.
-  const update = (patch: Partial<OfferQuery>) => {
-    clearTimeout(timer.current);
-    const q = input.current?.value ?? query.q;
-    startTransition(() => router.replace(href({ ...query, q, n: PAGE_SIZE, ...patch }), { scroll: false }));
-  };
-
-  // Поиск уходит на сервер с паузой: запрос на каждую букву был бы лишним.
-  const search = () => {
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => update({}), 300);
-  };
+  const feed = useFeed(query, href);
+  const storeName = new Map(stores.map((s) => [s.id, s.name]));
 
   return (
     <section className="space-y-4">
-      <div className="space-y-3">
-        <div className="relative">
-          <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" aria-hidden />
-          <input
-            type="search"
-            name="q"
-            autoComplete="off"
-            spellCheck={false}
-            aria-label="Поиск по акциям"
-            placeholder="Поиск: молоко, piens, Milka…"
-            ref={input}
-            defaultValue={query.q}
-            onChange={search}
-            className="bg-card focus-visible:ring-ring/50 h-11 w-full rounded-xl border pr-3 pl-9 text-base outline-none focus-visible:ring-3 sm:text-sm"
-          />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {[{ id: null, name: "Все магазины" }, ...stores].map((s) => (
-            <button
-              key={s.id ?? "all"}
-              type="button"
-              aria-pressed={query.store === s.id}
-              onClick={() => update({ store: s.id })}
-              className={cn(chip, query.store === s.id ? chipOn : chipOff)}
-            >
-              {s.name}
-            </button>
-          ))}
-          <button
-            type="button"
-            aria-pressed={query.cond}
-            onClick={() => update({ cond: !query.cond })}
-            className={cn(chip, query.cond ? chipOn : chipOff)}
-          >
-            С условием
-          </button>
-          <button
-            type="button"
-            aria-pressed={query.scope}
-            onClick={() => update({ scope: !query.scope })}
-            className={cn(chip, query.scope ? chipOn : chipOff)}
-          >
-            Скидки на бренд или категорию
-          </button>
-        </div>
-        {/* Категории в одну прокручиваемую строку: их ~20, в несколько рядов они бы вытеснили ленту. */}
-        <div role="group" aria-label="Категории" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
-          {[{ slug: null, name: "Все категории" }, ...CATEGORIES].map((c) => (
-            <button
-              key={c.slug ?? "all"}
-              type="button"
-              aria-pressed={query.cat === c.slug}
-              onClick={() => update({ cat: c.slug })}
-              className={cn(chip, query.cat === c.slug ? chipOn : chipOff)}
-            >
-              {c.name}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-muted-foreground text-sm tabular-nums" aria-live="polite">
-            Найдено: {total}
-          </p>
-          <select
-            aria-label="Сортировка"
-            value={query.sort}
-            onChange={(e) => update({ sort: e.target.value as OfferSort })}
-            className="bg-card focus-visible:ring-ring/50 h-11 rounded-xl border px-3 text-base outline-none focus-visible:ring-3 sm:text-sm"
-          >
-            {(Object.keys(SORT_LABELS) as OfferSort[]).map((k) => (
-              <option key={k} value={k}>
-                {SORT_LABELS[k]}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <FeedFilters
+        feed={feed}
+        query={query}
+        searchLabel="Поиск по акциям"
+        placeholder="Поиск: молоко, piens, Milka…"
+        allStores="Все магазины"
+        stores={stores}
+        toggles={[
+          { label: "С условием", on: query.cond, patch: { cond: !query.cond } },
+          { label: "Скидки на бренд или категорию", on: query.scope, patch: { scope: !query.scope } },
+        ]}
+        categories={CATEGORIES}
+        sortLabels={SORT_LABELS}
+        total={num(total)}
+        cleared={{ store: null, cat: null, cond: false, scope: false }}
+      />
 
       {compare}
       {offers.length ? (
         <>
           <ul
-            aria-busy={pending}
-            className={cn("grid grid-cols-2 gap-3 transition-opacity sm:grid-cols-3 lg:grid-cols-4", pending && "opacity-60")}
+            aria-busy={feed.pending}
+            className={cn("grid grid-cols-2 gap-3 transition-opacity sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5", feed.pending && "opacity-60")}
           >
             {offers.map((o) => (
               <li key={o.id} className="flex">
@@ -180,23 +90,17 @@ export function OfferFeed({
                 prefetch={false}
                 className={cn(buttonVariants({ variant: "outline", size: "lg" }), "mx-auto flex min-h-11 w-fit")}
               >
-                Показать ещё ({total - offers.length})
+                Показать ещё ({num(total - offers.length)})
               </Link>
             ) : (
               <p className="text-muted-foreground text-center text-sm">
-                Показаны первые {MAX_OFFERS} из {total}. Уточните поиск или выберите магазин.
+                Показаны первые {num(MAX_OFFERS)} из {num(total)}. Уточните поиск или выберите магазин.
               </p>
             ))}
         </>
       ) : (
         <div className="flex flex-col items-center gap-3 py-12 text-center">
-          <p className="text-muted-foreground text-sm">Ничего не найдено по этим фильтрам.</p>
-          <Button variant="outline" size="lg" className="min-h-11" onClick={() => {
-              if (input.current) input.current.value = "";
-              update({ q: "", store: null, cat: null, cond: false, scope: false });
-            }}>
-            Сбросить
-          </Button>
+          <p className="text-muted-foreground text-sm">Ничего не найдено по этим фильтрам. Сбросьте их кнопкой выше.</p>
         </div>
       )}
     </section>

@@ -104,6 +104,7 @@ export function PharmacyCard({ product: p, storeName, members, stores }: { produ
           {href ? (
             <a href={href} target="_blank" rel="noopener noreferrer" className="outline-none after:absolute after:inset-0">
               {p.title}
+              <span className="sr-only"> (откроется в новой вкладке)</span>
             </a>
           ) : (
             p.title
