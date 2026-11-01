@@ -43,3 +43,9 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      # Группы «один товар в нескольких аптеках» (pharmacy.products.group_id, group_rep): общий штрихкод или ключ названия (бренд, размер, число штук, слова).
+      - if: ${{ !cancelled() }}
+        run: pnpm --filter @bestprice/matcher pharmacy-groups
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
