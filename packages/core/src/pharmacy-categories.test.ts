@@ -45,3 +45,14 @@ test("каждая категория аптеки привязана к про�
     assert.ok(g === null || grocery.has(g), `${c.slug} → ${g}: такой продуктовой категории нет`);
   }
 });
+
+test("категории аптек: разделы Benu (слаги из названий разделов сайта)", () => {
+  assert.equal(cat("skaistums-un-adas-kopsana/matu-kopsana/sampuni"), "skincare");
+  assert.equal(cat("uztura-bagatinataji/vitamini-un-mineralvielas/kompleksie-vitamini"), "supplements");
+  assert.equal(cat("higiena/mutes-higiena/zobu-birstes"), "hygiene");
+  assert.equal(cat("maminam-un-berniem/berna-higiena"), "baby");
+  assert.equal(cat("bezrecepsu-medikamenti/alergija"), "medicine");
+  assert.equal(cat("partika-un-tejas/tejas"), "tea-food");
+  assert.equal(cat("pirma-palidziba/plaksteri"), "medical");
+  assert.equal(cat(null, "Insulīna pildspalvveida šļirces adatas N100"), "medical");
+});
