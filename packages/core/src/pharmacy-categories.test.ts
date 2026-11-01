@@ -63,3 +63,13 @@ test("категории аптек: рецептурные и ветерина�
   assert.equal(cat(null, "HILLS Prescription Diet sausā barība suņiem 4kg"), "pets");
   assert.equal(cat(null, "Barība kaķu sterilizētiem 2kg"), "pets");
 });
+
+test("категории аптек: частые названия без пути категории (Apotheka, Mēness)", () => {
+  assert.equal(cat(null, "CLARITHROMYCIN-TEVA  APV.TBL 500MG N14"), "medicine");
+  assert.equal(cat(null, "FOSFOMYCIN (FOZIFLUM) SANDOZ 3G PULV N1"), "medicine");
+  assert.equal(cat(null, "TENA Pants Super biksītes M izmērs, 12 gab."), "hygiene");
+  assert.equal(cat(null, "OMRON M4 Connect AFIB (autom./augšd.) tonometrs (22-42 cm)"), "medical");
+  assert.equal(cat(null, "BRILLES KORIĢĒJOŠĀS MODELIS 80053 (+1.75) N1"), "medical");
+  assert.equal(cat(null, "BABE Sun SPF 50+ fluīds, 50ml"), "skincare");
+  assert.equal(cat(null, "MR.BANDIT SPORT MINI AR JĒRA GAĻAS GARŠU 150G"), "pets");
+});

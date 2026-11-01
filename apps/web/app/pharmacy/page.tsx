@@ -1,4 +1,4 @@
-import { freshSince, parsePharmacyQuery, searchGroups, searchOrClause } from "@bestprice/core";
+import { comparePrices, freshSince, groupByEan, parsePharmacyQuery, searchGroups, searchOrClause } from "@bestprice/core";
 import { redirect } from "next/navigation";
 import { PharmacyFeed } from "@/components/pharmacy-feed";
 import { SiteHeader } from "@/components/site-header";
@@ -10,7 +10,7 @@ export const instant = false;
 
 // Без служебных search и external_id: ответ с сотнями карточек остаётся лёгким. Должны совпадать с PharmacyRow в components/pharmacy-card.tsx.
 const COLUMNS =
-  "id, source_id, title, brand, price, old_price, discount, card_price, card_condition, card_starts_at, card_ends_at, prescription, in_stock, url, image_url" as const;
+  "id, source_id, ean, title, brand, price, old_price, discount, card_price, card_condition, card_starts_at, card_ends_at, prescription, in_stock, url, image_url" as const;
 
 export default async function PharmacyPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const supabase = await createClient();
@@ -43,11 +43,12 @@ export default async function PharmacyPage({ searchParams }: { searchParams: Pro
     products = or ? products.or(or) : products.like("search", `%${g[0]}%`);
   }
   // id вторым ключом, иначе «Показать ещё» может повторять и терять строки.
+  // Недоступные товары в конец выдачи: «лучшая цена» на товар, которого нет в наличии, бесполезна.
   const ordered =
     query.sort === "discount"
-      ? products.order("discount", { ascending: false, nullsFirst: false }).order("price")
+      ? products.order("in_stock", { ascending: false }).order("discount", { ascending: false, nullsFirst: false }).order("price")
       : query.sort === "price"
-        ? products.order("price")
+        ? products.order("in_stock", { ascending: false }).order("price")
         : products.order("title");
 
   const [productsRes, sourcesRes, runsRes, memberRes, adminRes] = await Promise.all([
@@ -63,6 +64,18 @@ export default async function PharmacyPage({ searchParams }: { searchParams: Pro
   // Ошибка запроса не должна выглядеть как «нет данных»: бросаем, показывается error.tsx с «Повторить».
   const failed = productsRes.error ?? sourcesRes.error ?? runsRes.error;
   if (failed) throw new Error(failed.message);
+
+  // Тот же товар (по штрихкоду) в других аптеках: один запрос на все показанные товары. У кого нет пары, в compare не попадает.
+  const eans = [...new Set(productsRes.data?.flatMap((p) => (p.ean ? [p.ean] : [])))];
+  const compareRes = eans.length ? await supabase.schema("pharmacy").rpc("compare_prices", { eans }) : null;
+  if (compareRes?.error) throw new Error(compareRes.error.message);
+  const byEan = groupByEan((compareRes?.data ?? []).map((r) => ({ ...r, price: Number(r.price) })));
+  const compare = Object.fromEntries(
+    (productsRes.data ?? []).flatMap((p) => {
+      const c = p.ean ? comparePrices(p, byEan.get(p.ean) ?? []) : null;
+      return c?.others.length ? [[p.id, c]] : [];
+    }),
+  );
 
   const lastRun = new Map((runsRes.data ?? []).map((r) => [r.source_id, r.finished_at]));
   const stores = (sourcesRes.data ?? []).map((s) => ({ ...s, lastRun: lastRun.get(s.id) ?? null }));
@@ -82,7 +95,7 @@ export default async function PharmacyPage({ searchParams }: { searchParams: Pro
           </p>
         ) : (
           // Чипы аптек только для тех, у кого был успешный запуск: пустой чип ничего не покажет.
-          <PharmacyFeed products={rows} total={total} stores={stores.filter((s) => s.lastRun)} query={query} />
+          <PharmacyFeed products={rows} total={total} compare={compare} stores={stores.filter((s) => s.lastRun)} query={query} />
         )}
       </main>
     </>
