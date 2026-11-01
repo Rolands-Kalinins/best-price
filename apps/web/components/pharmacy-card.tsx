@@ -1,18 +1,22 @@
 "use client";
 
-import { cardActive, safeHttpUrl, type Database } from "@bestprice/core";
+import { cardActive, type PriceRow, safeHttpUrl, type Database } from "@bestprice/core";
 import { CreditCard, ImageOff } from "lucide-react";
 import { useCallback, useState } from "react";
 import { eur, shortDate } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 // Столбцы выбирает страница (PRODUCT_COLUMNS в app/pharmacy/page.tsx): серверной константе нельзя жить в клиентском модуле.
 export type PharmacyRow = Pick<
   Database["pharmacy"]["Tables"]["products"]["Row"],
-  | "id" | "source_id" | "title" | "brand" | "price" | "old_price" | "discount" | "card_price" | "card_condition" | "card_starts_at" | "card_ends_at"
+  | "id" | "source_id" | "ean" | "title" | "brand" | "price" | "old_price" | "discount" | "card_price" | "card_condition" | "card_starts_at" | "card_ends_at"
   | "prescription" | "in_stock" | "url" | "image_url"
 >;
 
-export function PharmacyCard({ product: p, storeName }: { product: PharmacyRow; storeName: string }) {
+// compare: тот же товар в других аптеках (по штрихкоду); stores: id аптеки → название.
+export type Compare = { others: PriceRow[]; cheaper: PriceRow | null };
+
+export function PharmacyCard({ product: p, storeName, compare, stores }: { product: PharmacyRow; storeName: string; compare?: Compare; stores: Map<number, string> }) {
   const [imgFailed, setImgFailed] = useState(false);
   const href = safeHttpUrl(p.url);
   const image = safeHttpUrl(p.image_url);
@@ -43,7 +47,10 @@ export function PharmacyCard({ product: p, storeName }: { product: PharmacyRow; 
             className="absolute inset-0 size-full object-contain p-3"
           />
         ) : (
-          <ImageOff className="text-muted-foreground/60 absolute inset-0 m-auto size-8" aria-label="Нет фото" role="img" />
+          <div className="text-muted-foreground/60 absolute inset-0 flex flex-col items-center justify-center gap-1 text-xs">
+            <ImageOff className="size-6" aria-hidden />
+            Нет фото
+          </div>
         )}
         {p.discount && (
           <span className="bg-sale text-sale-foreground absolute top-2 left-2 rounded-lg px-2 py-1 text-sm font-bold tabular-nums">
@@ -82,6 +89,11 @@ export function PharmacyCard({ product: p, storeName }: { product: PharmacyRow; 
           </p>
         )}
         {card && p.card_condition && <p className="text-muted-foreground text-xs">{p.card_condition}</p>}
+        {compare && (
+          <p className={cn("mt-1 text-xs", compare.cheaper ? "text-destructive font-medium" : "text-muted-foreground")}>
+            {compare.cheaper ? "Дешевле:" : "Также в:"} {compare.others.map((o) => `${stores.get(o.source_id) ?? "?"} ${eur(o.price)}`).join(" · ")}
+          </p>
+        )}
         {(p.prescription || !p.in_stock) && (
           <p className="text-muted-foreground text-xs font-medium">
             {[p.prescription && "Рецептурное", !p.in_stock && "Нет в наличии"].filter(Boolean).join(" · ")}

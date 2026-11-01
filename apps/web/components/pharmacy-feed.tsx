@@ -5,8 +5,9 @@ import { Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useTransition } from "react";
-import { PharmacyCard, type PharmacyRow } from "@/components/pharmacy-card";
+import { type Compare, PharmacyCard, type PharmacyRow } from "@/components/pharmacy-card";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { num } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 const SORT_LABELS: Record<PharmacySort, string> = {
@@ -41,11 +42,13 @@ const href = (q: PharmacyQuery) => {
 export function PharmacyFeed({
   products,
   total,
+  compare,
   stores,
   query,
 }: {
   products: PharmacyRow[];
   total: number;
+  compare: Record<number, Compare>;
   stores: { id: number; name: string }[];
   query: PharmacyQuery;
 }) {
@@ -128,7 +131,7 @@ export function PharmacyFeed({
         </div>
         <div className="flex items-center justify-between gap-3">
           <p className="text-muted-foreground text-sm tabular-nums" aria-live="polite">
-            Найдено: {total}
+            Найдено: {num(total)}
           </p>
           <select
             aria-label="Сортировка"
@@ -153,7 +156,7 @@ export function PharmacyFeed({
           >
             {products.map((p) => (
               <li key={p.id} className="flex">
-                <PharmacyCard product={p} storeName={storeName.get(p.source_id) ?? ""} />
+                <PharmacyCard product={p} storeName={storeName.get(p.source_id) ?? ""} compare={compare[p.id]} stores={storeName} />
               </li>
             ))}
           </ul>
@@ -165,11 +168,11 @@ export function PharmacyFeed({
                 prefetch={false}
                 className={cn(buttonVariants({ variant: "outline", size: "lg" }), "mx-auto flex min-h-11 w-fit")}
               >
-                Показать ещё ({total - products.length})
+                Показать ещё ({num(total - products.length)})
               </Link>
             ) : (
               <p className="text-muted-foreground text-center text-sm">
-                Показаны первые {MAX_OFFERS} из {total}. Уточните поиск или выберите аптеку.
+                Показаны первые {num(MAX_OFFERS)} из {num(total)}. Уточните поиск или выберите аптеку.
               </p>
             ))}
         </>

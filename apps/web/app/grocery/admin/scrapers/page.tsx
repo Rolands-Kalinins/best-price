@@ -1,4 +1,5 @@
 import { nextScrapeAt } from "@bestprice/core";
+import { Fragment } from "react";
 import { redirect } from "next/navigation";
 import { Countdown } from "@/components/countdown";
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,7 @@ export default async function ScrapersPage({ searchParams }: { searchParams: Pro
   if (!isAdmin) redirect("/grocery");
 
   const [sourcesRes, runsRes] = await Promise.all([
-    supabase.from("sources").select("id, slug, name, enabled").eq("module", "grocery").order("name"),
+    supabase.from("sources").select("id, slug, name, enabled, module").order("module").order("name"),
     // ponytail: последние 200 запусков на все магазины (≈ полгода при 4 парсерах в сутки); ниже HISTORY строк на магазин не нужно.
     supabase.from("scrape_runs").select("id, source_id, started_at, finished_at, status, items_count, invalid_count, error").order("started_at", { ascending: false }).limit(200),
   ]);
@@ -37,6 +38,8 @@ export default async function ScrapersPage({ searchParams }: { searchParams: Pro
   const { msg } = await searchParams;
   const started = msg?.startsWith("started-") ? msg.slice(8) : null;
   const notice = started ? ([`Запуск отправлен в GitHub Actions: ${started === "all" ? "все парсеры" : started}. Результат появится здесь, когда парсер закончит.`, false] as const) : MESSAGES[msg ?? ""];
+  // Источники двух разделов (продукты, аптеки): заголовок раздела перед первым источником раздела.
+  const MODULES: Record<string, string> = { grocery: "Продукты", pharmacy: "Аптеки" };
   const next = nextScrapeAt(new Date()).toISOString();
 
   return (
@@ -58,16 +61,18 @@ export default async function ScrapersPage({ searchParams }: { searchParams: Pro
             {notice[0]}
           </p>
         )}
-        {(sourcesRes.data ?? []).map((s) => {
+        {(sourcesRes.data ?? []).map((s, i, all) => {
           const runs = (runsRes.data ?? []).filter((r) => r.source_id === s.id);
           const last = runs[0];
           return (
-            <section key={s.id} className="bg-card space-y-2 rounded-2xl border p-3">
+            <Fragment key={s.id}>
+            {s.module !== all[i - 1]?.module && <h2 className="pt-2 text-lg font-semibold">{MODULES[s.module] ?? s.module}</h2>}
+            <section className="bg-card space-y-2 rounded-2xl border p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h2 className="text-lg font-semibold">
+                <h3 className="text-base font-semibold">
                   {s.name}
                   {!s.enabled && <span className="text-muted-foreground ml-2 text-sm font-normal">(выключен)</span>}
-                </h2>
+                </h3>
                 <form action={runScrapers}>
                   <input type="hidden" name="source" value={s.slug} />
                   <Button type="submit" variant="outline" className="min-h-11 px-4" disabled={!s.enabled}>Запустить</Button>
@@ -76,7 +81,7 @@ export default async function ScrapersPage({ searchParams }: { searchParams: Pro
               {last ? (
                 <p className="text-sm">
                   <span className={`font-medium ${last.status === "success" ? "text-primary" : "text-destructive"}`}>{last.status === "success" ? "Успех" : "Сбой"}</span>
-                  {" · "}старт {riga(last.started_at)} · {duration(last.started_at, last.finished_at)} · акций {last.items_count}, отброшено {last.invalid_count}
+                  {" · "}старт {riga(last.started_at)} · {duration(last.started_at, last.finished_at)} · позиций {last.items_count}, отброшено {last.invalid_count}
                 </p>
               ) : (
                 <p className="text-muted-foreground text-sm">Запусков ещё не было.</p>
@@ -100,6 +105,7 @@ export default async function ScrapersPage({ searchParams }: { searchParams: Pro
                 </details>
               )}
             </section>
+            </Fragment>
           );
         })}
       </div>

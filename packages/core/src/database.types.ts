@@ -529,7 +529,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      compare_prices: {
+        Args: { eans: string[] }
+        Returns: { ean: string; in_stock: boolean; price: number; source_id: number; url: string | null }[]
+      }
     }
     Enums: {
       [_ in never]: never

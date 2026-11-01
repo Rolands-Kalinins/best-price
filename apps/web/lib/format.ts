@@ -3,6 +3,9 @@ const dateFmt = new Intl.DateTimeFormat("ru", { day: "numeric", month: "numeric"
 
 export const eur = (n: number) => `${n.toFixed(2).replace(".", ",")} €`;
 
+/** 30653 → «30 653»: число из счётчиков и кнопок. */
+export const num = (n: number) => n.toLocaleString("ru-RU");
+
 export const shortDate = (iso: string) => dateFmt.format(new Date(iso));
 
 export function ago(iso: string) {
