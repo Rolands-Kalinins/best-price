@@ -18,7 +18,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/grocery/ad
       <SiteHeader email={auth.user.email ?? ""} isAdmin />
       <div className="mx-auto flex w-full max-w-[90rem] flex-1 flex-col md:flex-row">
         <AdminNav />
-        <main className="min-w-0 flex-1">{children}</main>
+        <main id="main" className="min-w-0 flex-1">{children}</main>
       </div>
     </>
   );
