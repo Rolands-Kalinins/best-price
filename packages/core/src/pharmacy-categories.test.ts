@@ -1,0 +1,36 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { CATEGORIES } from "./categories-data";
+import { changedCategories } from "./category";
+import { PHARMACY_CATEGORIES, PHARMACY_TO_GROCERY } from "./pharmacy-categories";
+
+const cat = (category: string | null, title = "") => [...changedCategories(PHARMACY_CATEGORIES, [{ id: 1, title, category, cat: null }]).keys()][0];
+
+test("категории аптек по смыслу: путь категории магазина", () => {
+  assert.equal(cat("medikamenti/saaukstesanas"), "medicine");
+  assert.equal(cat("medikamenti/medikamenti-berniem"), "medicine"); // лекарство для детей остаётся лекарством
+  assert.equal(cat("vitamini-un-mineralvielas/vitamini"), "supplements");
+  assert.equal(cat("vitamini-un-mineralvielas/tejas-un-partika/tejas"), "tea-food");
+  assert.equal(cat("mutes-dobuma-higiena/zobu-pastas"), "hygiene");
+  assert.equal(cat("viss-celojumiem/higienas-preces"), "hygiene");
+  assert.equal(cat("higienas-preces/vates-kocini"), "hygiene");
+  assert.equal(cat("skaistumam/sejas-adas-kopsana/serumi"), "skincare");
+  assert.equal(cat("maminam-un-berniem/preces-bernam"), "baby");
+  assert.equal(cat("medicinas-preces/ortopediskas-preces"), "medical");
+  assert.equal(cat("analizu-kompleksi"), "medical");
+  assert.equal(cat("preces-majdzivniekiem/barība"), "pets");
+});
+
+test("категории аптек: без пути решает название, иначе other", () => {
+  assert.equal(cat(null, "TENA Discreet uroloģiskie ieliktņi, 6 gab."), "hygiene");
+  assert.equal(cat(null, "Kaut kas nezināms"), "other");
+});
+
+test("каждая категория аптеки привязана к продуктовой (или null), и такая продуктовая существует", () => {
+  const grocery = new Set(CATEGORIES.map((c) => c.slug));
+  for (const c of PHARMACY_CATEGORIES) {
+    assert.ok(c.slug in PHARMACY_TO_GROCERY, `нет привязки для ${c.slug}`);
+    const g = PHARMACY_TO_GROCERY[c.slug];
+    assert.ok(g === null || grocery.has(g), `${c.slug} → ${g}: такой продуктовой категории нет`);
+  }
+});
