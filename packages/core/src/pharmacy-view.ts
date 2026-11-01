@@ -37,3 +37,18 @@ export function cardActive(p: { card_price: number | null; card_starts_at: strin
   const t = now.getTime();
   return (p.card_starts_at === null || new Date(p.card_starts_at).getTime() <= t) && (p.card_ends_at === null || new Date(p.card_ends_at).getTime() > t);
 }
+
+/** Строка сравнения цен: тот же товар (по штрихкоду) в одной из аптек. Отдаёт pharmacy.compare_prices. */
+export type PriceRow = { ean: string; source_id: number; price: number; in_stock: boolean; url: string | null };
+
+export const groupByEan = (rows: PriceRow[]): Map<string, PriceRow[]> => {
+  const m = new Map<string, PriceRow[]>();
+  for (const r of rows) m.set(r.ean, [...(m.get(r.ean) ?? []), r]);
+  return m;
+};
+
+/** Тот же товар в других аптеках (только в наличии, от дешёвых) и самая дешёвая из них, если она дешевле нашей цены. */
+export function comparePrices(own: { source_id: number; price: number }, rows: PriceRow[]): { others: PriceRow[]; cheaper: PriceRow | null } {
+  const others = rows.filter((r) => r.source_id !== own.source_id && r.in_stock).sort((a, b) => a.price - b.price);
+  return { others, cheaper: others[0] && others[0].price < own.price ? others[0] : null };
+}
