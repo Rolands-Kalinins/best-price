@@ -442,6 +442,7 @@ export type Database = {
           card_ends_at: string | null
           card_price: number | null
           card_starts_at: string | null
+          discount: number | null
           cat: string | null
           category: string | null
           ean: string | null
@@ -454,6 +455,7 @@ export type Database = {
           old_price: number | null
           packaging: string | null
           prescription: boolean
+          search: string
           price: number
           source_id: number
           starts_at: string | null
@@ -466,6 +468,7 @@ export type Database = {
           card_ends_at?: string | null
           card_price?: number | null
           card_starts_at?: string | null
+          discount?: never
           cat?: string | null
           category?: string | null
           ean?: string | null
@@ -478,6 +481,7 @@ export type Database = {
           old_price?: number | null
           packaging?: string | null
           prescription?: boolean
+          search?: never
           price: number
           source_id: number
           starts_at?: string | null
@@ -490,6 +494,7 @@ export type Database = {
           card_ends_at?: string | null
           card_price?: number | null
           card_starts_at?: string | null
+          discount?: never
           cat?: string | null
           category?: string | null
           ean?: string | null
@@ -502,6 +507,7 @@ export type Database = {
           old_price?: number | null
           packaging?: string | null
           prescription?: boolean
+          search?: never
           price?: number
           source_id?: number
           starts_at?: string | null
