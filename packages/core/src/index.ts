@@ -9,5 +9,7 @@ export * from "./offer-edit";
 export * from "./match";
 export * from "./offer";
 export * from "./offer-view";
+export * from "./pharmacy-categories";
+export * from "./product";
 export * from "./riga";
 export * from "./scrape-schedule";

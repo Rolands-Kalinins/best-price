@@ -1,0 +1,439 @@
+{
+ "meta": {
+  "totalItems": 10221,
+  "itemsPerPage": 100,
+  "currentPage": 3,
+  "lastPage": 103
+ },
+ "data": [
+  {
+   "id": 2888,
+   "code": "1162270",
+   "enabled": true,
+   "name": "ALTERMED Panthenol Forte 9 % aerosols, 150 ml",
+   "slug": "altermed-panthenol-altermed-forte-9-aerosols-150-ml",
+   "productTaxons": [
+    {
+     "code": "all_products",
+     "name": "Visas preces",
+     "slug": "menessaptieka/visas-preces"
+    },
+    {
+     "code": "bernu_kermena_kopsana",
+     "name": "Bērnu ķermeņa kopšana",
+     "slug": "maminam-un-berniem/bernu-kermena-kopsana"
+    },
+    {
+     "code": "kermena_adas_kopsana",
+     "name": "Ķermeņa ādas kopšana",
+     "slug": "skaistumam/kermena-adas-kopsana"
+    },
+    {
+     "code": "kremi_losjoni_un_ellas",
+     "name": "Krēmi, losjoni un eļļas",
+     "slug": "skaistumam/kermena-adas-kopsana/kremji-losjoni-un-ellas"
+    },
+    {
+     "code": "kremi_un_losjoni",
+     "name": "Krēmi un losjoni",
+     "slug": "maminam-un-berniem/bernu-kermena-kopsana/kremi-un-losjoni"
+    },
+    {
+     "code": "maminam_un_berniem",
+     "name": "Māmiņām un bērniem",
+     "slug": "maminam-un-berniem"
+    },
+    {
+     "code": "menessaptieka_master",
+     "name": "Menessaptieka",
+     "slug": "menessaptieka"
+    },
+    {
+     "code": "skaistumam",
+     "name": "Skaistumam",
+     "slug": "skaistumam"
+    },
+    {
+     "code": "mnlt_all_products",
+     "name": "Visas preces",
+     "slug": "moonmart-lt/visas-preces"
+    },
+    {
+     "code": "mnlt_bernu_kermena_kopsana",
+     "name": "Bērnu ķermeņa kopšana",
+     "slug": "maminu-un-bernu-pasaule/bernu-kermena-kopsana"
+    },
+    {
+     "code": "mnlt_kermena_adas_kopsana",
+     "name": "Ķermenim",
+     "slug": "kosmetika/kermena-adas-kopsana-kosmetika"
+    },
+    {
+     "code": "mnlt_kremi_losjoni_un_ellas",
+     "name": "Ķermeņa kopšanas krēmi, eļļas un losjoni",
+     "slug": "kosmetika/kermena-adas-kopsana-kosmetika/kermena-kopsanas-kremi-un-losjoni"
+    },
+    {
+     "code": "mnlt_mother_baby_world",
+     "name": "Māmiņu un bērnu pasaule",
+     "slug": "maminu-un-bernu-pasaule"
+    },
+    {
+     "code": "mnlt_skaistumam",
+     "name": "Kosmētika",
+     "slug": "kosmetika"
+    },
+    {
+     "code": "moonmart_lt",
+     "name": "Moonmart LT",
+     "slug": "moonmart-lt"
+    },
+    {
+     "code": "pecsaulosanas",
+     "name": "Pēc sauļošanās",
+     "slug": "skaistumam/saulosanas-kosmetika/pecsaulosanas"
+    },
+    {
+     "code": "saulosanas_kosmetika",
+     "name": "Sauļošanās kosmētika",
+     "slug": "skaistumam/saulosanas-kosmetika"
+    },
+    {
+     "code": "mn_all_products",
+     "name": "Visas preces",
+     "slug": "moonmart-lv/visas-preces"
+    },
+    {
+     "code": "mn_bernu_kermena_kopsana",
+     "name": "Bērnu ķermeņa kopšana",
+     "slug": "mv-maminu-un-bernu-pasaule/bernu-kermena-kopsana"
+    },
+    {
+     "code": "mn_higienas_preces",
+     "name": "Higiēna un veselība",
+     "slug": "mv-higiena-un-veseliba"
+    },
+    {
+     "code": "mn_home_aid",
+     "name": "Mājas aptieciņa",
+     "slug": "mv-higiena-un-veseliba/majas-aptiecina"
+    },
+    {
+     "code": "mn_kermena_adas_kopsana",
+     "name": "Ķermeņa ādas kopšanas kosmētika",
+     "slug": "kosmetika-mv/kermena-adas-kopsana-kosmetika"
+    },
+    {
+     "code": "mn_kremi_losjoni_un_ellas",
+     "name": "Ķermeņa kopšanas krēmi un losjoni",
+     "slug": "kosmetika-mv/kermena-adas-kopsana-kosmetika/kermena-kopsanas-kremi-un-losjoni"
+    },
+    {
+     "code": "mn_mother_baby_world",
+     "name": "Māmiņu un bērnu pasaule",
+     "slug": "mv-maminu-un-bernu-pasaule"
+    },
+    {
+     "code": "mn_skaistumam",
+     "name": "Kosmētika",
+     "slug": "mv-kosmetika"
+    },
+    {
+     "code": "mn_wound_care",
+     "name": "Brūču kopšana",
+     "slug": "mv-higiena-un-veseliba/majas-aptiecina/brucu-kopsana"
+    },
+    {
+     "code": "moonmart_lv",
+     "name": "Moonmart LV",
+     "slug": "moonmart-lv"
+    },
+    {
+     "code": "mn_creams_lotions_baby",
+     "name": "Krēmi un losjoni",
+     "slug": "mv-maminu-un-bernu-pasaule/bernu-kermena-kopsana/kremi-un-losjoni"
+    },
+    {
+     "code": "mnlt_maternity_baby_care_cosmetics",
+     "name": "Produkti topošajām māmiņām un mazuļiem",
+     "slug": "kosmetika/produkti-toposajam-maminam-un-mazuliem"
+    },
+    {
+     "code": "after_sun_care_new",
+     "name": "Pēc sauļošanās līdzekļi",
+     "slug": "kermena-kopsana/saulosanas-kosmetika-kermenim/pec-saulosanas-lidzekli"
+    },
+    {
+     "code": "all_products_new",
+     "name": "Visas preces",
+     "slug": "moonmart/visas-preces"
+    },
+    {
+     "code": "baby_cosmetics_face_body_new",
+     "name": "Sejai, matiem un ķermenim",
+     "slug": "maminai-un-mazulim/kosmetika-berniem/sejai-matiem-un-kermenim"
+    },
+    {
+     "code": "baby_cosmetics_new",
+     "name": "Kosmētika bērniem",
+     "slug": "maminai-un-mazulim/kosmetika-berniem"
+    },
+    {
+     "code": "body_care_new",
+     "name": "Ķermeņa kopšana",
+     "slug": "kermena-kopsana"
+    },
+    {
+     "code": "body_sun_care_new",
+     "name": "Sauļošanās kosmētika ķermenim",
+     "slug": "kermena-kopsana/saulosanas-kosmetika-kermenim"
+    },
+    {
+     "code": "first_aid_new",
+     "name": "Pirmās palīdzības preces",
+     "slug": "medicinas-preces-1/majas-aptiecina/pirmas-palidzibas-preces"
+    },
+    {
+     "code": "health_medical_new",
+     "name": "Medicīnas preces",
+     "slug": "medicinas-preces-1"
+    },
+    {
+     "code": "home_medicine_cabinet_new",
+     "name": "Mājas aptieciņa",
+     "slug": "medicinas-preces-1/majas-aptiecina"
+    },
+    {
+     "code": "moonmart_new",
+     "name": "Moonmart",
+     "slug": "moonmart"
+    },
+    {
+     "code": "mothers_baby_new",
+     "name": "Māmiņai un mazulim",
+     "slug": "maminai-un-mazulim"
+    },
+    {
+     "code": "wound_care_new",
+     "name": "Brūču kopšanas līdzekļi",
+     "slug": "medicinas-preces-1/majas-aptiecina/brucu-kopsanas-lidzekli"
+    }
+   ],
+   "images": [
+    {
+     "path": "bd/90/89f81862bd89fe602fb6ed27d60a.png",
+     "altText": "ALTERMED Panthenol Forte 9% aerosols, 150 ml, aerosola flakonā"
+    }
+   ],
+   "attributeValues": [
+    {
+     "code": "ml-unit-of-measure",
+     "value": "Ml",
+     "attribute": {
+      "code": "unit-of-measure"
+     }
+    },
+    {
+     "code": "no-receipt",
+     "value": false,
+     "attribute": {
+      "code": "receipt"
+     }
+    },
+    {
+     "code": "altermed-brand",
+     "value": "ALTERMED",
+     "attribute": {
+      "code": "brand"
+     }
+    }
+   ],
+   "defaultVariant": {
+    "code": "1162270",
+    "barcode": null,
+    "inStock": true,
+    "prices": {
+     "price": 659,
+     "originalPrices": [
+      1099
+     ],
+     "discountPercentages": [
+      40
+     ],
+     "startsAt": "2026-10-01 00:00:00",
+     "endsAt": "2026-11-01 23:59:00"
+    }
+   }
+  },
+  {
+   "id": 2295,
+   "code": "1144215",
+   "enabled": true,
+   "name": "CEMIO GEMZE 2x Stiprāks kapsulas, 60 gab.",
+   "slug": "cemio-gemze-2x-stipraks-kapsulas-60-gab",
+   "productTaxons": [
+    {
+     "code": "all_products",
+     "name": "Visas preces",
+     "slug": "menessaptieka/visas-preces"
+    },
+    {
+     "code": "kolagens",
+     "name": "Kolagēns",
+     "slug": "vitamini-un-mineralvielas/mineralvielu-kompleksi/kolagens"
+    },
+    {
+     "code": "menessaptieka_master",
+     "name": "Menessaptieka",
+     "slug": "menessaptieka"
+    },
+    {
+     "code": "mineralvielu_kompleksi",
+     "name": "Minerālvielu kompleksi",
+     "slug": "vitamini-un-mineralvielas/mineralvielu-kompleksi"
+    },
+    {
+     "code": "vitamini_un_mineralvielas",
+     "name": "Vitamīni un uztura bagātinātāji",
+     "slug": "vitamini-un-mineralvielas"
+    },
+    {
+     "code": "mnlt_all_products",
+     "name": "Visas preces",
+     "slug": "moonmart-lt/visas-preces"
+    },
+    {
+     "code": "mnlt_kolagens",
+     "name": "Kolagēns",
+     "slug": "uztura-bagatinataji/uztura-bagatinataji-skaistumam/kolagens"
+    },
+    {
+     "code": "mnlt_vitamini_un_mineralvielas",
+     "name": "Uztura bagātinātāji",
+     "slug": "uztura-bagatinataji"
+    },
+    {
+     "code": "moonmart_lt",
+     "name": "Moonmart LT",
+     "slug": "moonmart-lt"
+    },
+    {
+     "code": "mnlt_kermenis_locitavas_kauli",
+     "name": "Locītavām, kauliem un muskuļiem",
+     "slug": "uztura-bagatinataji/uztura-bagatinataji-veselibai/kermenis-locitavas-kauli"
+    },
+    {
+     "code": "mn_all_products",
+     "name": "Visas preces",
+     "slug": "moonmart-lv/visas-preces"
+    },
+    {
+     "code": "mn_kolagens",
+     "name": "Kolagēns",
+     "slug": "mv-uztura-bagatinataji/uztura-bagatinataji-skaistumam/kolagens"
+    },
+    {
+     "code": "mn_vitamini_un_mineralvielas",
+     "name": "Uztura bagātinātāji",
+     "slug": "mv-uztura-bagatinataji"
+    },
+    {
+     "code": "moonmart_lv",
+     "name": "Moonmart LV",
+     "slug": "moonmart-lv"
+    },
+    {
+     "code": "mn_food_supplements_beauty",
+     "name": "Uztura bagātinātāji skaistumam",
+     "slug": "mv-uztura-bagatinataji/uztura-bagatinataji-skaistumam"
+    },
+    {
+     "code": "geros_kainos_garantija",
+     "name": "Labas cenas",
+     "slug": "labas-cenas"
+    },
+    {
+     "code": "kermenis_locitavas_kauli",
+     "name": "Uztura bagātinātāji locītavām un kauliem",
+     "slug": "vitamini-un-mineralvielas/mineralvielu-kompleksi/kermenis-locitavas-kauli"
+    },
+    {
+     "code": "all_products_new",
+     "name": "Visas preces",
+     "slug": "moonmart/visas-preces"
+    },
+    {
+     "code": "beauty_food_supplements",
+     "name": "Uztura bagātinātāji skaistumam",
+     "slug": "uztura-bagatinataji-1/uztura-bagatinataji-skaistumam"
+    },
+    {
+     "code": "bones_muscles_joints_new",
+     "name": "Kauli, muskuļi un locītavas",
+     "slug": "uztura-bagatinataji-1/uztura-bagatinataji-labsajutai/kauli-muskuli-un-locitavas"
+    },
+    {
+     "code": "collagen_new",
+     "name": "Kolagēns",
+     "slug": "uztura-bagatinataji-1/uztura-bagatinataji-skaistumam/kolagens"
+    },
+    {
+     "code": "food_supplements_new",
+     "name": "Uztura bagātinātāji",
+     "slug": "uztura-bagatinataji-1"
+    },
+    {
+     "code": "food_supplements_wellbeing_new",
+     "name": "Uztura bagātinātāji labsajūtai",
+     "slug": "uztura-bagatinataji-1/uztura-bagatinataji-labsajutai"
+    },
+    {
+     "code": "moonmart_new",
+     "name": "Moonmart",
+     "slug": "moonmart"
+    }
+   ],
+   "images": [
+    {
+     "path": "f7/ce/6af57748935f4dca70efcc53daa6.png",
+     "altText": "CEMIO GEMZE 2x stiprākas kapsulas, 60 kapsulas sarkanā un baltā iepakojumā"
+    }
+   ],
+   "attributeValues": [
+    {
+     "code": "pcs-unit-of-measure",
+     "value": "Gab.",
+     "attribute": {
+      "code": "unit-of-measure"
+     }
+    },
+    {
+     "code": "no-receipt",
+     "value": false,
+     "attribute": {
+      "code": "receipt"
+     }
+    },
+    {
+     "code": "cemio-gemze-brand",
+     "value": "CEMIO GEMZE",
+     "attribute": {
+      "code": "brand"
+     }
+    }
+   ],
+   "defaultVariant": {
+    "code": "1144215",
+    "barcode": null,
+    "inStock": true,
+    "prices": {
+     "price": 2939,
+     "originalPrices": [],
+     "discountPercentages": [],
+     "startsAt": null,
+     "endsAt": null
+    }
+   }
+  }
+ ]
+}
