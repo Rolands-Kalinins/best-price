@@ -10,7 +10,7 @@ export const PHARMACY_CATEGORIES: readonly Category[] = [
   { slug: "hygiene", name: "Гигиена", stems: ["higien", "zobu", "mutes", "intim", "vates", "salvet", "ieliktn", "tampon", "paladz", "prezervat", "^dezodor"] },
   { slug: "skincare", name: "Косметика и уход", stems: ["skaistum", "kosmetik", "krems", "sampuns", "serums", "losjons", "balzams", "matu", "sejas"] },
   { slug: "baby", name: "Мама и ребёнок", stems: ["maminam-un-berniem", "maminas-un-berni", "maminu-un-bernu", "maminai-un-mazulim", "bernu", "zidaini", "pudele", "knupis"] },
-  { slug: "medical", name: "Медицинские товары", stems: ["medicinas-preces", "analizu", "testi", "tests", "termometr", "plaksteri", "pirma-palidziba", "ortopedisk", "saites", "masku"] },
+  { slug: "medical", name: "Медицинские товары", stems: ["medicinas-preces", "analizu", "testi", "tests", "termometr", "plaksteri", "pirma-palidziba", "ortopedisk", "saites", "masku", "slirc", "insulin", "^adat", "^adu"] },
   { slug: "pets", name: "Товары для животных", stems: ["majdzivni", "dzivniek", "kaki", "suniem"] },
 ];
 

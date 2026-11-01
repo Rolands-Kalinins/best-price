@@ -1,0 +1,779 @@
+{
+ "results": {
+  "total_hits": 6070,
+  "hits": [
+   {
+    "url": "/p/bioderma-atoderm-creme-ultra-krems-500-ml",
+    "attributes": {
+     "drugType": [
+      "basic"
+     ],
+     "discountMinCartValue": [
+      15
+     ],
+     "hasLCPrice": [
+      0
+     ],
+     "nboOrder": [
+      2900
+     ],
+     "price": "12.60 EUR",
+     "inStock": [
+      1
+     ],
+     "brand": [
+      "BIODERMA"
+     ],
+     "all_categories": [
+      "Skaistums un ādas kopšana",
+      "Ķermeņa kopšana",
+      "Krēmi un losjoni"
+     ],
+     "classic_discount_date": [
+      "01.11. - 30.11."
+     ],
+     "price_amount": 12.6,
+     "titleRaw": [
+      "BIODERMA Atoderm Crème Ultra krēms 500 ml"
+     ],
+     "boost": 0,
+     "status": [
+      "active"
+     ],
+     "boosted_via": [],
+     "numero": [
+      1
+     ],
+     "main_category_lvl_2": [
+      "Ķermeņa kopšana"
+     ],
+     "main_category_lvl_3": [
+      "Krēmi un losjoni"
+     ],
+     "availability": "1",
+     "main_category_lvl_1": [
+      "Skaistums un ādas kopšana"
+     ],
+     "product_code": [
+      "3701129805312"
+     ],
+     "specialProperties": [
+      "Nav testēts uz dzīvniekiem",
+      "Bez parabēniem",
+      "Videi draudzīgs",
+      "Nesatur nātrija laurisulfātu (SLS)"
+     ],
+     "ean": [
+      "3701129805312"
+     ],
+     "to_cart_id": [
+      10000568
+     ],
+     "discount_price_absolute_amount": 15.39,
+     "lowestRecentPrice": [
+      "12.60"
+     ],
+     "price_old": "27.99 EUR",
+     "hasDiscount": [
+      1
+     ],
+     "updateTime": [
+      "2026-11-01 16:00:21"
+     ],
+     "helperProductID": [
+      "product-10000568"
+     ],
+     "original_url": "https://www.benu.lv/p/bioderma-atoderm-creme-ultra-krems-500-ml",
+     "lifeStage": [
+      "Bērniem",
+      "Pusaudžiem",
+      "Pieaugušajiem",
+      "Senioriem",
+      "Visām vecuma grupām",
+      "Zīdaiņiem"
+     ],
+     "availability_rank_text": [
+      "in stock"
+     ],
+     "reviews_num": [
+      10
+     ],
+     "rating": [
+      4.9
+     ],
+     "nboOrderPosition": [
+      2900
+     ],
+     "skinCondition": [
+      "Normālai ādai",
+      "Sausai/ Ļoti sausai ādai"
+     ],
+     "assignedCategories": [
+      "3"
+     ],
+     "image_link": "https://www.benu.lv/media/.thumb/.500x400-create-10000568-bioderma-atoderm-cr-me-ultra-krems-500-ml-1-1792661426.jpg",
+     "assignedTags": [
+      "KO_kuno_kremai_losjonai_pieneliai"
+     ],
+     "fastPickupPharmacies": [
+      1
+     ],
+     "measure": [
+      "500"
+     ],
+     "discount_price_percentage_amount": 54.98,
+     "fastPickupPharmacyCodes": [
+      "LV1101",
+      "LV1107",
+      "LV1115",
+      "LV1116",
+      "LV1127",
+      "LV1153",
+      "LV1158"
+     ],
+     "lowestRecentPricePercentage": [
+      0
+     ],
+     "title": "BIODERMA Atoderm Crème Ultra krēms 500 ml",
+     "price_old_amount": 27.99,
+     "categories_lvl_2": [
+      "Ķermeņa kopšana"
+     ],
+     "categories_lvl_3": [
+      "Krēmi un losjoni"
+     ],
+     "discount_price_proportion_amount": 0.5498,
+     "discount_price_percentage": 55,
+     "productType": [
+      "Kosmētika un higiēnas preces"
+     ],
+     "categories_lvl_1": [
+      "Skaistums un ādas kopšana"
+     ],
+     "category_upto_lvl_5": [
+      "Skaistums un ādas kopšana|Ķermeņa kopšana|Krēmi un losjoni"
+     ],
+     "item_id": 10000568,
+     "isNew": [
+      0
+     ],
+     "isHidden": [
+      "no"
+     ],
+     "rating_facet": [
+      4.9
+     ],
+     "product_type": [
+      "Kosmētika un higiēnas preces"
+     ],
+     "form": [
+      "Krēms"
+     ],
+     "hasVoucher": [
+      1
+     ],
+     "category": [
+      "Skaistums un ādas kopšana",
+      "Ķermeņa kopšana",
+      "Krēmi un losjoni"
+     ],
+     "category_upto_lvl_4": [
+      "Skaistums un ādas kopšana|Ķermeņa kopšana|Krēmi un losjoni"
+     ],
+     "category_upto_lvl_3": [
+      "Skaistums un ādas kopšana|Ķermeņa kopšana|Krēmi un losjoni"
+     ],
+     "availability_rank": "1",
+     "category_upto_lvl_2": [
+      "Skaistums un ādas kopšana|Ķermeņa kopšana"
+     ],
+     "category_upto_lvl_1": [
+      "Skaistums un ādas kopšana"
+     ]
+    }
+   },
+   {
+    "url": "/p/mizon-good-bye-blemish-clear-patch-plaksteri-pumpam-n44",
+    "attributes": {
+     "drugType": [
+      "basic"
+     ],
+     "hasLCPrice": [
+      0
+     ],
+     "nboOrder": [
+      1271
+     ],
+     "price": "7.19 EUR",
+     "inStock": [
+      1
+     ],
+     "brand": [
+      "MIZON"
+     ],
+     "all_categories": [
+      "Skaistums un ādas kopšana",
+      "Sejas ādas kopšana",
+      "Sejas kopšanas maskas"
+     ],
+     "price_amount": 7.19,
+     "titleRaw": [
+      "MIZON Good Bye Blemish Clear Patch plāksteri pumpām N44"
+     ],
+     "boost": 0,
+     "status": [
+      "active"
+     ],
+     "boosted_via": [],
+     "numero": [
+      44
+     ],
+     "main_category_lvl_2": [
+      "Sejas ādas kopšana"
+     ],
+     "main_category_lvl_3": [
+      "Sejas kopšanas maskas"
+     ],
+     "availability": "1",
+     "main_category_lvl_1": [
+      "Skaistums un ādas kopšana"
+     ],
+     "product_code": [
+      "8809663753146"
+     ],
+     "ean": [
+      "8809663753146"
+     ],
+     "to_cart_id": [
+      10089145
+     ],
+     "discount_price_absolute_amount": 0,
+     "hasDiscount": [
+      0
+     ],
+     "updateTime": [
+      "2026-11-01 15:40:03"
+     ],
+     "helperProductID": [
+      "product-10089145"
+     ],
+     "original_url": "https://www.benu.lv/p/mizon-good-bye-blemish-clear-patch-plaksteri-pumpam-n44",
+     "availability_rank_text": [
+      "in stock"
+     ],
+     "reviews_num": [
+      0
+     ],
+     "rating": [
+      0
+     ],
+     "nboOrderPosition": [
+      1271
+     ],
+     "skinCondition": [
+      "Problemātiskai ādai"
+     ],
+     "assignedCategories": [
+      "16"
+     ],
+     "image_link": "https://www.benu.lv/media/.thumb/.500x400-create-10089145-mizon-good-bye-blemish-clear-patch-plaksteri-pumpam-n44-1-1792571063.jpg",
+     "fastPickupPharmacies": [
+      0
+     ],
+     "measure": [
+      "44"
+     ],
+     "discount_price_percentage_amount": 0,
+     "title": "MIZON Good Bye Blemish Clear Patch plāksteri pumpām N44",
+     "categories_lvl_2": [
+      "Sejas ādas kopšana"
+     ],
+     "categories_lvl_3": [
+      "Sejas kopšanas maskas"
+     ],
+     "discount_price_proportion_amount": 0,
+     "productType": [
+      "Kosmētika un higiēnas preces"
+     ],
+     "categories_lvl_1": [
+      "Skaistums un ādas kopšana"
+     ],
+     "category_upto_lvl_5": [
+      "Skaistums un ādas kopšana|Sejas ādas kopšana|Sejas kopšanas maskas"
+     ],
+     "item_id": 10089145,
+     "isNew": [
+      0
+     ],
+     "isHidden": [
+      "no"
+     ],
+     "rating_facet": [
+      0
+     ],
+     "product_type": [
+      "Kosmētika un higiēnas preces"
+     ],
+     "hasVoucher": [
+      1
+     ],
+     "category": [
+      "Skaistums un ādas kopšana",
+      "Sejas ādas kopšana",
+      "Sejas kopšanas maskas"
+     ],
+     "category_upto_lvl_4": [
+      "Skaistums un ādas kopšana|Sejas ādas kopšana|Sejas kopšanas maskas"
+     ],
+     "category_upto_lvl_3": [
+      "Skaistums un ādas kopšana|Sejas ādas kopšana|Sejas kopšanas maskas"
+     ],
+     "availability_rank": "1",
+     "category_upto_lvl_2": [
+      "Skaistums un ādas kopšana|Sejas ādas kopšana"
+     ],
+     "category_upto_lvl_1": [
+      "Skaistums un ādas kopšana"
+     ]
+    }
+   },
+   {
+    "url": "/p/finasteride-accord-1mg-tabn98",
+    "attributes": {
+     "strength": [
+      "D11AX10 - finasteride"
+     ],
+     "rating": [
+      0
+     ],
+     "nboOrderPosition": [
+      9123
+     ],
+     "drugType": [
+      "RX"
+     ],
+     "hasLCPrice": [
+      0
+     ],
+     "nboOrder": [
+      9123
+     ],
+     "price": "98.00 EUR",
+     "inStock": [
+      0
+     ],
+     "brand": [
+      "FINASTERIDE ACCORD"
+     ],
+     "image_link": "https://www.benu.lv/application/images/noimage.png",
+     "price_amount": 98,
+     "fastPickupPharmacies": [
+      0
+     ],
+     "discount_price_percentage_amount": 0,
+     "titleRaw": [
+      "FINASTERIDE ACCORD 1mg tab.N98"
+     ],
+     "boost": 0,
+     "status": [
+      "new"
+     ],
+     "boosted_via": [],
+     "numero": [
+      98
+     ],
+     "availability": "0",
+     "title": "FINASTERIDE ACCORD 1mg tab.N98",
+     "product_code": [
+      "5055565712474"
+     ],
+     "ean": [
+      "5055565712474"
+     ],
+     "to_cart_id": [
+      10087338
+     ],
+     "discount_price_absolute_amount": 0,
+     "discount_price_proportion_amount": 0,
+     "productType": [
+      "Recepšu medikaments"
+     ],
+     "item_id": 10087338,
+     "hasDiscount": [
+      0
+     ],
+     "updateTime": [
+      "2026-11-01 07:40:11"
+     ],
+     "isNew": [
+      0
+     ],
+     "helperProductID": [
+      "product-10087338"
+     ],
+     "isHidden": [
+      "no"
+     ],
+     "rating_facet": [
+      0
+     ],
+     "product_type": [
+      "Recepšu medikaments"
+     ],
+     "form": [
+      "Tablete"
+     ],
+     "original_url": "https://www.benu.lv/p/finasteride-accord-1mg-tabn98",
+     "hasVoucher": [
+      0
+     ],
+     "availability_rank_text": [
+      "preorder"
+     ],
+     "category": [],
+     "reviews_num": [
+      0
+     ],
+     "availability_rank": "7"
+    }
+   },
+   {
+    "url": "/p/orthomol-d3k2-vitamins-aerosols-20-ml",
+    "attributes": {
+     "drugType": [
+      "basic"
+     ],
+     "discountMinCartValue": [
+      10
+     ],
+     "hasLCPrice": [
+      0
+     ],
+     "nboOrder": [
+      9123
+     ],
+     "price": "13.19 EUR",
+     "inStock": [
+      1
+     ],
+     "brand": [
+      "ORTHOMOL"
+     ],
+     "all_categories": [
+      "Uztura bagātinātāji",
+      "Vitamīni un minerālvielas",
+      "Kompleksie vitamīni"
+     ],
+     "classic_discount_date": [
+      "19.10. - 18.11."
+     ],
+     "price_amount": 13.19,
+     "titleRaw": [
+      "ORTHOMOL D3+K2 vitamīns aerosols 20 ml"
+     ],
+     "boost": 0,
+     "status": [
+      "active"
+     ],
+     "boosted_via": [],
+     "numero": [
+      1
+     ],
+     "main_category_lvl_2": [
+      "Vitamīni un minerālvielas"
+     ],
+     "main_category_lvl_3": [
+      "Kompleksie vitamīni"
+     ],
+     "availability": "1",
+     "main_category_lvl_1": [
+      "Uztura bagātinātāji"
+     ],
+     "product_code": [
+      "PZN-17444652"
+     ],
+     "specialProperties": [
+      "Bez pievienota cukura"
+     ],
+     "ean": [
+      "PZN-17444652"
+     ],
+     "to_cart_id": [
+      10074408
+     ],
+     "discount_price_absolute_amount": 7.8,
+     "lowestRecentPrice": [
+      "13.19"
+     ],
+     "price_old": "20.99 EUR",
+     "hasDiscount": [
+      1
+     ],
+     "updateTime": [
+      "2026-11-01 16:20:03"
+     ],
+     "helperProductID": [
+      "product-10074408"
+     ],
+     "original_url": "https://www.benu.lv/p/orthomol-d3k2-vitamins-aerosols-20-ml",
+     "lifeStage": [
+      "Pieaugušajiem"
+     ],
+     "availability_rank_text": [
+      "in stock"
+     ],
+     "reviews_num": [
+      0
+     ],
+     "rating": [
+      0
+     ],
+     "nboOrderPosition": [
+      9123
+     ],
+     "assignedCategories": [
+      "155"
+     ],
+     "image_link": "https://www.benu.lv/media/.thumb/.500x400-create-10074408-orthomol-d3-k2-vitamins-aerosols-20-ml-1-1792708574.jpg",
+     "fastPickupPharmacies": [
+      0
+     ],
+     "measure": [
+      "20"
+     ],
+     "discount_price_percentage_amount": 37.16,
+     "lowestRecentPricePercentage": [
+      0
+     ],
+     "title": "ORTHOMOL D3+K2 vitamīns aerosols 20 ml",
+     "price_old_amount": 20.99,
+     "categories_lvl_2": [
+      "Vitamīni un minerālvielas"
+     ],
+     "categories_lvl_3": [
+      "Kompleksie vitamīni"
+     ],
+     "discount_price_proportion_amount": 0.3716,
+     "discount_price_percentage": 37,
+     "productType": [
+      "Uztura bagātinātājs"
+     ],
+     "categories_lvl_1": [
+      "Uztura bagātinātāji"
+     ],
+     "category_upto_lvl_5": [
+      "Uztura bagātinātāji|Vitamīni un minerālvielas|Kompleksie vitamīni"
+     ],
+     "item_id": 10074408,
+     "isNew": [
+      0
+     ],
+     "isHidden": [
+      "no"
+     ],
+     "rating_facet": [
+      0
+     ],
+     "product_type": [
+      "Uztura bagātinātājs"
+     ],
+     "form": [
+      "Aerosols"
+     ],
+     "hasVoucher": [
+      1
+     ],
+     "category": [
+      "Uztura bagātinātāji",
+      "Vitamīni un minerālvielas",
+      "Kompleksie vitamīni"
+     ],
+     "category_upto_lvl_4": [
+      "Uztura bagātinātāji|Vitamīni un minerālvielas|Kompleksie vitamīni"
+     ],
+     "category_upto_lvl_3": [
+      "Uztura bagātinātāji|Vitamīni un minerālvielas|Kompleksie vitamīni"
+     ],
+     "availability_rank": "1",
+     "category_upto_lvl_2": [
+      "Uztura bagātinātāji|Vitamīni un minerālvielas"
+     ],
+     "category_upto_lvl_1": [
+      "Uztura bagātinātāji"
+     ]
+    }
+   },
+   {
+    "url": "/p/footlogix-18-tulznas-mikstinoss-lidzeklis-180-ml",
+    "attributes": {
+     "lowestPriceDiscount": [
+      -40
+     ],
+     "drugType": [
+      "basic"
+     ],
+     "hasLCPrice": [
+      1
+     ],
+     "nboOrder": [
+      9123
+     ],
+     "price": "41.69 EUR",
+     "loyal_customer_price_amount": "25.01",
+     "LCDiscountPercent": [
+      40
+     ],
+     "inStock": [
+      0
+     ],
+     "brand": [
+      "FOOTLOGIX"
+     ],
+     "all_categories": [
+      "Skaistums un ādas kopšana",
+      "Ķermeņa kopšana",
+      "Kāju un pēdu kopšana"
+     ],
+     "price_amount": 41.69,
+     "titleRaw": [
+      "FOOTLOGIX 18 tulznas mīkstinošs līdzeklis 180 ml"
+     ],
+     "boost": 0,
+     "status": [
+      "hidden"
+     ],
+     "boosted_via": [],
+     "numero": [
+      1
+     ],
+     "main_category_lvl_2": [
+      "Ķermeņa kopšana"
+     ],
+     "main_category_lvl_3": [
+      "Kāju un pēdu kopšana"
+     ],
+     "availability": "0",
+     "main_category_lvl_1": [
+      "Skaistums un ādas kopšana"
+     ],
+     "product_code": [
+      "694419411146"
+     ],
+     "specialProperties": [
+      "Vegāniem",
+      "Nav testēts uz dzīvniekiem",
+      "Bez sulfātiem"
+     ],
+     "ean": [
+      "694419411146"
+     ],
+     "discount_price_lc_percentage": 40,
+     "to_cart_id": [
+      10044411
+     ],
+     "discount_price_absolute_amount": 0,
+     "lowestRecentPrice": [
+      "41.69"
+     ],
+     "price_old": "41.69 EUR",
+     "hasDiscount": [
+      1
+     ],
+     "updateTime": [
+      "2026-11-01 12:40:11"
+     ],
+     "helperProductID": [
+      "product-10044411"
+     ],
+     "original_url": "https://www.benu.lv/p/footlogix-18-tulznas-mikstinoss-lidzeklis-180-ml",
+     "availability_rank_text": [
+      "discontinued"
+     ],
+     "reviews_num": [
+      0
+     ],
+     "rating": [
+      0
+     ],
+     "nboOrderPosition": [
+      9123
+     ],
+     "skinCondition": [
+      "Sausai/ Ļoti sausai ādai"
+     ],
+     "assignedCategories": [
+      "7"
+     ],
+     "image_link": "https://www.benu.lv/media/.thumb/.500x400-create-10044411-footlogix-18-tulznas-mikstinoss-lidzeklis-180-ml-1-1792570123.jpg",
+     "fastPickupPharmacies": [
+      0
+     ],
+     "measure": [
+      "180"
+     ],
+     "discount_price_percentage_amount": 0,
+     "lowestRecentPricePercentage": [
+      0
+     ],
+     "title": "FOOTLOGIX 18 tulznas mīkstinošs līdzeklis 180 ml",
+     "price_old_amount": 41.69,
+     "categories_lvl_2": [
+      "Ķermeņa kopšana"
+     ],
+     "categories_lvl_3": [
+      "Kāju un pēdu kopšana"
+     ],
+     "discount_price_proportion_amount": 0,
+     "discount_price_percentage": 0,
+     "productType": [
+      "Kosmētika un higiēnas preces"
+     ],
+     "categories_lvl_1": [
+      "Skaistums un ādas kopšana"
+     ],
+     "category_upto_lvl_5": [
+      "Skaistums un ādas kopšana|Ķermeņa kopšana|Kāju un pēdu kopšana"
+     ],
+     "item_id": 10044411,
+     "isNew": [
+      0
+     ],
+     "isHidden": [
+      "no"
+     ],
+     "loyal_customer_price": "25.01 EUR",
+     "rating_facet": [
+      0
+     ],
+     "product_type": [
+      "Kosmētika un higiēnas preces"
+     ],
+     "form": [
+      "Aerosols"
+     ],
+     "hasVoucher": [
+      1
+     ],
+     "category": [
+      "Skaistums un ādas kopšana",
+      "Ķermeņa kopšana",
+      "Kāju un pēdu kopšana"
+     ],
+     "category_upto_lvl_4": [
+      "Skaistums un ādas kopšana|Ķermeņa kopšana|Kāju un pēdu kopšana"
+     ],
+     "category_upto_lvl_3": [
+      "Skaistums un ādas kopšana|Ķermeņa kopšana|Kāju un pēdu kopšana"
+     ],
+     "availability_rank": "15",
+     "category_upto_lvl_2": [
+      "Skaistums un ādas kopšana|Ķermeņa kopšana"
+     ],
+     "category_upto_lvl_1": [
+      "Skaistums un ādas kopšana"
+     ]
+    }
+   }
+  ]
+ }
+}
