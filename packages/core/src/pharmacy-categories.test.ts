@@ -56,3 +56,10 @@ test("категории аптек: разделы Benu (слаги из наз
   assert.equal(cat("pirma-palidziba/plaksteri"), "medical");
   assert.equal(cat(null, "Insulīna pildspalvveida šļirces adatas N100"), "medical");
 });
+
+test("категории аптек: рецептурные и ветеринарные по названию (Apotheka, где у рецептурных нет пути категории)", () => {
+  assert.equal(cat(null, "OMEPRAZOLE STADA CPS 20MG N30"), "medicine");
+  assert.equal(cat(null, "NUROFEN tbl. 200mg N24"), "medicine");
+  assert.equal(cat(null, "HILLS Prescription Diet sausā barība suņiem 4kg"), "pets");
+  assert.equal(cat(null, "Barība kaķu sterilizētiem 2kg"), "pets");
+});
