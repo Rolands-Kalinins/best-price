@@ -18,7 +18,7 @@
 |---|---|---|---|---|---|---|
 | Drogas | JSON-API `api.drogas.lv/api/v2/drlv/products/search` | 9 330 уникальных | есть у всех (`ean`) | да (`otherPrices` = цена по карте, `topPromotion`) | да (`topPromotion.start/endDate`) | **robots.txt закрывает `/api/v2/`**, Akamai |
 | Mēness aptieka | JSON-API `api.e-menessaptieka.lv/api/v2/shop/search/products` | 10 221 | нет (`barcode: null`) | да (`originalPrices`, `discountPercentages`) | да (`startsAt/endsAt`) | магазин на другом домене; есть рецептурные |
-| Benu | HTML-списки `/e-aptieka/<категория>?page=N` | 6 909 | на списках нет | частично (`<ins>`, цена «в корзине от 9.99 €») | нет | Cloudflare, 290 запросов |
+| Benu | JSON поиска Luigi's Box (`docs/recon/benu.md`) | 6 070 в наличии (6 800 active) | 99% | старая цена и период у 3 715 | есть (цена по карте в данных есть, у продаваемых пока нет) | 31 запрос, 429 при частых |
 | Apotheka | HTML-списки `/produkti/...?p=N` + страница товара | ≈9 133 | `gtin` только на странице товара | да (`<del>` + `<ins>`) | нет | `/catalog` и `/rest` закрыты |
 | Euroaptieka | HTML-списки `/l/<категория>?page=N`, JSON-LD на карточке | 6 608 | `gtin13` на карточке | да (цена по клубу, `/l/akcijas`) | нет | Next.js, страницы по 1.4–3.3 МБ |
 | Douglas | HTML-списки `/lv/katalogs/...?&page_size=100&page=N` | ≈14 200 | `snd_product_id` (12 цифр, не проверено) | да (`price_regular` / `price`, `/lv/outlet/`) | нет | сайт без API, но HTML открыт |
@@ -36,7 +36,7 @@
 1. **Mēness aptieka**: чистый JSON, акции с датами, нет защиты. Самый дешёвый старт для аптечного раздела, заодно проверяем схему `pharmacy.*`.
 2. **Drogas**: JSON, EAN у всех, но сначала решение по robots (вопрос 2).
 3. **Euroaptieka**: HTML + JSON-LD с `gtin13`.
-4. **Benu**: простой HTML, без EAN.
+4. **Benu**: открытый JSON поиска, EAN есть (реализован в 2.3.0.0).
 5. **Douglas**: HTML, 14 тыс. товаров, EAN под вопросом.
 6. **Apotheka**: самый тяжёлый (EAN только на странице товара).
 
@@ -46,7 +46,7 @@
 2. **Drogas отложен** (спорный `robots.txt`, см. выше); файл `drogas.md` остаётся на будущее. Остальные магазины идут в работу: у них в `robots.txt` каталог не закрыт. Условия использования (ToS) сайтов не читались.
 3. Схемы `pharmacy.*` и `cosmetics.*` одобрены. В косметике пока остаётся один Douglas.
 
-Статус: **Mēness** (2.0.0.0) и **Euroaptieka** (2.1.0.0) реализованы; цену по карте собираем у обоих (2.1.0.0). Benu, Douglas и Apotheka не начаты.
+Статус: **Mēness** (2.0.0.0) и **Euroaptieka** (2.1.0.0) реализованы; цену по карте собираем у обоих (2.1.0.0). **Benu** реализован (2.3.0.0). Douglas и Apotheka не начаты.
 
 ## Что нужно было решить (закрыто выше, пункты 1–3; пункт 4 про Mēness остаётся в силе: берём `e-menessaptieka.lv`)
 
