@@ -12,7 +12,7 @@ on:
         description: Какой парсер запустить
         type: choice
         default: all
-        options: [all, lidl, maxima, barbora, e-latts, rimi, etop, meness]
+        options: [all, lidl, maxima, barbora, e-latts, rimi, etop, meness, euroaptieka]
 
 # Один запуск за раз: двойной клик по кнопке в админке не даст двух одинаковых парсеров.
 concurrency:
@@ -121,6 +121,31 @@ jobs:
         with:
           name: meness-debug
           path: packages/scrapers/meness/debug
+          retention-days: 7
+
+  # Интернет-аптека Euroaptieka: все карточки товаров из sitemap (≈6 600), ≈140 КБ каждая, 3 потока с паузой 0,25 с; живой прогон см. docs/PLAN.md (2026-11-01).
+  # Если сайт начнёт блокировать адреса GitHub (403), магазин снимаем с сайта, а не обходим защиту (решение владельца).
+  euroaptieka:
+    if: github.event_name != 'workflow_dispatch' || inputs.source == 'all' || inputs.source == 'euroaptieka'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @bestprice/scraper-euroaptieka scrape
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: euroaptieka-debug
+          path: packages/scrapers/euroaptieka/debug
           retention-days: 7
 
   # Раздел «Akcijas» интернет-магазина LaTS: ≈16 запросов с паузой 0,2 с, живой прогон ≈15 секунд (2026-10-31).

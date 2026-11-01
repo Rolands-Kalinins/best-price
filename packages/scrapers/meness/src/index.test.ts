@@ -46,6 +46,19 @@ test("parse: нет веток верхнего меню — берём друг
   assert.equal(parse([p]).products[0].category, null);
 });
 
+test("parse: цена по карте «Veselība» с периодом; у товара без неё поля пустые", () => {
+  const c = clone(plain);
+  Object.assign(c.defaultVariant.prices, { loyaltyCatalogPromotionPrice: 2500, loyaltyCatalogPromotionStartsAt: "2026-10-01 00:00:00", loyaltyCatalogPromotionEndsAt: "2026-11-01 23:59:00" });
+  const p = parse([c]).products[0];
+  assert.equal(p.price, 29.39);
+  assert.equal(p.cardPrice, 25);
+  assert.equal(p.cardCondition, "Ar karti «Veselība»");
+  assert.equal(p.cardStartsAt, "2026-09-30T21:00:00.000Z");
+  assert.equal(p.cardEndsAt, "2026-11-01T21:59:00.000Z");
+  const none = parse([plain]).products[0];
+  assert.deepEqual([none.cardPrice, none.cardCondition, none.cardStartsAt, none.cardEndsAt], [null, null, null, null]);
+});
+
 test("parse: рецептурный препарат помечается, а не отбрасывается", () => {
   const rx = clone(plain);
   rx.attributeValues.find((a: Item) => a.attribute.code === "receipt").value = true;

@@ -20,3 +20,4 @@
 | 2026-10-31 | [barbora-condition-format](2026-10-31-barbora-condition-format.md) | Парсер Barbora: условие «Pērkot 2 vai vairāk» не распознавалось `conditionKind`, 358 акций не склеились бы с другими магазинами |
 | 2026-10-31 | [elatts-title-class](2026-10-31-elatts-title-class.md) | Парсер e-latts: 4 акции с длинным названием (`-oTitle -sLong`) отбрасывались, фикстура не покрывала вариант разметки |
 | 2026-11-01 | [meness-result-window](2026-11-01-meness-result-window.md) | Парсер Mēness: HTTP 400 на странице 101, поиск не отдаёт глубже 10 000 результатов; обход разбит на ценовые диапазоны |
+| 2026-11-01 | [prd-fr-numbering](2026-11-01-prd-fr-numbering.md) | PRD: новые требования аптек получили занятые номера FR-61 и FR-62, «хвост» grep показал не максимум; перенумерованы в FR-63…67 |
