@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
-import { activeFilter, discountPercent, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchGroups, searchOrClause, searchTerms, storePrices } from "./offer-view";
+import { activeFilter, discountPercent, endsSoon, isStale, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchGroups, searchOrClause, searchTerms, storePrices } from "./offer-view";
 import { RU_LV } from "./ru-lv";
 
 test("safeHttpUrl: наша миниатюра /grocery/img/<магазин>/<ключ> разрешена, любой другой относительный путь нет", () => {
@@ -37,12 +37,12 @@ test("offerDiscount: процент скидки на бренд важнее р
 });
 
 test("parseQuery: значения по умолчанию и мусор", () => {
-  const def = { q: "", store: null, cat: null, cond: false, scope: false, sort: "discount", n: 60 };
+  const def = { q: "", store: null, cat: null, cond: false, scope: false, sort: "discount", n: 60, all: false };
   assert.deepEqual(parseQuery(new URLSearchParams("")), def);
-  assert.deepEqual(parseQuery(new URLSearchParams("sort=хаос&store=abc&cond=yes&scope=да&cat=nope")), def);
+  assert.deepEqual(parseQuery(new URLSearchParams("sort=хаос&store=abc&cond=yes&scope=да&cat=nope&all=yes")), def);
   assert.deepEqual(parseQuery(new URLSearchParams("store=0")), def);
   assert.deepEqual(parseQuery(new URLSearchParams("store=-3")), def);
-  assert.deepEqual(parseQuery(new URLSearchParams("q=pienas&store=2&cat=dairy&cond=1&scope=1&sort=price")), {
+  assert.deepEqual(parseQuery(new URLSearchParams("q=pienas&store=2&cat=dairy&cond=1&scope=1&sort=price&all=1")), {
     q: "pienas",
     store: 2,
     cat: "dairy",
@@ -50,6 +50,7 @@ test("parseQuery: значения по умолчанию и мусор", () =>
     scope: true,
     sort: "price",
     n: 60,
+    all: true,
   });
   // Лимит: не меньше страницы, не больше 1000, мусор — страница.
   assert.equal(parseQuery(new URLSearchParams("n=180")).n, 180);
@@ -127,4 +128,20 @@ test("storePrices: одна самая дешёвая акция на магаз
 test("priceGap: разница в евро и процентах от лучшей цены", () => {
   assert.deepEqual(priceGap(1.2, 1), { eur: 0.2, pct: 20 });
   assert.deepEqual(priceGap(1, 1), { eur: 0, pct: 0 });
+});
+
+test("endsSoon: сегодня и завтра считаются по календарным дням Риги, а не по 24 часам", () => {
+  const now = new Date("2026-11-01T10:00:00Z"); // 12:00 в Риге
+  assert.equal(endsSoon("2026-11-01T21:30:00Z", now), "today"); // 23:30 по Риге того же дня
+  assert.equal(endsSoon("2026-11-01T22:30:00Z", now), "tomorrow"); // 00:30 2 ноября по Риге, хотя UTC ещё 1-е
+  assert.equal(endsSoon("2026-11-02T21:00:00Z", now), "tomorrow");
+  assert.equal(endsSoon("2026-11-02T22:30:00Z", now), null); // послезавтра
+  assert.equal(endsSoon("2026-10-31T10:00:00Z", now), null); // уже кончилась
+  assert.equal(endsSoon(null, now), null);
+});
+
+test("isStale: данные старше 48 часов устарели", () => {
+  const now = new Date("2026-11-03T12:00:00Z");
+  assert.equal(isStale("2026-11-01T12:01:00Z", now), false);
+  assert.equal(isStale("2026-11-01T11:59:00Z", now), true);
 });

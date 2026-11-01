@@ -3,7 +3,7 @@ export default function Loading() {
   return (
     <>
       <div className="h-14 border-b" />
-      <main className="mx-auto w-full max-w-6xl space-y-4 p-4" aria-busy="true" aria-label="Загрузка">
+      <main id="main" className="mx-auto w-full max-w-7xl space-y-4 p-4" aria-busy="true" aria-label="Загрузка">
         <h1 className="text-2xl font-semibold">Акции</h1>
         <div className="bg-muted h-5 w-64 animate-pulse rounded motion-reduce:animate-none" />
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">

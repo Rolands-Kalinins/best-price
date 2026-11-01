@@ -1,10 +1,16 @@
 import { activeFilter, parseQuery, priceGap, searchGroups, searchOrClause, storePrices } from "@bestprice/core";
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { buttonVariants } from "@/components/ui/button";
 import { OfferFeed } from "@/components/offer-feed";
 import { ProductCard } from "@/components/product-card";
 import { SiteHeader } from "@/components/site-header";
 import { StoreStatus } from "@/components/store-status";
+import { num } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata = { title: "Акции" };
 
 // Страница персональная (RLS по сессии), пререндер не нужен.
 export const instant = false;
@@ -89,12 +95,17 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
   const offers = offersRes.data ?? [];
 
   const total = (offersRes.count ?? offers.length) + products.length;
+  // Ссылка переключает только «all»: остальные условия (поиск, фильтры, «Показать ещё») сохраняются.
+  const toggled = new URLSearchParams(sp);
+  if (query.all) toggled.delete("all");
+  else toggled.set("all", "1");
+  const compareHref = `/grocery${toggled.size ? `?${toggled}` : ""}`;
   const unfiltered = !query.q && query.store === null && !query.cat && !query.cond && !query.scope;
 
   return (
     <>
       <SiteHeader email={auth.user.email ?? ""} isAdmin={adminRes.data === true} />
-      <main className="mx-auto w-full max-w-6xl space-y-4 p-4">
+      <main id="main" className="mx-auto w-full max-w-7xl space-y-4 p-4">
         <h1 className="text-2xl font-semibold">Акции</h1>
         <StoreStatus stores={stores} />
         {total === 0 && unfiltered ? (
@@ -112,13 +123,24 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
               products.length > 0 && (
                 <section aria-label="Сравнение цен" className="space-y-3">
                   <h2 className="text-lg font-semibold">Где дешевле ({products.length})</h2>
+                  {/* В страницу идут только первые карточки: все 200 с картинками давали 2,5 МБ HTML. На телефоне видны 3, шире 6. */}
                   <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {products.map((p) => (
-                      <li key={p.id} className="flex *:w-full">
+                    {(query.all ? products : products.slice(0, 6)).map((p, i) => (
+                      <li key={p.id} className={cn("flex *:w-full", i >= 3 && !query.all && "max-sm:hidden")}>
                         <ProductCard title={p.title} offers={p.offers} storeName={storeName} />
                       </li>
                     ))}
                   </ul>
+                  {products.length > 3 && (
+                    <Link
+                      href={compareHref}
+                      scroll={false}
+                      prefetch={false}
+                      className={cn(buttonVariants({ variant: "outline", size: "lg" }), "mx-auto flex min-h-11 w-fit", !query.all && products.length <= 6 && "sm:hidden")}
+                    >
+                      {query.all ? "Свернуть" : `Показать все (${num(products.length)})`}
+                    </Link>
+                  )}
                 </section>
               )
             }
