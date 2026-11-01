@@ -15,9 +15,6 @@ create index products_discount_idx on pharmacy.products (discount desc nulls las
 create index products_source_idx on pharmacy.products (source_id);
 
 -- Политики читают is_member() один раз на запрос, а не на каждую строку (как у grocery после offers_scale).
-drop policy products_select on pharmacy.products;
-create policy products_select on pharmacy.products
-  for select to authenticated using ((select public.is_member()));
-drop policy price_history_select on pharmacy.price_history;
-create policy price_history_select on pharmacy.price_history
-  for select to authenticated using ((select public.is_member()));
+-- alter, а не drop + create: без удаления политик, окна без защиты нет.
+alter policy products_select on pharmacy.products using ((select public.is_member()));
+alter policy price_history_select on pharmacy.price_history using ((select public.is_member()));
