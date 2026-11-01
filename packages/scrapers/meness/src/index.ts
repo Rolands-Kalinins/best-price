@@ -10,6 +10,7 @@ const IMAGES = "https://api.e-menessaptieka.lv/media/image/";
 const PER_PAGE = 100;
 const USER_AGENT = "BestPriceBot (personal project)";
 const MAX_INVALID = 0.05;
+const CARD = "Ar karti «Veselība»";
 // Каталог ≈10 200 товаров; оборванный обход выглядел бы успехом, поэтому порог.
 const MIN_PRODUCTS = 9000;
 // Верхний уровень меню сайта. В productTaxons лежат ещё деревья Moonmart (moonmart-lv, mv-…), «-1» и пр.: они меню магазина не являются.
@@ -30,7 +31,15 @@ type Item = {
   defaultVariant?: {
     barcode?: string | null;
     inStock?: boolean;
-    prices?: { price: number; originalPrices?: number[]; startsAt?: string | null; endsAt?: string | null };
+    prices?: {
+      price: number;
+      originalPrices?: number[];
+      startsAt?: string | null;
+      endsAt?: string | null;
+      loyaltyCatalogPromotionPrice?: number | null;
+      loyaltyCatalogPromotionStartsAt?: string | null;
+      loyaltyCatalogPromotionEndsAt?: string | null;
+    };
   };
 };
 
@@ -78,6 +87,11 @@ function toProduct(it: Item): unknown {
     oldPrice: old ? euro(old) : null,
     startsAt: old ? riga(pr?.startsAt) : null,
     endsAt: old ? riga(pr?.endsAt) : null,
+    // Цена по карте лояльности «Veselība» (у ≈15% товаров), со своим периодом.
+    cardPrice: pr?.loyaltyCatalogPromotionPrice ? euro(pr.loyaltyCatalogPromotionPrice) : null,
+    cardCondition: pr?.loyaltyCatalogPromotionPrice ? CARD : null,
+    cardStartsAt: pr?.loyaltyCatalogPromotionPrice ? riga(pr.loyaltyCatalogPromotionStartsAt) : null,
+    cardEndsAt: pr?.loyaltyCatalogPromotionPrice ? riga(pr.loyaltyCatalogPromotionEndsAt) : null,
     ean: v?.barcode || null, // в выборке 2026-11-01 пусто у всех
     url: `${SHOP}/p/${it.slug}-${it.code}`,
     imageUrl: it.images?.[0] ? IMAGES + it.images[0].path : null,

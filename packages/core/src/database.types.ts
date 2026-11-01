@@ -438,6 +438,10 @@ export type Database = {
       products: {
         Row: {
           brand: string | null
+          card_condition: string | null
+          card_ends_at: string | null
+          card_price: number | null
+          card_starts_at: string | null
           cat: string | null
           category: string | null
           ean: string | null
@@ -458,6 +462,10 @@ export type Database = {
         }
         Insert: {
           brand?: string | null
+          card_condition?: string | null
+          card_ends_at?: string | null
+          card_price?: number | null
+          card_starts_at?: string | null
           cat?: string | null
           category?: string | null
           ean?: string | null
@@ -478,6 +486,10 @@ export type Database = {
         }
         Update: {
           brand?: string | null
+          card_condition?: string | null
+          card_ends_at?: string | null
+          card_price?: number | null
+          card_starts_at?: string | null
           cat?: string | null
           category?: string | null
           ean?: string | null
