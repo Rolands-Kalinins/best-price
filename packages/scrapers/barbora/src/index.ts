@@ -13,6 +13,7 @@ const USER_AGENT = "BestPriceBot (personal project)";
 // Как у Maxima: одинаковое условие нужно, чтобы одна и та же акция двух магазинов получила один ключ товара (docs/PLAN.md, «Сопоставление»).
 const CARD = "Ar PALDIES karti";
 const MAX_INVALID = 0.05;
+const MAX_MISSING = 0.05;
 
 type Item = {
   id: string;
@@ -163,7 +164,8 @@ async function collection(id: string, retryMs: number): Promise<{ items: unknown
     if (!body.inventories.length || items.length >= count) break;
   }
   // Если сервер урезал страницы, молча потеряли бы часть товаров (findings/maxima-limit-ceiling).
-  if (items.length < count) throw new Error(`Barbora: получено ${items.length} из ${count} позиций ${id}, пагинация могла измениться`);
+  // count включает позиции, которых API не отдаёт ни при каком Limit (2026-11-03: 1685 из 1729 и 2425 из 2443), поэтому допуск, а не равенство.
+  if (items.length < count * (1 - MAX_MISSING)) throw new Error(`Barbora: получено ${items.length} из ${count} позиций ${id}, пагинация могла измениться`);
   return { items, tree };
 }
 
