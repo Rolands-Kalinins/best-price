@@ -101,7 +101,7 @@ function server(total: number, drop = 0) {
     const all = id === "50XV" ? items("akcijas", total) : items("paldies", 5);
     const off = Number(u.searchParams.get("Offset"));
     const lim = Number(u.searchParams.get("Limit"));
-    return Response.json({ count: all.length + drop, inventories: all.slice(off, off + lim), categoryTree: load(id === "50XV" ? "akcijas" : "paldies").categoryTree });
+    return Response.json({ count: all.length + (id === "50XV" ? drop : 0), inventories: all.slice(off, off + lim), categoryTree: load(id === "50XV" ? "akcijas" : "paldies").categoryTree });
   }) as typeof fetch;
   return { calls, restore: () => (globalThis.fetch = real) };
 }
@@ -124,6 +124,16 @@ test("scrape: сервер отдал меньше, чем обещал count, �
   const s = server(10, 3);
   try {
     await assert.rejects(scrape(), /10 из 13/);
+  } finally {
+    s.restore();
+  }
+});
+
+test("scrape: count включает ~2% позиций, которые API не отдаёт никогда (живые 1685 из 1729), это не сбой", async () => {
+  const s = server(1000, 22);
+  try {
+    const { offers } = await scrape();
+    assert.equal(offers.length, 1005);
   } finally {
     s.restore();
   }
