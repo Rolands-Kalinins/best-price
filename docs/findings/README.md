@@ -24,3 +24,4 @@
 | 2026-11-03 | [barbora-count-gap](2026-11-03-barbora-count-gap.md) | Парсер Barbora: `count` включает ~1–3% позиций, которые API не отдаёт, строгая проверка «получено ≥ count» роняла прогон; введён допуск 5% |
 | 2026-11-12 | [lidl-thumb-crop-rounding](2026-11-12-lidl-thumb-crop-rounding.md) | Lidl: `cropRegion` округлял left и width независимо, рамка у края выходила на 1 px за страницу (sharp: bad extract area), прогоны падали с 07.11; округляются края, плохая рамка пропускается, а не роняет запуск |
 | 2026-11-01 | [expandlist-hidden-not-skipped](2026-11-01-expandlist-hidden-not-skipped.md) | «Где дешевле»: карточки скрыты CSS, но все 200 уходили в страницу (2,5 МБ, 3,7 с); теперь сервер строит только видимые, остальные по `?all=1` |
+| 2026-11-12 | [meness-connection-drops](2026-11-12-meness-connection-drops.md) | Парсер Mēness: на раннерах GitHub сайт рвал соединение серией (`terminated`), 3 попыток на ≈105 запросов не хватало; попыток 6, повторы логируются |
