@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { TABLES, buildSql, insertSql } from "./db-pull.mjs";
+import { TABLES, buildSql, insertSql, remapSourceIds } from "./db-pull.mjs";
 
 const offers = TABLES.find((t) => t.name === "grocery.offers");
 const history = TABLES.find((t) => t.name === "grocery.price_history");
@@ -37,4 +37,17 @@ test("buildSql: одна транзакция, перед вставкой оч�
   assert.ok(!/leaflet_offers|public\.users|allowed_emails/.test(sql)); // локальные и личные данные не трогаем
   const at = (n) => sql.indexOf(`insert into ${n}`);
   assert.ok(at("grocery.products") < at("grocery.offers") && at("grocery.offers") < at("grocery.price_history"));
+});
+
+test("remapSourceIds: source_id боевой БД переводится в локальный по slug (id магазинов в базах разные)", () => {
+  const prod = [{ id: 5, slug: "barbora" }, { id: 7, slug: "meness" }];
+  const local = [{ id: 7, slug: "barbora" }, { id: 9, slug: "meness" }];
+  const data = { "grocery.offers": [{ id: 1, source_id: 5 }, { id: 2, source_id: 7 }], "grocery.products": [{ id: 3 }] };
+  const out = remapSourceIds(data, prod, local);
+  assert.deepEqual(out["grocery.offers"], [{ id: 1, source_id: 7 }, { id: 2, source_id: 9 }]); // 7 боевой (Mēness) не путается с 7 локальным (Barbora)
+  assert.deepEqual(out["grocery.products"], [{ id: 3 }]); // таблицы без source_id не трогаем
+});
+
+test("remapSourceIds: магазина нет в локальной БД — понятная ошибка, а не нарушение внешнего ключа посреди вставки", () => {
+  assert.throws(() => remapSourceIds({ "grocery.offers": [{ id: 1, source_id: 5 }] }, [{ id: 5, slug: "newshop" }], []), /newshop/);
 });

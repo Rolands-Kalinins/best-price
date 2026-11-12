@@ -283,6 +283,12 @@ export type Database = {
         Update: { key_a?: string; key_b?: string; prompt_version?: number; reason?: string; same?: boolean }
         Relationships: []
       }
+      pair_checks: {
+        Row: { diff: string; differs: boolean; key_a: string; key_b: string; prompt_version: number }
+        Insert: { diff: string; differs: boolean; key_a: string; key_b: string; prompt_version: number }
+        Update: { diff?: string; differs?: boolean; key_a?: string; key_b?: string; prompt_version?: number }
+        Relationships: []
+      }
       leaflet_offers: {
         Row: {
           brand: string | null

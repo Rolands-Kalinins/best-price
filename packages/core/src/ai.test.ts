@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { acceptBrand, batches, brandPrompt, needBrand, parseBrandReply, parseVerdictReply, verdictPrompt } from "./ai";
+import { acceptBrand, acceptedPairs, batches, brandPrompt, checkPrompt, needBrand, parseBrandReply, parseCheckReply, parseVerdictReply, verdictPrompt } from "./ai";
 
 test("acceptBrand: бренд принимается, только если он дословно есть в названии", () => {
   assert.equal(acceptBrand("PILOS Ultrapasterizēts piens", "PILOS"), "pilos");
@@ -75,4 +75,26 @@ test("промпты: названия внутри JSON, правила про 
   assert.match(p, /variety/i);
   const v = verdictPrompt([["Piens PILOS 1L", "PILOS Piens 1 l"]]);
   assert.ok(v.includes(JSON.stringify([["Piens PILOS 1L", "PILOS Piens 1 l"]])));
+});
+
+test("checkPrompt: каждая сторона пары отдельным списком, не больше 3 названий с каждой", () => {
+  const p = checkPrompt([{ a: ["a1", "a2", "a3", "a4"], b: ["b1"] }]);
+  assert.match(p, /"a":\["a1","a2","a3"\]/);
+  assert.match(p, /"b":\["b1"\]/);
+  assert.doesNotMatch(p, /a4/);
+});
+
+test("parseCheckReply: различия по индексам, пропущенный индекс = null, мусор — исключение", () => {
+  const r = parseCheckReply(JSON.stringify([{ i: 1, differs: true, diff: "вкус" }, { i: 0, differs: false, diff: "" }]), 3);
+  assert.deepEqual(r, [{ differs: false, diff: "" }, { differs: true, diff: "вкус" }, null]);
+  assert.throws(() => parseCheckReply("{}", 1));
+});
+
+test("acceptedPairs: принимает только «тот же» от Gemini и «различий нет» от проверки; остальное в очередь", () => {
+  const s = (a: string, b: string) => ({ keyA: a, keyB: b, offerIds: [1, 2], idsA: [1], idsB: [2] });
+  const sugg = [s("a", "b"), s("a", "c"), s("a", "d"), s("a", "e"), s("a", "f")];
+  const verdicts = new Map([["a\nb", { same: true, reason: "" }], ["a\nc", { same: true, reason: "" }], ["a\nd", { same: false, reason: "" }], ["a\ne", { same: true, reason: "" }]]);
+  const checks = new Map([["a\nb", { differs: false, diff: "" }], ["a\nc", { differs: true, diff: "вкус" }], ["a\nd", { differs: false, diff: "" }]]);
+  // b: оба «да»; c: проверка нашла отличие; d: Gemini «разные»; e: проверки ещё нет; f: ничего нет.
+  assert.deepEqual(acceptedPairs(sugg, verdicts, checks), [{ keyA: "a", keyB: "b" }]);
 });
