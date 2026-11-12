@@ -185,9 +185,15 @@ if (!DRY) {
       const { width, height } = await page.metadata();
       const rows = [];
       for (const o of offers) {
-        const photo = await page.clone().extract(cropRegion(o.photo_box!, width, height)).resize({ width: 320, height: 320, fit: "inside", withoutEnlargement: true }).webp({ quality: 80 }).toBuffer();
-        rows.push({ source_id: source.id, external_id: o.external_id, photo: "\\x" + photo.toString("hex") }); // bytea в PostgREST: hex с префиксом \x
+        try {
+          const photo = await page.clone().extract(cropRegion(o.photo_box!, width, height)).resize({ width: 320, height: 320, fit: "inside", withoutEnlargement: true }).webp({ quality: 80 }).toBuffer();
+          rows.push({ source_id: source.id, external_id: o.external_id, photo: "\\x" + photo.toString("hex") }); // bytea в PostgREST: hex с префиксом \x
+        } catch (e) {
+          // Плохая рамка одной акции (ошибка модели) не стоит остальных миниатюр страницы и не роняет запуск: предупреждение, не сбой.
+          console.warn(`миниатюра ${o.external_id}: пропущена: ${e instanceof Error ? e.message : e}`);
+        }
       }
+      if (!rows.length) continue;
       const { error } = await grocery.from("leaflet_thumbs").upsert(rows, { onConflict: "source_id,external_id" });
       if (error) throw new Error(error.message);
       made += rows.length;

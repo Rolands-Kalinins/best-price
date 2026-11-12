@@ -133,7 +133,9 @@ export type LeafletOffer = Offer & { priceCard: number | null; priceSecond: numb
 export function cropRegion(box: number[], width: number, height: number) {
   const [y0, x0, y1, x1] = box;
   const px = (v: number, size: number) => Math.round((v / 1000) * size);
-  return { left: px(x0, width), top: px(y0, height), width: px(x1 - x0, width), height: px(y1 - y0, height) };
+  // Округляем края, а не размеры: round(a)+round(b-a) может быть на 1 px больше round(b) и выйти за страницу (sharp: bad extract area).
+  const [left, top, right, bottom] = [px(x0, width), px(y0, height), px(x1, width), px(y1, height)];
+  return { left, top, width: right - left, height: bottom - top };
 }
 
 /** Рамка от модели → [ymin, xmin, ymax, xmax] или null (нет фото, выход за страницу, вырожденная рамка). */
