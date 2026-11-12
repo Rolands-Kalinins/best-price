@@ -117,7 +117,8 @@ export function parse(items: unknown[]): ProductScrapeResult {
   return { products: uniqueProducts(products), invalid };
 }
 
-const ATTEMPTS = 3;
+// 6 попыток: на раннерах GitHub сайт изредка рвёт соединение серией (11–12.11 три попытки подряд не хватило, findings/2026-11-12-meness-connection-drops).
+const ATTEMPTS = 6;
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Повторяем сетевые ошибки, 5xx и 429; остальные 4xx повтор не лечит (findings/maxima-fetch-no-retry).
@@ -134,6 +135,7 @@ async function get(url: string, retryMs: number): Promise<{ meta?: { totalItems?
       failure = e;
     }
     if (attempt === ATTEMPTS) throw failure;
+    console.warn(`Mēness: повтор ${attempt}/${ATTEMPTS - 1} (${url.slice(API.length)}): ${failure instanceof Error ? `${failure.message} ${(failure.cause as Error | undefined)?.message ?? ""}` : failure}`);
     await wait(retryMs * attempt);
   }
 }

@@ -116,6 +116,15 @@ test("scrape: обходит страницы диапазона по lastPage �
   }
 });
 
+test("scrape: серия из четырёх обрывов подряд на одной странице переживается (на раннерах GitHub сайт рвёт соединение, 11–12.11 падало с «terminated»)", async () => {
+  const m = mockFetch([probe(1), 500, 500, 500, 500, page([withCode("1")], 1, 1, 1)]);
+  try {
+    assert.equal((await scrape(opts)).products.length, 1);
+  } finally {
+    m.restore();
+  }
+});
+
 test("scrape: диапазоны обходятся по очереди, повтор на стыке убирается", async () => {
   const m = mockFetch([probe(3), page([withCode("1"), withCode("2")], 1, 1, 2), page([withCode("2"), withCode("3")], 1, 1, 2)]);
   try {
