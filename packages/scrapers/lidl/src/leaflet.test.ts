@@ -212,6 +212,15 @@ test("cropRegion: рамка 0–1000 → пиксели страницы", () =
   assert.deepEqual(cropRegion([900, 900, 1000, 1000], 1441, 2400), { left: 1297, top: 2160, width: 144, height: 240 });
 });
 
+test("cropRegion: рамка у края не выходит за страницу даже при округлении .5 (1441 px, 500..1000 → 721+721 > 1441, sharp: bad extract area)", () => {
+  for (const [w, h] of [[1441, 2400], [1441, 1441], [999, 1001], [1237, 1793]]) {
+    for (let a = 0; a <= 980; a += 5) {
+      const r = cropRegion([a, a, 1000, 1000], w, h);
+      assert.ok(r.left + r.width <= w && r.top + r.height <= h && r.width > 0 && r.height > 0, `${w}x${h} a=${a}: ${JSON.stringify(r)}`);
+    }
+  }
+});
+
 test("toLeafletOffers: «2. prece» — цена одного товара остаётся ценой, цена второго отдельно, скидки и «по карте» нет (Coca-Cola 1,32 / вторая 0,46)", () => {
   const { offers } = toLeafletOffers(reply([it({ name: "Coca-Cola", size: "1 l", price: 1.32, second_price: 0.46, price_card: 0.46, discount_pct: 65, card_only: true, condition: "2. precei ar Lidl Plus" })]), ctx);
   assert.deepEqual([offers[0].price, offers[0].priceSecond, offers[0].priceCard, offers[0].oldPrice, offers[0].discountPercent, offers[0].condition], [1.32, 0.46, null, null, null, "2. precei ar Lidl Plus"]);
