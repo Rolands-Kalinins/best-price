@@ -10,6 +10,7 @@ export * from "./match";
 export * from "./offer";
 export * from "./offer-view";
 export * from "./pharmacy-categories";
+export * from "./local-dev";
 export * from "./pharmacy-match";
 export * from "./pharmacy-view";
 export * from "./product";

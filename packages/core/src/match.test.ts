@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { buildMatches, conditionKind, diffLinks, isSuspiciousRun, parseProduct, type MatchItem } from "./match";
+import { abbrTokens, buildMatches, conditionKind, diffLinks, isSuspiciousRun, parseProduct, type MatchDecision, type MatchItem } from "./match";
 
 const brands = new Set(["lays", "alma", "coca cola", "fanta", "jaunpils", "felix"]);
 const p = (title: string, brand: string | null = null) => parseProduct(title, brand, brands);
@@ -156,4 +156,80 @@ test("защита пересчёта: пустое или резко усечё
   assert.equal(isSuspiciousRun({ rows: 1000, linkedBefore: 100, linkedAfter: 60 }), false);
   // малое число привязок: пересчёт может честно обнулить всё
   assert.equal(isSuspiciousRun({ rows: 50, linkedBefore: 10, linkedAfter: 0 }), false);
+});
+
+// Сокращение с точкой («koc.», «mais.») совпадает с полным словом, если остальные слова те же. Реальные пары из очереди.
+const abbrBrands = new Set(["boujee", "santa maria", "selga", "elmex", "colgate", "nivea", "old spice", "tri bio", "syoss", "paulig", "tiret"]);
+const m = (items: MatchItem[], decisions: MatchDecision[] = []) => buildMatches(items, abbrBrands, decisions);
+
+test("abbrTokens: слова с точкой после них; десятичная точка и размер не считаются", () => {
+  assert.deepEqual([...abbrTokens("3D persiku saldējums uz koc. BOUJEE 75g")], ["koc"]);
+  assert.deepEqual([...abbrTokens("Gāz.dz. Cola 1.5l, Tr.mazg.līdz. 2.5%")].sort(), ["dz", "gaz", "lidz", "mazg", "tr"]);
+});
+
+test("сокращение с точкой объединяется с полным словом (Maxima «koc.» и Barbora «kociņa»)", () => {
+  const r = m([item(1, 2, "3D persiku saldējums uz koc. BOUJEE 75g", null), item(2, 5, "3D persiku saldējums uz kociņa BOUJEE 75g", null)]);
+  assert.deepEqual(r.groups.map((g) => g.offerIds), [[1, 2]]);
+  assert.deepEqual(r.suggestions, []);
+});
+
+test("сокращение в обе стороны и несколько сокращений сразу", () => {
+  const r = m([item(1, 5, "Siera tako garšvielu maisījums SANTA MARIA 28g", null), item(2, 4, "Garšvielu mais. Santa Maria siera tako 28g", null)]);
+  assert.equal(r.groups.length, 1);
+  const v = m([item(1, 4, "Šampūns Nivea Men Strong Power vīrieš. 500ml", null), item(2, 5, "Šampūns NIVEA Men Strong Power vīriešiem 500ml", null)]);
+  assert.equal(v.groups.length, 1);
+});
+
+test("без точки префикс не считается сокращением (White и Whitening разные)", () => {
+  const r = m([item(1, 2, "Zobu pasta Colgate Total White 75ml", null), item(2, 5, "Zobu pasta Colgate Total Whitening 75ml", null)]);
+  assert.deepEqual(r.groups, []);
+});
+
+test("окончания: citrona и citronu один вкус, а разные вкусы остаются разными", () => {
+  const same = m([item(1, 2, "Mini vafeles Selga citrona garšu 250g", null), item(2, 5, "Mini vafeles Selga citronu garšu 250g", null)]);
+  assert.equal(same.groups.length, 1);
+  const diff = m([item(1, 2, "Mini vafeles Selga citronu garšu 250g", null), item(2, 5, "Mini vafeles Selga vaniļas garšu 250g", null)]);
+  assert.deepEqual(diff.groups, []);
+});
+
+test("другое слово с тем же началом не окончание (Color и Colorist, Classic и Classico)", () => {
+  const color = m([item(1, 2, "Šampūns Syoss Color 440ml", null), item(2, 5, "Šampūns Syoss Colorist 440ml", null)]);
+  assert.deepEqual(color.groups, []);
+});
+
+test("лишнее слово не объединяется (Sensitive и Sensitive Gum Care остаются предположением)", () => {
+  const r = m([item(1, 4, "Zobu pasta Elmex Sensitive 75ml", null), item(2, 5, "Zobu pasta Elmex Sensitive Gum Care 75ml", null)]);
+  assert.deepEqual(r.groups, []);
+});
+
+test("решение админа «разные» сильнее правила сокращений", () => {
+  const items = [item(1, 2, "3D persiku saldējums uz koc. BOUJEE 75g", null), item(2, 5, "3D persiku saldējums uz kociņa BOUJEE 75g", null)];
+  // Те же две акции, но админ запретил именно эту пару ключей.
+  const a = "boujee|75g||3 koc persiku saldejums uz";
+  const b = "boujee|75g||3 kocina persiku saldejums uz";
+  assert.deepEqual(m(items, [{ keyA: a, keyB: b, same: false }]).groups, []);
+});
+
+test("слова с общим началом без точки и окончания остаются разными (white и whitening, color и colorist, classic и classico, choc и chocominis)", () => {
+  const pairs = [["White", "Whitening"], ["Color", "Colorist"], ["Classic", "Classico"], ["Choc", "Chocominis"]];
+  for (const [x, y] of pairs) {
+    const r = m([item(1, 2, `Zobu pasta Colgate ${x} 75ml`, null), item(2, 5, `Zobu pasta Colgate ${y} 75ml`, null)]);
+    assert.deepEqual(r.groups, [], `${x}/${y}`);
+  }
+});
+
+test("правило сокращений не склеивает через посредника ключи, которые админ развёл («разные»)", () => {
+  // «Kaf» ≈ «kafija» по правилу, «kafija» ≈ «kafijas» по окончанию, но админ запретил пару kaf / kafijas.
+  const items = [item(1, 2, "Kaf. Paulig Classic 500g", null), item(2, 5, "Kafija Paulig Classic 500g", null), item(3, 4, "Kafijas Paulig Classic 500g", null)];
+  const kaf = "paulig|500g||classic kaf", kafs = "paulig|500g||classic kafijas";
+  const r = m(items, [{ keyA: kaf, keyB: kafs, same: false }]);
+  assert.equal(r.groups.length, 1);
+  assert.deepEqual(r.groups[0].offerIds, [1, 2]); // 3 не попал в группу с 1
+});
+
+test("конфликты: решение «разные» внутри одной итоговой группы возвращаются списком", () => {
+  const items = [item(1, 2, "Šampūns Syoss Repair 440ml", null), item(2, 5, "Šampūns Syoss Repair Plus 440ml", null), item(3, 4, "Šampūns Syoss Repair Max 440ml", null)];
+  const a = "syoss|440ml||repair sampuns", b = "syoss|440ml||plus repair sampuns", c = "syoss|440ml||max repair sampuns";
+  const r = m(items, [{ keyA: a, keyB: b, same: true }, { keyA: a, keyB: c, same: true }, { keyA: b, keyB: c, same: false }]);
+  assert.deepEqual(r.conflicts, [{ keyA: c, keyB: b }]);
 });

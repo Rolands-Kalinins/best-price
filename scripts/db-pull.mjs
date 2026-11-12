@@ -13,7 +13,7 @@ const PAGE = 1000; // PostgREST отдаёт не больше 1000 строк �
 export const TABLES = [
   { name: "grocery.products", key: "id", identity: "id" },
   // discount и search база считает сама (generated): в готовом виде их вставить нельзя.
-  { name: "grocery.offers", key: "id", identity: "id", skip: ["discount", "search"] },
+  { name: "grocery.offers", key: "id", identity: "id", skip: ["discount", "search"], sourceCol: "source_id" },
   // Триггер log_price при вставке акций сам пишет по строке «на сегодня»: перед вставкой боевой истории стираем их (clear).
   { name: "grocery.price_history", key: "offer_id,day", clear: true },
   { name: "grocery.match_decisions", key: "key_a,key_b" },
@@ -21,8 +21,9 @@ export const TABLES = [
   { name: "grocery.match_suggestions", key: "key_a,key_b" },
   { name: "grocery.title_attrs", key: "title_key,prompt_version" },
   { name: "grocery.pair_verdicts", key: "key_a,key_b,prompt_version" },
+  { name: "grocery.pair_checks", key: "key_a,key_b,prompt_version" },
   { name: "grocery.ai_usage", key: "day,model" },
-  { name: "public.scrape_runs", key: "id", identity: "id" },
+  { name: "public.scrape_runs", key: "id", identity: "id", sourceCol: "source_id" },
 ];
 
 const TAG = "$bp$"; // разделитель строки-литерала; названия товаров чужие, поэтому его наличие в данных — ошибка
@@ -41,6 +42,16 @@ export function insertSql(table, rows) {
     ? `\nselect setval(pg_get_serial_sequence('${table.name}', '${table.identity}'), (select max(${table.identity}) from ${table.name}));`
     : "";
   return `${clear ? clear + "\n" : ""}insert into ${table.name} (${cols})${override}\nselect ${cols} from json_populate_recordset(null::${schema}.${name}, ${TAG}${json}${TAG}::json);${reset}`;
+}
+
+/** id магазинов в боевой и локальной БД разные (магазины добавлялись в разном порядке): source_id переводим по slug.
+ * Иначе вставка упирается во внешний ключ, а совпавший по номеру id молча лёг бы не в тот магазин. */
+export function remapSourceIds(data, prodSources, localSources) {
+  const localId = new Map(localSources.map((s) => [s.slug, s.id]));
+  const map = new Map(prodSources.map((s) => [s.id, localId.get(s.slug) ?? (() => { throw new Error(`магазина «${s.slug}» нет в локальной БД: pnpm db:reset (применит миграции)`); })()]));
+  const out = { ...data };
+  for (const t of TABLES) if (t.sourceCol && out[t.name]) out[t.name] = out[t.name].map((r) => ({ ...r, [t.sourceCol]: map.get(r[t.sourceCol]) ?? r[t.sourceCol] }));
+  return out;
 }
 
 /** Весь SQL одной транзакцией: сбой посреди копирования оставляет локальную БД как была. */
@@ -70,11 +81,14 @@ async function main() {
   const key = env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error(".env.prod: нет NEXT_PUBLIC_SUPABASE_URL или SUPABASE_SERVICE_ROLE_KEY");
   if (/127\.0\.0\.1|localhost/.test(url)) throw new Error(".env.prod указывает на локальную БД, копировать не с чего");
-  const data = {};
+  let data = {};
   for (const t of TABLES) {
     data[t.name] = await pull(url, key, t);
     console.log(`${t.name}: ${data[t.name].length}`);
   }
+  const prodSources = await pull(url, key, { name: "public.sources", key: "id" });
+  const local = execFileSync("docker", ["exec", CONTAINER, "psql", "-U", "postgres", "-t", "-A", "-F", "|", "-c", "select id, slug from public.sources"], { encoding: "utf8" });
+  data = remapSourceIds(data, prodSources, local.trim().split(/\r?\n/).map((l) => ({ id: Number(l.split("|")[0]), slug: l.split("|")[1] })));
   execFileSync("docker", ["exec", "-i", CONTAINER, "psql", "-U", "postgres", "-v", "ON_ERROR_STOP=1", "-q"], { input: buildSql(data), maxBuffer: 1 << 28, stdio: ["pipe", "inherit", "inherit"] });
   console.log("Локальная БД обновлена из боевой.");
 }

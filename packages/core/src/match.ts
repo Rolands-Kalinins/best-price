@@ -21,6 +21,35 @@ const norm = (s: string) =>
 
 const tokenize = (s: string) => s.match(/\d+(?:[.-]\d+)*%?|[a-z]+/g) ?? [];
 
+// Слова, после которых в названии стоит точка («koc.», «mais.», «vīrieš.»): магазин их сократил. Десятичная точка («1.5») не считается: перед ней цифра.
+export function abbrTokens(title: string): Set<string> {
+  return new Set([...norm(title).matchAll(/([a-z]+)\./g)].map((m) => m[1]));
+}
+
+// Падежные окончания латышского (без диакритики). Другие хвосты («colorist» после «color», «classico» после «classic») — другое слово.
+const ENDINGS = new Set(["", "a", "as", "e", "es", "i", "is", "s", "u", "us", "os", "am", "ai", "ais", "iem", "ies", "ei", "em", "ie", "um"]);
+// Одно слово в разных падежах: общее начало не короче 4 букв, хвосты из ENDINGS («citrona» и «citronu»).
+const sameStem = (x: string, y: string) => {
+  let i = 0;
+  while (i < x.length && x[i] === y[i]) i++;
+  return i >= 4 && ENDINGS.has(x.slice(i)) && ENDINGS.has(y.slice(i));
+};
+const sameWord = (x: string, y: string, abbr: Set<string>) =>
+  x === y || (/^[a-z]+$/.test(x) && /^[a-z]+$/.test(y) && ((abbr.has(x) && y.startsWith(x)) || (abbr.has(y) && x.startsWith(y)) || sameStem(x, y)));
+
+// Слова двух ключей различаются только сокращением с точкой или окончанием: те же слова после попарного сопоставления. Лишнее слово («Gum Care») — нет.
+export function softEqual(a: string[], b: string[], abbr: Set<string>): boolean {
+  const ra = a.filter((t) => !b.includes(t));
+  const free = b.filter((t) => !a.includes(t));
+  if (ra.length === 0 || ra.length !== free.length) return false;
+  return ra.every((x) => {
+    const i = free.findIndex((y) => sameWord(x, y, abbr));
+    if (i < 0) return false;
+    free.splice(i, 1);
+    return true;
+  });
+}
+
 export function normalizeBrand(brand: string): string {
   return tokenize(norm(brand)).join(" ");
 }
@@ -68,13 +97,13 @@ export function conditionKind(condition: string | null): string | null {
 export type MatchItem = { id: number; sourceId: number; title: string; brand: string | null; condition: string | null };
 export type MatchDecision = { keyA: string; keyB: string; same: boolean };
 export type MatchGroup = { key: string; offerIds: number[] };
-export type MatchSuggestion = { keyA: string; keyB: string; offerIds: number[] };
+export type MatchSuggestion = { keyA: string; keyB: string; offerIds: number[]; idsA: number[]; idsB: number[] };
 
 const pair = (a: string, b: string) => (a < b ? `${a}\n${b}` : `${b}\n${a}`);
 
 export function buildMatches(items: MatchItem[], brands: Set<string>, decisions: MatchDecision[], excluded: ReadonlySet<number> = new Set()) {
   // Ключ = бренд | размер | условие | слова. Товары без бренда или размера не сопоставляем.
-  const byKey = new Map<string, { prefix: string; tokens: string[]; items: MatchItem[] }>();
+  const byKey = new Map<string, { prefix: string; tokens: string[]; abbr: Set<string>; items: MatchItem[] }>();
   for (const it of items) {
     if (excluded.has(it.id)) continue; // админ убрал эту акцию из сопоставления
     const p = parseProduct(it.title, it.brand, brands);
@@ -82,16 +111,40 @@ export function buildMatches(items: MatchItem[], brands: Set<string>, decisions:
     if (!p || !p.brand || !p.size || cond === null) continue;
     const prefix = `${p.brand}|${p.size}|${cond}`;
     const key = `${prefix}|${p.tokens.join(" ")}`;
-    byKey.get(key)?.items.push(it) ?? byKey.set(key, { prefix, tokens: p.tokens, items: [it] });
+    const e = byKey.get(key) ?? byKey.set(key, { prefix, tokens: p.tokens, abbr: new Set(), items: [] }).get(key)!;
+    e.items.push(it);
+    for (const t of abbrTokens(it.title)) e.abbr.add(t);
   }
 
   // «Тот же товар» от админа склеивает ключи в одну группу.
   const parent = new Map<string, string>();
   const root = (k: string): string => (parent.get(k) && parent.get(k) !== k ? root(parent.get(k)!) : k);
   const decided = new Set<string>();
+  const denied: [string, string][] = [];
   for (const d of decisions) {
     decided.add(pair(d.keyA, d.keyB));
+    if (!d.same) denied.push([d.keyA, d.keyB]);
     if (d.same && byKey.has(d.keyA) && byKey.has(d.keyB)) parent.set(root(d.keyA), root(d.keyB));
+  }
+
+  // Правило сокращений: ключи одной корзины (бренд | размер | условие), слова которых различаются только сокращением с точкой или окончанием,
+  // объединяются сами. Решение админа по паре (и «тот же», и «разные») сильнее правила.
+  const buckets = new Map<string, string[]>();
+  for (const [k, v] of byKey) buckets.set(v.prefix, [...(buckets.get(v.prefix) ?? []), k]);
+  const soft: { keyA: string; keyB: string }[] = [];
+  for (const keys of buckets.values()) {
+    for (let i = 0; i < keys.length; i++) {
+      for (let j = i + 1; j < keys.length; j++) {
+        const a = byKey.get(keys[i])!, b = byKey.get(keys[j])!;
+        if (decided.has(pair(keys[i], keys[j])) || root(keys[i]) === root(keys[j])) continue;
+        if (!softEqual(a.tokens, b.tokens, new Set([...a.abbr, ...b.abbr]))) continue;
+        // Склейка не должна соединить ключи, которые админ развёл («разные»), даже через посредника.
+        const ra = root(keys[i]), rb = root(keys[j]);
+        if (denied.some(([x, y]) => (root(x) === ra && root(y) === rb) || (root(x) === rb && root(y) === ra))) continue;
+        parent.set(root(keys[i]), root(keys[j]));
+        soft.push(keys[i] < keys[j] ? { keyA: keys[i], keyB: keys[j] } : { keyA: keys[j], keyB: keys[i] });
+      }
+    }
   }
 
   // Ключ группы = наименьший из склеенных ключей: не зависит от порядка склейки, продукт в БД не «переезжает».
@@ -108,8 +161,6 @@ export function buildMatches(items: MatchItem[], brands: Set<string>, decisions:
 
   // Предположение: тот же бренд, размер и условие, слова совпадают не меньше чем на 0,6 (Жаккар).
   // Сравниваем попарно только внутри бакета (бренд | размер | условие). ponytail: O(n²) в бакете, хватает для тысяч товаров.
-  const buckets = new Map<string, string[]>();
-  for (const [k, v] of byKey) buckets.set(v.prefix, [...(buckets.get(v.prefix) ?? []), k]);
   const suggestions: MatchSuggestion[] = [];
   for (const keys of buckets.values()) {
     for (let i = 0; i < keys.length; i++) {
@@ -121,12 +172,15 @@ export function buildMatches(items: MatchItem[], brands: Set<string>, decisions:
         const shared = a.tokens.filter((t) => b.tokens.includes(t)).length;
         if (shared >= 1 && shared / (a.tokens.length + b.tokens.length - shared) >= 0.6) {
           const [keyA, keyB] = keys[i] < keys[j] ? [keys[i], keys[j]] : [keys[j], keys[i]];
-          suggestions.push({ keyA, keyB, offerIds: sorted(both) });
+          const [ia, ib] = keys[i] < keys[j] ? [a, b] : [b, a];
+          suggestions.push({ keyA, keyB, offerIds: sorted(both), idsA: sorted(ia.items), idsB: sorted(ib.items) });
         }
       }
     }
   }
-  return { groups, suggestions };
+  // Решение «разные» внутри одной группы: админ развёл ключи, а склейка через третий ключ их всё же соединила.
+  const conflicts = denied.filter(([x, y]) => byKey.has(x) && byKey.has(y) && root(x) === root(y)).map(([x, y]) => (x < y ? { keyA: x, keyB: y } : { keyA: y, keyB: x }));
+  return { groups, suggestions, soft, conflicts };
 }
 
 // Что изменить в offers.product_id: привязать акции к товару (товар → id акций) и снять привязку с тех, кто выпал из групп.
