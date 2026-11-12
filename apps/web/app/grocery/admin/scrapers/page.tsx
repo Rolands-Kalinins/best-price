@@ -1,10 +1,11 @@
-import { nextScrapeAt } from "@bestprice/core";
+import { canPullProdData, nextScrapeAt } from "@bestprice/core";
 import { Fragment } from "react";
 import { redirect } from "next/navigation";
 import { Countdown } from "@/components/countdown";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
-import { runScrapers } from "./actions";
+import { PullButton } from "@/components/pull-button";
+import { pullProd, runScrapers } from "./actions";
 
 export const instant = false;
 
@@ -17,10 +18,12 @@ const duration = (a: string, b: string) => {
 const MESSAGES: Record<string, [string, boolean]> = {
   "no-token": ["Не задан GITHUB_DISPATCH_TOKEN в переменных Vercel: запуск из интерфейса недоступен.", true],
   failed: ["GitHub не принял запуск (проверь токен и права Actions: write).", true],
+  pulled: ["Локальная БД обновлена из боевой.", false],
+  "pull-denied": ["Копирование доступно только на localhost с локальной БД.", true],
 };
 
 // Статус парсеров и ручной запуск. Только админ: журнал scrape_runs закрыт RLS для остальных, страница не доступна участникам.
-export default async function ScrapersPage({ searchParams }: { searchParams: Promise<{ msg?: string }> }) {
+export default async function ScrapersPage({ searchParams }: { searchParams: Promise<{ msg?: string; detail?: string }> }) {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
   if (!auth.user) redirect("/login");
@@ -35,9 +38,14 @@ export default async function ScrapersPage({ searchParams }: { searchParams: Pro
   const failed = sourcesRes.error ?? runsRes.error;
   if (failed) throw new Error(failed.message);
 
-  const { msg } = await searchParams;
+  const { msg, detail } = await searchParams;
   const started = msg?.startsWith("started-") ? msg.slice(8) : null;
-  const notice = started ? ([`Запуск отправлен в GitHub Actions: ${started === "all" ? "все парсеры" : started}. Результат появится здесь, когда парсер закончит.`, false] as const) : MESSAGES[msg ?? ""];
+  const notice = started
+    ? ([`Запуск отправлен в GitHub Actions: ${started === "all" ? "все парсеры" : started}. Результат появится здесь, когда парсер закончит.`, false] as const)
+    : msg === "pull-failed"
+      ? ([`Не удалось скопировать: ${(detail ?? "").slice(0, 200)}. Docker запущен (pnpm db:start) и есть .env.prod?`, true] as const)
+      : MESSAGES[msg ?? ""];
+  const canPull = canPullProdData(process.env.NODE_ENV, process.env.NEXT_PUBLIC_SUPABASE_URL);
   // Источники двух разделов (продукты, аптеки): заголовок раздела перед первым источником раздела.
   const MODULES: Record<string, string> = { grocery: "Продукты", pharmacy: "Аптеки" };
   const next = nextScrapeAt(new Date()).toISOString();
@@ -56,6 +64,17 @@ export default async function ScrapersPage({ searchParams }: { searchParams: Pro
             <Button type="submit" className="min-h-11 px-4">Запустить все</Button>
           </form>
         </div>
+        {canPull && (
+          <div className="bg-card flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-3">
+            <p className="text-sm">
+              Локальная копия боевых данных
+              <span className="text-muted-foreground block text-xs">Боевая БД только читается. Локальная заменяется целиком: ваши локальные правки (решения, исключения) пропадут. Около минуты.</span>
+            </p>
+            <form action={pullProd}>
+              <PullButton />
+            </form>
+          </div>
+        )}
         {notice && (
           <p role="status" className={`rounded-lg border p-3 text-sm ${notice[1] ? "text-destructive border-destructive/40" : ""}`}>
             {notice[0]}
