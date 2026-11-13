@@ -1,6 +1,6 @@
 "use client";
 
-import { PAGE_SIZE } from "@bestprice/core";
+import { MAX_SEARCH_CHARS, PAGE_SIZE } from "@bestprice/core";
 import { Check, Search, SlidersHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
@@ -100,6 +100,7 @@ export function FeedFilters<Q extends Base>({
           <input
             type="search"
             name="q"
+            maxLength={MAX_SEARCH_CHARS}
             autoComplete="off"
             spellCheck={false}
             aria-label={searchLabel}
