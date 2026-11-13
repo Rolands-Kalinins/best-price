@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
-import { activeFilter, discountPercent, endsSoon, isStale, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchGroups, searchOrClause, searchTerms, storePrices } from "./offer-view";
+import { activeFilter, discountPercent, endsSoon, isStale, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchGroups, searchOrClause, searchTerms, storePrices, MAX_SEARCH_WORDS, MAX_SEARCH_CHARS } from "./offer-view";
 import { RU_LV } from "./ru-lv";
 
 test("safeHttpUrl: наша миниатюра /grocery/img/<магазин>/<ключ> разрешена, любой другой относительный путь нет", () => {
@@ -146,4 +146,20 @@ test("isStale: данные старше 48 часов устарели", () => 
   assert.equal(isStale("2026-11-01T11:59:00Z", now), true);
   assert.equal(isStale("2026-10-29T12:01:00Z", now, 192), false); // порог магазина с запуском раз в неделю
   assert.equal(isStale("2026-10-26T11:59:00Z", now, 192), true);
+});
+
+test("searchGroups: пользовательский текст никогда не попадает в or() (запятые, скобки, точки, кавычки)", () => {
+  for (const q of ["a,b", "x),(y", "a.b.c", `"q"`, "a%b", "x'y;--", "(a)", "молоко,валио"]) {
+    for (const g of searchGroups(q)) {
+      const or = searchOrClause(g);
+      // or() бывает только у словарной группы (основы из RU_LV), а слова из ввода идут через like() и экранируются библиотекой.
+      if (or) for (const s of g) assert.match(s, /^\^?[a-z]{3,}( [a-z]+)*$/, `${q}: ${s}`);
+    }
+  }
+});
+
+test("searchTerms: длинный ввод обрезается (иначе адрес запроса к БД не влезает в лимит и страница падает)", () => {
+  assert.ok(searchTerms("а ".repeat(5000)).length <= MAX_SEARCH_WORDS);
+  assert.ok(searchTerms("x".repeat(5000)).join("").length <= MAX_SEARCH_CHARS);
+  assert.deepEqual(searchTerms("молоко valio"), ["молоко", "valio"]); // обычный ввод не затронут
 });
