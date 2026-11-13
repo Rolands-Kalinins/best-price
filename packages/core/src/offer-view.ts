@@ -111,7 +111,7 @@ export function endsSoon(endsAt: string | null, now: Date): "today" | "tomorrow"
   return days === 0 ? "today" : days === 1 ? "tomorrow" : null;
 }
 
-/** Запуск парсера старше двух суток: на сайте могут быть старые цены, это стоит показать. */
-export function isStale(iso: string, now: Date): boolean {
-  return now.getTime() - new Date(iso).getTime() > 48 * 3_600_000;
+/** Запуск парсера старше порога (по умолчанию двое суток; для магазина из расписания см. `staleAfterHours`): на сайте могут быть старые цены, это стоит показать. */
+export function isStale(iso: string, now: Date, hours = 48): boolean {
+  return now.getTime() - new Date(iso).getTime() > hours * 3_600_000;
 }

@@ -46,7 +46,7 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
   // Карточки сравнения считаем первыми: из ленты скрываем только акции, которые реально попали в карточку. Товар, у которого осталось меньше
   // двух магазинов (акция кончилась после пересчёта) или который не влез в лимит, показывается в ленте как обычные акции.
   const sideRes = Promise.all([
-    supabase.from("sources").select("id, name").eq("module", "grocery").eq("enabled", true),
+    supabase.from("sources").select("id, name, slug").eq("module", "grocery").eq("enabled", true),
     supabase.rpc("last_scrape_success"), // журнал запусков виден только админу (RLS), участнику отдаётся лишь время последнего успеха
     supabase.rpc("is_member"),
     supabase.rpc("is_admin"),
