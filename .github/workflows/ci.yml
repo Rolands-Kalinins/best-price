@@ -29,6 +29,8 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # Только то, что попадает в боевой код (--prod), и только серьёзное (high+): уязвимости инструментов разработки (shadcn CLI, eslint) сайт не затрагивают.
+      - run: pnpm audit --prod --audit-level=high
       - run: pnpm lint
       # Ключи Supabase для сборки не нужны: страницы с данными строятся при запросе.
       - run: pnpm build
