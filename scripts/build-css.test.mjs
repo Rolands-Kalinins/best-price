@@ -15,3 +15,7 @@ test("собранный CSS: наша тема, а не шаблон shadcn п�
   assert.doesNotMatch(css, /--background:#fff[;}]/, "остался шаблонный светлый фон shadcn (--background:#fff)");
   assert.doesNotMatch(css, /\.dark\{--background/, "остался шаблонный класс .dark");
 });
+
+test("собранный CSS: отступ прокрутки под закреплённые шапку и поиск (фокус не уходит под них)", { skip: css === null && "нет сборки (pnpm build)" }, () => {
+  assert.match(css, /scroll-padding-top:\s*7rem/);
+});
