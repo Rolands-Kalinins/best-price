@@ -100,7 +100,7 @@ export function PharmacyCard({ product: p, storeName, members, stores }: { produ
       </div>
       <div className="flex flex-1 flex-col gap-1 p-3">
         <p className="text-muted-foreground text-xs">{storeName}</p>
-        <h2 className="line-clamp-3 text-sm leading-snug font-medium break-words">
+        <h2 lang="lv" className="line-clamp-3 text-sm leading-snug font-medium break-words">
           {href ? (
             <a href={href} target="_blank" rel="noopener noreferrer" className="outline-none after:absolute after:inset-0">
               {p.title}
