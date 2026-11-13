@@ -24,7 +24,9 @@ export function parsePharmacyQuery(sp: URLSearchParams): PharmacyQuery {
   };
 }
 
-const STALE_DAYS = 3;
+// Аптеки парсятся 3 раза в неделю (пауза до 3 суток), карточки Apotheka раз в неделю (до 7 суток + опоздание GitHub): окно 8 суток.
+// То же число в `pharmacy.group_members` (миграция 20261113100000_pharmacy_fresh_8_days.sql).
+const STALE_DAYS = 8;
 
 /** Товар виден, если парсер видел его за последние STALE_DAYS дней: каталог хранится целиком и пропавший товар сам не удаляется. */
 export function freshSince(now: Date): string {

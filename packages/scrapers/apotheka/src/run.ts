@@ -10,7 +10,7 @@ if (
     label: "Apotheka",
     noun: "товаров",
     work: async ({ sb, sourceId }) => {
-      const { products, invalid } = await scrape();
+      const { products, invalid } = await scrape({ cards: process.env.APOTHEKA_CARDS !== "false" }); // «false» ставит workflow в дни «только список»
       const seen = new Date().toISOString();
       // cat (наша категория) не пишем: её ставит matcher, upsert не трогает столбцы, которых нет в строке.
       const rows = products.map((p) => ({
