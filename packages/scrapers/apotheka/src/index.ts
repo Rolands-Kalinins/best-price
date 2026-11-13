@@ -150,7 +150,8 @@ function listPage(html: string): { products: Item[]; last: number; count: number
 
 const key = (u: string) => u.match(/pmm\d+lv$/i)?.[0].toLowerCase() ?? u;
 
-export async function scrape(opts: { retryMs?: number; pauseMs?: number; minProducts?: number } = {}): Promise<ProductScrapeResult> {
+// cards=false: только список (≈20 мин), без карточек рецептурных и не из списка (≈35 мин): они почти не меняются, их читаем раз в неделю.
+export async function scrape(opts: { retryMs?: number; pauseMs?: number; minProducts?: number; cards?: boolean } = {}): Promise<ProductScrapeResult> {
   const retryMs = opts.retryMs ?? 5000;
   const pauseMs = opts.pauseMs ?? 500;
 
@@ -175,7 +176,7 @@ export async function scrape(opts: { retryMs?: number; pauseMs?: number; minProd
 
   const result = parseList([...items.values()]);
   const listed = new Set([...items.values()].map((i) => key(String(i.url))));
-  const cards = productUrls((await get(SITEMAP, retryMs))!).filter((u) => !listed.has(key(u)));
+  const cards = opts.cards === false ? [] : productUrls((await get(SITEMAP, retryMs))!).filter((u) => !listed.has(key(u)));
   const extra: Product[] = [];
   for (const url of cards) {
     const html = await get(url, retryMs, true);
