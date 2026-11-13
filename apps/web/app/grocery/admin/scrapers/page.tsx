@@ -2,9 +2,9 @@ import { canPullProdData, nextScrapeAt } from "@bestprice/core";
 import { Fragment } from "react";
 import { redirect } from "next/navigation";
 import { Countdown } from "@/components/countdown";
-import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { PullButton } from "@/components/pull-button";
+import { RunButton } from "@/components/run-button";
 import { pullProd, runScrapers } from "./actions";
 
 export const instant = false;
@@ -61,7 +61,7 @@ export default async function ScrapersPage({ searchParams }: { searchParams: Pro
           </p>
           <form action={runScrapers}>
             <input type="hidden" name="source" value="all" />
-            <Button type="submit" className="min-h-11 px-4">Запустить все</Button>
+            <RunButton confirm="Запустить все парсеры? Это расходует минуты GitHub Actions (лимит в месяц ограничен)." className="min-h-11 px-4">Запустить все</RunButton>
           </form>
         </div>
         {canPull && (
@@ -94,7 +94,7 @@ export default async function ScrapersPage({ searchParams }: { searchParams: Pro
                 </h3>
                 <form action={runScrapers}>
                   <input type="hidden" name="source" value={s.slug} />
-                  <Button type="submit" variant="outline" className="min-h-11 px-4" disabled={!s.enabled}>Запустить</Button>
+                  <RunButton variant="outline" className="min-h-11 px-4" disabled={!s.enabled}>Запустить</RunButton>
                 </form>
               </div>
               {last ? (
