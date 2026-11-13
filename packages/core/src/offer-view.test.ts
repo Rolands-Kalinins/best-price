@@ -144,4 +144,6 @@ test("isStale: данные старше 48 часов устарели", () => 
   const now = new Date("2026-11-03T12:00:00Z");
   assert.equal(isStale("2026-11-01T12:01:00Z", now), false);
   assert.equal(isStale("2026-11-01T11:59:00Z", now), true);
+  assert.equal(isStale("2026-10-29T12:01:00Z", now, 192), false); // порог магазина с запуском раз в неделю
+  assert.equal(isStale("2026-10-26T11:59:00Z", now, 192), true);
 });
