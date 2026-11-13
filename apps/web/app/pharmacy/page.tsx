@@ -55,7 +55,7 @@ export default async function PharmacyPage({ searchParams }: { searchParams: Pro
 
   const [productsRes, sourcesRes, runsRes, memberRes, adminRes] = await Promise.all([
     ordered.order("id").range(0, query.n - 1),
-    supabase.from("sources").select("id, name").eq("module", "pharmacy").eq("enabled", true),
+    supabase.from("sources").select("id, name, slug").eq("module", "pharmacy").eq("enabled", true),
     supabase.rpc("last_scrape_success"), // журнал запусков виден только админу (RLS), участнику отдаётся лишь время последнего успеха
     supabase.rpc("is_member"),
     supabase.rpc("is_admin"),
