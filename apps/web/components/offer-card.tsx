@@ -48,7 +48,7 @@ export function OfferCard({ offer: o, storeName }: { offer: OfferRow; storeName:
       </div>
       <div className="flex flex-1 flex-col gap-1 p-3">
         <p className="text-muted-foreground text-xs">{storeName}</p>
-        <h2 className="line-clamp-2 text-sm leading-snug font-medium break-words">
+        <h2 lang="lv" className="line-clamp-2 text-sm leading-snug font-medium break-words">
           {href ? (
             <a
               href={href}

@@ -13,7 +13,7 @@ export function ProductCard({ title, offers, storeName }: { title: string; offer
     <article className="bg-card flex flex-col gap-3 rounded-2xl border p-3">
       <div className="flex items-start gap-3">
         <ZoomImage src={safeHttpUrl(top?.image_url ?? null)} title={title} className="size-16" />
-        <h3 className="line-clamp-3 text-sm leading-snug font-medium break-words">{title}</h3>
+        <h3 lang="lv" className="line-clamp-3 text-sm leading-snug font-medium break-words">{title}</h3>
       </div>
       <ul className="divide-y">
         {offers.map((o, i) => {
