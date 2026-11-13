@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
+import { securityHeaders } from "./security-headers";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  headers: async () => [
+    { source: "/:path*", headers: securityHeaders({ supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL, dev: process.env.NODE_ENV !== "production" }) },
+  ],
   cacheComponents: true,
   partialPrefetching: true,
   // Без постоянного кэша сборки: Vercel восстанавливает .next/cache от прошлого деплоя, и в боевую сборку попал устаревший CSS
