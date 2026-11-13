@@ -58,10 +58,14 @@ export function parseQuery(sp: URLSearchParams): OfferQuery {
 export const SEARCH_FROM = "āčēģīķļņšūžäöüõ";
 export const SEARCH_TO = "acegiklnsuzaouo";
 
-/** Слова поиска: без регистра и диакритики, «Šokolāde» и «sokolade» — одно слово. */
+// Каждое слово — отдельное условие в адресе запроса к БД; без потолка длинный ввод даёт адрес сверх лимита API и ошибку страницы.
+export const MAX_SEARCH_CHARS = 100;
+export const MAX_SEARCH_WORDS = 8;
+
+/** Слова поиска: без регистра и диакритики, «Šokolāde» и «sokolade» — одно слово. Ввод длиннее MAX_SEARCH_CHARS обрезается, слов не больше MAX_SEARCH_WORDS. */
 export function searchTerms(q: string): string[] {
-  const plain = [...q.toLowerCase()].map((c) => (SEARCH_FROM.includes(c) ? SEARCH_TO[SEARCH_FROM.indexOf(c)] : c)).join("");
-  return plain.replace(/[%_\\*^]/g, " ").split(/\s+/).filter(Boolean);
+  const plain = [...q.slice(0, MAX_SEARCH_CHARS).toLowerCase()].map((c) => (SEARCH_FROM.includes(c) ? SEARCH_TO[SEARCH_FROM.indexOf(c)] : c)).join("");
+  return plain.replace(/[%_\\*^]/g, " ").split(/\s+/).filter(Boolean).slice(0, MAX_SEARCH_WORDS);
 }
 
 /** Слова поиска как группы вариантов: русское слово из словаря → латышские основы (достаточно любой), остальные как есть. Группы связаны «и». */
