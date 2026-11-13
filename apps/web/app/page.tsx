@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 export const instant = false;
 
 // Отдельной главной нет: участник сразу попадает в раздел «Акции».
+// С открытой регистрацией (2.8.0.0) участник — любой вошедший с email, поэтому «Доступ закрыт» остаётся только для аккаунта без email.
 export default async function Home() {
   const supabase = await createClient();
   const { data: auth } = await supabase.auth.getUser();
@@ -18,7 +19,7 @@ export default async function Home() {
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col items-center justify-center gap-4 p-4 text-center">
       <h1 className="text-2xl font-semibold">Доступ закрыт</h1>
       <p className="text-muted-foreground text-sm">
-        Аккаунт {auth.user.email} не в списке. Обратитесь к владельцу.
+        У этого аккаунта нет адреса email, а доступ выдаётся по нему. Войдите другим аккаунтом Google.
       </p>
       <form action="/auth/signout" method="post">
         <Button variant="outline" size="lg" type="submit" className="min-h-11">
