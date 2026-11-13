@@ -181,3 +181,14 @@ test("scrape: товаров меньше ожидаемого минимума 
     m.restore();
   }
 });
+
+test("scrape: cards=false — только список, без sitemap и карточек", async () => {
+  const m = mockFetch({ [`${LIST}?p=1`]: [listPage([sale, reg, plain], 1, 3)] });
+  try {
+    const { products } = await scrape({ ...opts, cards: false });
+    assert.deepEqual(products.map((p) => p.externalId).sort(), ["PMM0010086LV", "PMM0174017LV", "PMM0192729LV"]);
+    assert.deepEqual(m.calls, [`${LIST}?p=1`]);
+  } finally {
+    m.restore();
+  }
+});
