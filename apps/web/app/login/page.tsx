@@ -23,8 +23,8 @@ function PasswordForm() {
   return (
     <form onSubmit={signIn} className="space-y-3 border-t pt-6 text-left">
       <p className="text-muted-foreground text-xs">Только локальная разработка</p>
-      <input name="email" type="email" placeholder="Email" required className="bg-background w-full rounded-lg border px-3 py-2 text-sm" />
-      <input name="password" type="password" placeholder="Пароль" required className="bg-background w-full rounded-lg border px-3 py-2 text-sm" />
+      <input name="email" type="email" aria-label="Email" autoComplete="email" spellCheck={false} placeholder="Email" required className="bg-background w-full rounded-lg border px-3 py-2 text-sm" />
+      <input name="password" type="password" aria-label="Пароль" autoComplete="current-password" placeholder="Пароль" required className="bg-background w-full rounded-lg border px-3 py-2 text-sm" />
       <Button type="submit" variant="outline" className="min-h-11 w-full">
         Войти по паролю
       </Button>
