@@ -119,3 +119,8 @@ export function endsSoon(endsAt: string | null, now: Date): "today" | "tomorrow"
 export function isStale(iso: string, now: Date, hours = 48): boolean {
   return now.getTime() - new Date(iso).getTime() > hours * 3_600_000;
 }
+
+/** Чистая страница «Акции»: ничего не выбрано. Сортировка, число карточек и «all» (развёрнутое сравнение) выбором не считаются. Тогда показывается блок начала. */
+export function isOfferLanding(q: OfferQuery): boolean {
+  return !q.q && q.store === null && !q.cat && !q.cond && !q.scope;
+}

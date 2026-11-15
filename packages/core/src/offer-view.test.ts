@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
-import { activeFilter, discountPercent, endsSoon, isStale, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchGroups, searchOrClause, searchTerms, storePrices, MAX_SEARCH_WORDS, MAX_SEARCH_CHARS } from "./offer-view";
+import { activeFilter, discountPercent, endsSoon, isOfferLanding, isStale, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchGroups, searchOrClause, searchTerms, storePrices, MAX_SEARCH_WORDS, MAX_SEARCH_CHARS } from "./offer-view";
 import { RU_LV } from "./ru-lv";
 
 test("safeHttpUrl: наша миниатюра /grocery/img/<магазин>/<ключ> разрешена, любой другой относительный путь нет", () => {
@@ -162,4 +162,11 @@ test("searchTerms: длинный ввод обрезается (иначе ад
   assert.ok(searchTerms("а ".repeat(5000)).length <= MAX_SEARCH_WORDS);
   assert.ok(searchTerms("x".repeat(5000)).join("").length <= MAX_SEARCH_CHARS);
   assert.deepEqual(searchTerms("молоко valio"), ["молоко", "valio"]); // обычный ввод не затронут
+});
+
+test("isOfferLanding: чистая страница акций — без поиска, категории, магазина и переключателей; сортировка, страница и «all» не в счёт", () => {
+  const q = (s: string) => parseQuery(new URLSearchParams(s));
+  assert.equal(isOfferLanding(q("")), true);
+  assert.equal(isOfferLanding(q("sort=price&n=120&all=1")), true);
+  for (const s of ["q=piens", "store=2", "cat=dairy", "cond=1", "scope=1"]) assert.equal(isOfferLanding(q(s)), false, s);
 });
