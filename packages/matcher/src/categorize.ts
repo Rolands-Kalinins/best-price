@@ -1,24 +1,29 @@
 // Шаг после парсеров: раскладывает акции по категориям (offers.cat) словарём CATEGORIES, без Gemini. Пишет только изменившееся.
+// --pharmacy: те же шаги для pharmacy.products и PHARMACY_CATEGORIES (аптеки, весь каталог).
 // --dry: ничего не пишет, показывает охват по категориям и самые частые слова акций без категории (чем дополнять словарь).
 import { createClient } from "@supabase/supabase-js";
-import { activeFilter, batches, CATEGORIES, changedCategories, fold, OTHER, type Database } from "@bestprice/core";
+import { batches, CATEGORIES, changedCategories, fold, OTHER, PHARMACY_CATEGORIES, type Database } from "@bestprice/core";
 
 const DRY = process.argv.includes("--dry");
+const PHARMACY = process.argv.includes("--pharmacy");
 const sb = createClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
-const grocery = sb.schema("grocery");
+// У pharmacy.products те же столбцы id, title, category, cat, что у grocery.offers: типы приводим к grocery, чтобы не раздваивать код.
+const db = sb.schema(PHARMACY ? "pharmacy" : "grocery") as unknown as ReturnType<typeof sb.schema<"grocery">>;
+const table = (PHARMACY ? "products" : "offers") as "offers";
+const cats = PHARMACY ? PHARMACY_CATEGORIES : CATEGORIES;
 
 // PostgREST отдаёт не больше 1000 строк за запрос (docs/findings/2026-10-27-rest-1000-rows-cap.md): читаем страницами.
 // Берём все акции, а не только действующие: кто-то вернётся в ленту, а у него уже должна быть категория.
 type Row = { id: number; title: string; category: string | null; cat: string | null };
 const rows: Row[] = [];
 for (let from = 0; ; from += 1000) {
-  const { data, error } = await grocery.from("offers").select("id,title,category,cat").order("id").range(from, from + 999);
+  const { data, error } = await db.from(table).select("id,title,category,cat").order("id").range(from, from + 999);
   if (error) throw error;
   rows.push(...data);
   if (data.length < 1000) break;
 }
 
-const changes = changedCategories(CATEGORIES, rows);
+const changes = changedCategories(cats, rows);
 const changed = [...changes.values()].reduce((n, ids) => n + ids.length, 0);
 console.log(`акций ${rows.length}, изменится ${changed}`);
 
@@ -39,7 +44,7 @@ if (DRY) {
 } else {
   for (const [slug, ids] of changes) {
     for (const part of batches(ids, 200)) {
-      const { error } = await grocery.from("offers").update({ cat: slug }).in("id", part);
+      const { error } = await db.from(table).update({ cat: slug }).in("id", part);
       if (error) throw new Error(error.message);
     }
   }

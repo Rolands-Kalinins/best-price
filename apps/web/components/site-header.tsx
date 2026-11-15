@@ -3,15 +3,41 @@
 import { Menu } from "@base-ui/react/menu";
 import { LayoutDashboard, LogOut, ShoppingBasket, User } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+
+const SECTIONS = [
+  { href: "/grocery", label: "Акции" },
+  { href: "/pharmacy", label: "Аптеки" },
+];
 
 export function SiteHeader({ email, isAdmin = false }: { email: string; isAdmin?: boolean }) {
+  const path = usePathname();
   return (
     <header className="bg-background/90 border-b sticky top-0 z-20 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
         <Link href="/grocery" className="flex items-center gap-2 rounded-lg font-semibold outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
           <ShoppingBasket className="text-primary size-5" aria-hidden />
           <span translate="no">BestPrice</span>
         </Link>
+        <nav aria-label="Разделы" className="flex gap-1">
+          {SECTIONS.map((s) => {
+            const on = path === s.href || path.startsWith(`${s.href}/`);
+            return (
+              <Link
+                key={s.href}
+                href={s.href}
+                aria-current={on ? "page" : undefined}
+                className={cn(
+                  "flex min-h-11 items-center rounded-lg px-3 text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                  on ? "bg-muted" : "text-muted-foreground hover:bg-muted",
+                )}
+              >
+                {s.label}
+              </Link>
+            );
+          })}
+        </nav>
         <Menu.Root>
           <Menu.Trigger
             aria-label="Меню профиля"

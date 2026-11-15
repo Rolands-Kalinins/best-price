@@ -283,6 +283,12 @@ export type Database = {
         Update: { key_a?: string; key_b?: string; prompt_version?: number; reason?: string; same?: boolean }
         Relationships: []
       }
+      pair_checks: {
+        Row: { diff: string; differs: boolean; key_a: string; key_b: string; prompt_version: number }
+        Insert: { diff: string; differs: boolean; key_a: string; key_b: string; prompt_version: number }
+        Update: { diff?: string; differs?: boolean; key_a?: string; key_b?: string; prompt_version?: number }
+        Relationships: []
+      }
       leaflet_offers: {
         Row: {
           brand: string | null
@@ -409,6 +415,138 @@ export type Database = {
     Functions: {
       add_ai_usage: {
         Args: { p_day: string; p_errors: number; p_last_error: string | null; p_model: string; p_quota_hit_at: string | null; p_quota_hits: number; p_requests: number; p_tokens_in: number; p_tokens_out: number }
+        Returns: undefined
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+  pharmacy: {
+    Tables: {
+      price_history: {
+        Row: { day: string; price: number; product_id: number }
+        Insert: { day?: string; price: number; product_id: number }
+        Update: { day?: string; price?: number; product_id?: number }
+        Relationships: [
+          {
+            foreignKeyName: "price_history_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          brand: string | null
+          card_condition: string | null
+          card_ends_at: string | null
+          card_price: number | null
+          card_starts_at: string | null
+          discount: number | null
+          cat: string | null
+          category: string | null
+          ean: string | null
+          ends_at: string | null
+          external_id: string
+          id: number
+          image_url: string | null
+          in_stock: boolean
+          last_seen_at: string
+          group_id: number | null
+          group_rep: boolean
+          old_price: number | null
+          packaging: string | null
+          prescription: boolean
+          search: string
+          price: number
+          source_id: number
+          starts_at: string | null
+          title: string
+          url: string | null
+        }
+        Insert: {
+          brand?: string | null
+          card_condition?: string | null
+          card_ends_at?: string | null
+          card_price?: number | null
+          card_starts_at?: string | null
+          discount?: never
+          cat?: string | null
+          category?: string | null
+          ean?: string | null
+          ends_at?: string | null
+          external_id: string
+          id?: never
+          image_url?: string | null
+          in_stock?: boolean
+          last_seen_at?: string
+          group_id?: number | null
+          group_rep?: boolean
+          old_price?: number | null
+          packaging?: string | null
+          prescription?: boolean
+          search?: never
+          price: number
+          source_id: number
+          starts_at?: string | null
+          title: string
+          url?: string | null
+        }
+        Update: {
+          brand?: string | null
+          card_condition?: string | null
+          card_ends_at?: string | null
+          card_price?: number | null
+          card_starts_at?: string | null
+          discount?: never
+          cat?: string | null
+          category?: string | null
+          ean?: string | null
+          ends_at?: string | null
+          external_id?: string
+          id?: never
+          image_url?: string | null
+          in_stock?: boolean
+          last_seen_at?: string
+          group_id?: number | null
+          group_rep?: boolean
+          old_price?: number | null
+          packaging?: string | null
+          prescription?: boolean
+          search?: never
+          price?: number
+          source_id?: number
+          starts_at?: string | null
+          title?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      group_members: {
+        Args: { gids: number[] }
+        Returns: { card_condition: string | null; card_ends_at: string | null; card_price: number | null; card_starts_at: string | null; discount: number | null; group_id: number; id: number; image_url: string | null; old_price: number | null; prescription: boolean; price: number; source_id: number; title: string; url: string | null }[]
+      }
+      set_groups: {
+        Args: { gids: (number | null)[]; ids: number[]; reps: boolean[] }
         Returns: undefined
       }
     }

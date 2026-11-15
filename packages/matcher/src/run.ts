@@ -1,9 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 import {
+  acceptedPairs,
   activeFilter,
   batches,
   BATCH_SIZE,
   BRAND_SCHEMA,
+  CHECK_SCHEMA,
+  checkPrompt,
   brandPrompt,
   buildMatches,
   diffLinks,
@@ -13,6 +16,8 @@ import {
   normalizeBrand,
   pacificDay,
   parseBrandReply,
+  parseCheckReply,
+  pairKey,
   parseVerdictReply,
   PROMPT_VERSION,
   recordFailure,
@@ -22,6 +27,7 @@ import {
   verdictPrompt,
   type Database,
   type MatchItem,
+  type PairCheck,
   type Verdict,
 } from "@bestprice/core";
 import { askGemini, GeminiError } from "@bestprice/core";
@@ -150,14 +156,14 @@ const toItems = (useAi: boolean): MatchItem[] =>
     brand: r.brand?.trim() || (useAi ? attrs.get(titleKey(r.title)) ?? null : null),
     condition: r.condition,
   }));
+const items = toItems(true);
 const decisionList = decisions.map((d) => ({ keyA: d.key_a, keyB: d.key_b, same: d.same }));
 const excluded = new Set(exclusions.map((e) => e.offer_id));
-const { groups, suggestions } = buildMatches(toItems(true), brands, decisionList, excluded);
+let { groups, suggestions, soft, conflicts } = buildMatches(items, brands, decisionList, excluded);
 
 // Совет по предположениям: «тот же товар?» с причиной. Никого не объединяет, его видит админ в очереди.
 // ponytail: в запрос идут первые 6 акций предположения по id; если акций много, одна из сторон может не попасть. Брать по 2-3 с каждой стороны, если вердикты начнут ошибаться.
 const titleOf = new Map(rows.map((r) => [r.id, r.title]));
-const pairKey = (a: string, b: string) => `${a}\n${b}`;
 const verdicts = new Map<string, Verdict>(
   (await readAll((a, b) => grocery.from("pair_verdicts").select("key_a,key_b,same,reason").eq("prompt_version", PROMPT_VERSION).order("key_a").order("key_b").range(a, b))).map((v) => [
     pairKey(v.key_a, v.key_b),
@@ -180,9 +186,37 @@ for (const part of batches(suggestions.filter((s) => !verdicts.has(pairKey(s.key
   if (!DRY) check(await grocery.from("pair_verdicts").upsert(out, { onConflict: "key_a,key_b,prompt_version" }));
 }
 
+// Вторая проверка пар, которые Gemini назвал одним товаром: чем отличаются стороны. Нет отличий — пара принимается без админа
+// (accepted), иначе остаётся в очереди. Принятые не пишутся в match_decisions: ответы кэшируются, решение пересчитывается каждый запуск.
+const checks = new Map<string, PairCheck>(
+  (await readAll((a, b) => grocery.from("pair_checks").select("key_a,key_b,differs,diff").eq("prompt_version", PROMPT_VERSION).order("key_a").order("key_b").range(a, b))).map((c) => [
+    pairKey(c.key_a, c.key_b),
+    { differs: c.differs, diff: c.diff },
+  ]),
+);
+requests = 0;
+const toCheck = suggestions.filter((s) => verdicts.get(pairKey(s.keyA, s.keyB))?.same && !checks.has(pairKey(s.keyA, s.keyB)));
+for (const part of batches(toCheck, 50)) {
+  const text = await ask(checkPrompt(part.map((s) => ({ a: s.idsA.map((id) => titleOf.get(id)!), b: s.idsB.map((id) => titleOf.get(id)!) }))), CHECK_SCHEMA);
+  if (!text) break;
+  let found: (PairCheck | null)[];
+  try {
+    found = parseCheckReply(text, part.length);
+  } catch (e) {
+    console.warn(`Gemini: ответ проверки не разобран (${e instanceof Error ? e.message : e}), пачка пропущена`);
+    continue;
+  }
+  const out = part.flatMap((s, i) => (found[i] ? [{ key_a: s.keyA, key_b: s.keyB, prompt_version: PROMPT_VERSION, ...found[i]! }] : []));
+  for (const o of out) checks.set(pairKey(o.key_a, o.key_b), { differs: o.differs, diff: o.diff });
+  if (!DRY) check(await grocery.from("pair_checks").upsert(out, { onConflict: "key_a,key_b,prompt_version" }));
+}
+const accepted = acceptedPairs(suggestions, verdicts, checks);
+if (accepted.length) ({ groups, suggestions, soft, conflicts } = buildMatches(items, brands, [...decisionList, ...accepted.map((p) => ({ ...p, same: true }))], excluded));
+
 await flushUsage();
 
-console.log(`акций ${rows.length}, брендов ${brands.size}, групп ${groups.length}, предположений ${suggestions.length}; Gemini: запросов ${totalRequests}, названий спрошено ${asked.length}`);
+console.log(`акций ${rows.length}, брендов ${brands.size}, групп ${groups.length}, объединено по сокращениям ${soft.length}, принято по Gemini ${accepted.length}, предположений ${suggestions.length}; Gemini: запросов ${totalRequests}, названий спрошено ${asked.length}`);
+for (const c of conflicts) console.warn(`конфликт решений: «разные» внутри одной группы: ${c.keyA} <> ${c.keyB}`);
 if (DRY) {
   const title = new Map(rows.map((r) => [r.id, `[${r.source_id}] ${r.title}`]));
   const base = buildMatches(toItems(false), brands, decisionList, excluded);

@@ -1,7 +1,27 @@
 "use server";
 
+import { execFile } from "node:child_process";
+import { resolve } from "node:path";
+import { promisify } from "node:util";
+import { canPullProdData } from "@bestprice/core";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { adminSupabase } from "@/lib/admin";
+
+// Копия боевых данных в локальную БД: запускает scripts/db-pull.mjs (то же, что `pnpm db:pull`). Только на localhost с локальным Supabase;
+// команда и аргументы фиксированы, от пользователя ничего не берётся. Боевая БД только читается, локальная заменяется целиком.
+export async function pullProd() {
+  await adminSupabase();
+  const page = "/grocery/admin/scrapers";
+  if (!canPullProdData(process.env.NODE_ENV, process.env.NEXT_PUBLIC_SUPABASE_URL)) redirect(`${page}?msg=pull-denied`);
+  let error = "";
+  try {
+    await promisify(execFile)(process.execPath, ["scripts/db-pull.mjs"], { cwd: resolve(process.cwd(), "../.."), timeout: 600_000, maxBuffer: 1 << 24 });
+  } catch (e) {
+    const out = String((e as { stderr?: string }).stderr || (e as Error).message);
+    error = out.trim().split("\n")[0].slice(0, 200); // причина (ответ Docker, HTTP-код боевой) идёт первой, «Command failed» после неё
+  }
+  redirect(error ? `${page}?msg=pull-failed&detail=${encodeURIComponent(error)}` : `${page}?msg=pulled`);
+}
 
 const WORKFLOW = "scrape.yml";
 const REPO = process.env.GITHUB_REPO ?? "Rolands-Kalinins/best-price";
@@ -12,9 +32,7 @@ export async function runScrapers(formData: FormData) {
   const source = formData.get("source");
   if (typeof source !== "string" || !/^[a-z0-9-]{1,32}$/.test(source)) return;
 
-  const supabase = await createClient();
-  const { data: isAdmin } = await supabase.rpc("is_admin");
-  if (!isAdmin) redirect("/grocery");
+  const supabase = await adminSupabase();
   if (source !== "all") {
     const { data } = await supabase.from("sources").select("id").eq("slug", source).eq("enabled", true).maybeSingle();
     if (!data) return;

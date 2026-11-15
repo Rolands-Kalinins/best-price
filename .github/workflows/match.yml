@@ -7,6 +7,9 @@ on:
     types: [completed]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: match
   cancel-in-progress: false
@@ -34,6 +37,18 @@ jobs:
       # Категории для фильтра (offers.cat) раскладывает словарь, без Gemini и без квот. Запускаем и после сбоя match: категории от него не зависят.
       - if: ${{ !cancelled() }}
         run: pnpm --filter @bestprice/matcher categorize
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      # Категории аптек (pharmacy.products.cat) тем же словарём. Раньше их ставили вручную, и на боевой базе они были пустыми.
+      - if: ${{ !cancelled() }}
+        run: pnpm --filter @bestprice/matcher categorize --pharmacy
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      # Группы «один товар в нескольких аптеках» (pharmacy.products.group_id, group_rep): общий штрихкод или ключ названия (бренд, размер, число штук, слова).
+      - if: ${{ !cancelled() }}
+        run: pnpm --filter @bestprice/matcher pharmacy-groups
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}

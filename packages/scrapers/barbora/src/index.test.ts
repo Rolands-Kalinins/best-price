@@ -101,7 +101,7 @@ function server(total: number, drop = 0) {
     const all = id === "50XV" ? items("akcijas", total) : items("paldies", 5);
     const off = Number(u.searchParams.get("Offset"));
     const lim = Number(u.searchParams.get("Limit"));
-    return Response.json({ count: all.length + drop, inventories: all.slice(off, off + lim), categoryTree: load(id === "50XV" ? "akcijas" : "paldies").categoryTree });
+    return Response.json({ count: all.length + (id === "50XV" ? drop : 0), inventories: all.slice(off, off + lim), categoryTree: load(id === "50XV" ? "akcijas" : "paldies").categoryTree });
   }) as typeof fetch;
   return { calls, restore: () => (globalThis.fetch = real) };
 }
@@ -129,6 +129,16 @@ test("scrape: сервер отдал меньше, чем обещал count, �
   }
 });
 
+test("scrape: count включает ~2% позиций, которые API не отдаёт никогда (живые 1685 из 1729), это не сбой", async () => {
+  const s = server(1000, 22);
+  try {
+    const { offers } = await scrape();
+    assert.equal(offers.length, 1005);
+  } finally {
+    s.restore();
+  }
+});
+
 test("scrape: формат ответа изменился или нет ни одной акции", async () => {
   const real = globalThis.fetch;
   try {
@@ -145,7 +155,7 @@ test("scrape: обрыв соединения повторяется, посто
   const real = globalThis.fetch;
   let calls = 0;
   const drop = () => Promise.reject(new TypeError("terminated"));
-  const ok = () => Promise.resolve(Response.json({ count: 2, inventories: akcijas.inventories.slice(0, 2), categoryTree: [] }));
+  const ok = () => Promise.resolve(Response.json({ count: 2, inventories: akcijas.inventories.slice(0, 2), categoryTree: akcijas.categoryTree }));
   const replies = [drop, drop, ok, ok];
   globalThis.fetch = (() => replies[calls++]()) as typeof fetch;
   try {
@@ -164,6 +174,16 @@ test("scrape: обрыв соединения повторяется, посто
     replies.splice(0, 3, () => Promise.resolve(new Response("", { status: 403 })));
     await assert.rejects(scrape({ retryMs: 0 }), /HTTP 403/);
     assert.equal(calls, 1);
+  } finally {
+    globalThis.fetch = real;
+  }
+});
+
+test("scrape: категория пропала у всех акций (дерево пустое) — сбой с именем поля, а не тихий успех", async () => {
+  const real = globalThis.fetch;
+  globalThis.fetch = (() => Promise.resolve(Response.json({ count: 2, inventories: akcijas.inventories.slice(0, 2), categoryTree: [] }))) as typeof fetch;
+  try {
+    await assert.rejects(scrape({ retryMs: 0 }), /поле category есть у 0 из 2/);
   } finally {
     globalThis.fetch = real;
   }

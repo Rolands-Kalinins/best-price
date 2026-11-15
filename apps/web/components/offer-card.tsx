@@ -1,6 +1,6 @@
 "use client";
 
-import { offerDiscount, safeHttpUrl, type Database } from "@bestprice/core";
+import { endsSoon, offerDiscount, safeHttpUrl, type Database } from "@bestprice/core";
 import { ImageOff, Tag } from "lucide-react";
 import { useCallback, useState } from "react";
 import { eur, shortDate } from "@/lib/format";
@@ -17,6 +17,7 @@ export function OfferCard({ offer: o, storeName }: { offer: OfferRow; storeName:
   const href = safeHttpUrl(o.url);
   const image = safeHttpUrl(o.image_url);
   const pct = offerDiscount(o);
+  const soon = endsSoon(o.ends_at, new Date());
   // Ошибка могла случиться до гидратации — тогда onError уже не сработает. Ref стабильный, чтобы не перезапускаться на каждый рендер.
   const checkBroken = useCallback((el: HTMLImageElement | null) => {
     if (el?.complete && el.naturalWidth === 0) setImgFailed(true);
@@ -47,7 +48,7 @@ export function OfferCard({ offer: o, storeName }: { offer: OfferRow; storeName:
       </div>
       <div className="flex flex-1 flex-col gap-1 p-3">
         <p className="text-muted-foreground text-xs">{storeName}</p>
-        <h2 className="line-clamp-2 text-sm leading-snug font-medium break-words">
+        <h2 lang="lv" className="line-clamp-2 text-sm leading-snug font-medium break-words">
           {href ? (
             <a
               href={href}
@@ -56,6 +57,7 @@ export function OfferCard({ offer: o, storeName }: { offer: OfferRow; storeName:
               className="outline-none after:absolute after:inset-0"
             >
               {o.title}
+              <span className="sr-only"> (откроется в новой вкладке)</span>
             </a>
           ) : (
             o.title
@@ -87,7 +89,11 @@ export function OfferCard({ offer: o, storeName }: { offer: OfferRow; storeName:
             {o.condition}
           </p>
         )}
-        {o.ends_at && <p className="text-muted-foreground text-xs">до {shortDate(o.ends_at)}</p>}
+        {o.ends_at && (
+          <p suppressHydrationWarning className={soon ? "text-sale text-xs font-medium" : "text-muted-foreground text-xs"}>
+            {soon ? (soon === "today" ? "Заканчивается сегодня" : "Заканчивается завтра") : `до ${shortDate(o.ends_at)}`}
+          </p>
+        )}
       </div>
     </article>
   );

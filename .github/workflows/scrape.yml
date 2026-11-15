@@ -6,17 +6,33 @@ on:
     # GitHub опаздывает на 5–6 часов, поэтому запуск ночью: к утру данные есть.
     # Минута 17, а не 0: круглые часы самые загруженные.
     - cron: "17 22 * * *"
+    # Экономия минут Actions (лимит 2000 в месяц на приватный репозиторий). Строка в `if:` у job'ов должна совпадать с cron дословно.
+    # Rimi: акции стартуют в пн, ср, чт и вс (по Риге), поэтому ночью с вс, вт, ср и сб на пн, ср, чт и вс.
+    - cron: "27 22 * * 0,2,3,6"
+    # Аптеки (Apotheka ≈57 мин, Euroaptieka ≈34 мин): сроков акций в данных нет, цены меняются редко, поэтому 3 раза в неделю (ночью на пн, ср, пт).
+    # Понедельник: всё, включая карточки рецептурных Apotheka (раз в неделю). Среда и пятница: Apotheka только по списку (APOTHEKA_CARDS=false).
+    # Окно свежести на сайте 8 суток (STALE_DAYS в core/pharmacy-view.ts): пауза между полными прогонами Apotheka 7 суток.
+    - cron: "37 22 * * 0"
+    - cron: "37 22 * * 2,4"
+    # Lidl: бумажный буклет действует неделю (пн–вс), следующий выкладывают с пятницы. Раз в неделю, ночью на понедельник: читаются все новые страницы.
+    # Сбой не повторится до следующего воскресенья сам: админ запускает Lidl вручную на странице «Парсеры».
+    - cron: "47 22 * * 0"
   workflow_dispatch:
     inputs:
       source:
         description: Какой парсер запустить
         type: choice
         default: all
-        options: [all, lidl, maxima, barbora, e-latts, rimi, etop]
+        options: [all, lidl, maxima, barbora, e-latts, rimi, etop, meness, euroaptieka, benu, apotheka]
+
+permissions:
+  contents: read
 
 # Один запуск за раз: двойной клик по кнопке в админке не даст двух одинаковых парсеров.
+# Группа своя у каждого cron: в одной группе ждёт только один запуск и новый отменяет прежнего,
+# а в ночь на понедельник совпадают четыре cron (общий, Rimi, аптеки, Lidl). Ручные запуски делят группу `manual`.
 concurrency:
-  group: scrape
+  group: scrape-${{ github.event.schedule || 'manual' }}
   cancel-in-progress: false
 
 jobs:
@@ -24,7 +40,7 @@ jobs:
   # Запуск идемпотентный: прочитанные страницы пропускаются без квоты, поэтому ночной запуск каждый день сам подхватывает новый буклет
   # (Lidl выкладывает следующий с пятницы), а упавший на квоте дочитывается на следующую ночь.
   lidl:
-    if: github.event_name != 'workflow_dispatch' || inputs.source == 'all' || inputs.source == 'lidl'
+    if: github.event.schedule == '47 22 * * 0' || inputs.source == 'all' || inputs.source == 'lidl'
     runs-on: ubuntu-latest
     # Основная модель gemini-3.5-flash читает страницу ≈60 с: буклет ≈45 минут, два буклета ≈90, запас вдвое.
     timeout-minutes: 180
@@ -53,7 +69,7 @@ jobs:
           retention-days: 7
 
   maxima:
-    if: github.event_name != 'workflow_dispatch' || inputs.source == 'all' || inputs.source == 'maxima'
+    if: github.event.schedule == '17 22 * * *' || inputs.source == 'all' || inputs.source == 'maxima'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -75,7 +91,7 @@ jobs:
           retention-days: 7
 
   barbora:
-    if: github.event_name != 'workflow_dispatch' || inputs.source == 'all' || inputs.source == 'barbora'
+    if: github.event.schedule == '17 22 * * *' || inputs.source == 'all' || inputs.source == 'barbora'
     runs-on: ubuntu-latest
     # Живой прогон: ≈20 запросов, около 8 секунд; запас с избытком.
     timeout-minutes: 10
@@ -96,6 +112,108 @@ jobs:
         with:
           name: barbora-debug
           path: packages/scrapers/barbora/debug
+          retention-days: 7
+
+  # Интернет-аптека Mēness: весь каталог (≈10 200 товаров) в пяти ценовых диапазонах, ≈105 запросов по ≈3.7 МБ с паузой 0,4 с, живой прогон ≈5 минут (2026-11-01).
+  # Если сайт начнёт блокировать адреса GitHub, магазин снимаем с сайта, а не обходим защиту (решение владельца).
+  meness:
+    if: github.event.schedule == '17 22 * * *' || inputs.source == 'all' || inputs.source == 'meness'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @bestprice/scraper-meness scrape
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: meness-debug
+          path: packages/scrapers/meness/debug
+          retention-days: 7
+
+  # Интернет-аптека Euroaptieka: все карточки товаров из sitemap (≈6 600), ≈140 КБ каждая, 3 потока с паузой 0,25 с; живой прогон см. docs/PLAN.md (2026-11-01).
+  # Если сайт начнёт блокировать адреса GitHub (403), магазин снимаем с сайта, а не обходим защиту (решение владельца).
+  euroaptieka:
+    if: github.event.schedule == '37 22 * * 0' || github.event.schedule == '37 22 * * 2,4' || inputs.source == 'all' || inputs.source == 'euroaptieka'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @bestprice/scraper-euroaptieka scrape
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: euroaptieka-debug
+          path: packages/scrapers/euroaptieka/debug
+          retention-days: 7
+
+  # Интернет-аптека Benu: каталог в наличии (≈6 070 товаров) из открытого поиска Luigi's Box, 31 запрос по 200 с паузой 0,7 с, живой прогон ≈30 секунд (2026-11-01).
+  # Сайт отвечал 429 при частых запросах (парсер повторяет с ожиданием). Если начнёт блокировать адреса GitHub (403), магазин снимаем с сайта, а не обходим защиту (решение владельца).
+  benu:
+    if: github.event.schedule == '17 22 * * *' || inputs.source == 'all' || inputs.source == 'benu'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @bestprice/scraper-benu scrape
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: benu-debug
+          path: packages/scrapers/benu/debug
+          retention-days: 7
+
+  # Интернет-аптека Apotheka: ≈180 страниц списка (≈6 175 товаров, ответ ≈7 с) и ≈2 960 карточек товаров вне списков (рецептурные и не в наличии, ≈0,3 с), живой прогон ≈50 минут (2026-11-01).
+  # Блокировку адресов GitHub не проверяли до слияния. Если начнёт блокировать (403), магазин снимаем с сайта, а не обходим защиту (решение владельца).
+  apotheka:
+    if: github.event.schedule == '37 22 * * 0' || github.event.schedule == '37 22 * * 2,4' || inputs.source == 'all' || inputs.source == 'apotheka'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @bestprice/scraper-apotheka scrape
+        env:
+          # Ручной запуск (schedule пуст) читает и карточки.
+          APOTHEKA_CARDS: ${{ github.event.schedule != '37 22 * * 2,4' }}
+          NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: apotheka-debug
+          path: packages/scrapers/apotheka/debug
           retention-days: 7
 
   # Раздел «Akcijas» интернет-магазина LaTS: ≈16 запросов с паузой 0,2 с, живой прогон ≈15 секунд (2026-10-31).
@@ -124,7 +242,7 @@ jobs:
           retention-days: 7
 
   rimi:
-    if: github.event_name != 'workflow_dispatch' || inputs.source == 'all' || inputs.source == 'rimi'
+    if: github.event.schedule == '27 22 * * 0,2,3,6' || inputs.source == 'all' || inputs.source == 'rimi'
     runs-on: ubuntu-latest
     # Первый прогон ≈50 минут (≈4 тыс. карточек по одной), дальше только новые товары; запас вдвое.
     timeout-minutes: 120
@@ -148,7 +266,7 @@ jobs:
           retention-days: 7
 
   etop:
-    if: github.event_name != 'workflow_dispatch' || inputs.source == 'all' || inputs.source == 'etop'
+    if: github.event.schedule == '17 22 * * *' || inputs.source == 'all' || inputs.source == 'etop'
     runs-on: ubuntu-latest
     # Живой прогон: 3 запроса, секунды; запас с избытком.
     timeout-minutes: 10

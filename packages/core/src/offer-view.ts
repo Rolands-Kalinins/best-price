@@ -28,8 +28,9 @@ export function safeHttpUrl(url: string | null): string | null {
 
 export type OfferSort = "discount" | "price" | "ends";
 // scope: только скидки на бренд или категорию (у них нет цены).
+// all: блок «Где дешевле» показан целиком, а не первые карточки (иначе в страницу уходят сотни карточек с картинками).
 // n: сколько акций показать (растёт кнопкой «Показать ещё»). Потолок 1000 — лимит строк ответа API.
-export type OfferQuery = { q: string; store: number | null; cat: string | null; cond: boolean; scope: boolean; sort: OfferSort; n: number };
+export type OfferQuery = { q: string; store: number | null; cat: string | null; cond: boolean; scope: boolean; sort: OfferSort; n: number; all: boolean };
 
 export const PAGE_SIZE = 60; // делится на 2, 3 и 4 колонки сетки: последний ряд не остаётся неполным
 export const MAX_OFFERS = 1000;
@@ -48,6 +49,7 @@ export function parseQuery(sp: URLSearchParams): OfferQuery {
     cond: sp.get("cond") === "1",
     scope: sp.get("scope") === "1",
     sort: SORTS.includes(sort) ? sort : "discount",
+    all: sp.get("all") === "1",
     n: Number.isInteger(n) ? Math.min(Math.max(n, PAGE_SIZE), MAX_OFFERS) : PAGE_SIZE,
   };
 }
@@ -56,10 +58,14 @@ export function parseQuery(sp: URLSearchParams): OfferQuery {
 export const SEARCH_FROM = "āčēģīķļņšūžäöüõ";
 export const SEARCH_TO = "acegiklnsuzaouo";
 
-/** Слова поиска: без регистра и диакритики, «Šokolāde» и «sokolade» — одно слово. */
+// Каждое слово — отдельное условие в адресе запроса к БД; без потолка длинный ввод даёт адрес сверх лимита API и ошибку страницы.
+export const MAX_SEARCH_CHARS = 100;
+export const MAX_SEARCH_WORDS = 8;
+
+/** Слова поиска: без регистра и диакритики, «Šokolāde» и «sokolade» — одно слово. Ввод длиннее MAX_SEARCH_CHARS обрезается, слов не больше MAX_SEARCH_WORDS. */
 export function searchTerms(q: string): string[] {
-  const plain = [...q.toLowerCase()].map((c) => (SEARCH_FROM.includes(c) ? SEARCH_TO[SEARCH_FROM.indexOf(c)] : c)).join("");
-  return plain.replace(/[%_\\*^]/g, " ").split(/\s+/).filter(Boolean);
+  const plain = [...q.slice(0, MAX_SEARCH_CHARS).toLowerCase()].map((c) => (SEARCH_FROM.includes(c) ? SEARCH_TO[SEARCH_FROM.indexOf(c)] : c)).join("");
+  return plain.replace(/[%_\\*^]/g, " ").split(/\s+/).filter(Boolean).slice(0, MAX_SEARCH_WORDS);
 }
 
 /** Слова поиска как группы вариантов: русское слово из словаря → латышские основы (достаточно любой), остальные как есть. Группы связаны «и». */
@@ -98,4 +104,18 @@ export function storePrices<T extends { source_id: number; price: number | null 
 /** На сколько цена выше лучшей: в евро и процентах от лучшей (округление до целых процентов). */
 export function priceGap(price: number, best: number): { eur: number; pct: number } {
   return { eur: Math.round((price - best) * 100) / 100, pct: best > 0 ? Math.round((price / best - 1) * 100) : 0 };
+}
+
+const rigaDay = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Riga" }); // «2026-11-01»
+
+/** Акция кончается сегодня или завтра (по календарным дням Риги); позже, уже кончилась или даты нет — null. */
+export function endsSoon(endsAt: string | null, now: Date): "today" | "tomorrow" | null {
+  if (!endsAt || new Date(endsAt) <= now) return null;
+  const days = (Date.parse(rigaDay.format(new Date(endsAt))) - Date.parse(rigaDay.format(now))) / 86_400_000;
+  return days === 0 ? "today" : days === 1 ? "tomorrow" : null;
+}
+
+/** Запуск парсера старше порога (по умолчанию двое суток; для магазина из расписания см. `staleAfterHours`): на сайте могут быть старые цены, это стоит показать. */
+export function isStale(iso: string, now: Date, hours = 48): boolean {
+  return now.getTime() - new Date(iso).getTime() > hours * 3_600_000;
 }
