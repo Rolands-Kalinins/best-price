@@ -13,19 +13,14 @@ const MAX_INVALID = 0.05;
 const CARD = "Ar karti «Veselība»";
 // Каталог ≈10 200 товаров; оборванный обход выглядел бы успехом, поэтому порог.
 const MIN_PRODUCTS = 9000;
-// Верхний уровень меню сайта. В productTaxons лежат ещё деревья Moonmart (moonmart-lv, mv-…), «-1» и пр.: они меню магазина не являются.
-const MENU = new Set([
-  "analizu-kompleksi", "vitamini-un-mineralvielas", "medikamenti", "skaistumam",
-  "mutes-dobuma-higiena", "medicinas-preces", "maminam-un-berniem", "viss-celojumiem",
-]);
-
+type Taxon = { code: string; parent?: Taxon | null };
 type Attr = { value?: unknown; attribute?: { code?: string } };
 type Item = {
   code: string;
   name: string;
   slug: string;
   enabled?: boolean;
-  productTaxons?: { slug: string }[];
+  mainTaxon?: Taxon | null;
   images?: { path: string }[];
   attributeValues?: Attr[];
   defaultVariant?: {
@@ -52,25 +47,12 @@ function riga(s: string | null | undefined): string | null {
   return m ? rigaIso(+m[1], +m[2], +m[3], +m[4], +m[5], +m[6]) : null;
 }
 
-// Служебные деревья: общий корень, Moonmart (moonmart*, mv-*, *-mv), подборки. Категориями не считаем.
-const SERVICE = /^(menessaptieka$|moonmart|mv-|kosmetika-mv|labas-cenas|1-1$|testi$)/;
-
-// Самый глубокий путь, при равенстве первый. Сначала из меню магазина; у ≈10% товаров (гигиена, зоотовары) там ничего нет —
-// тогда из остальных неслужебных деревьев (higienas-preces, preces-majdzivniekiem…).
+// Категория — цепочка mainTaxon.parent (до 13.11.2026 была в productTaxons[].slug, теперь там только id).
+// Корни menessaptieka_master/all_products служебные; коды «a_b» приводим к прежнему виду «a-b», его ждёт словарь категорий.
 function category(it: Item): string | null {
-  const deepest = (ok: (top: string) => boolean) => {
-    let best: string | null = null;
-    let depth = 0;
-    for (const { slug } of it.productTaxons ?? []) {
-      const d = slug.split("/").length;
-      if (ok(slug.split("/")[0]) && d > depth) {
-        best = slug;
-        depth = d;
-      }
-    }
-    return best;
-  };
-  return deepest((top) => MENU.has(top)) ?? deepest((top) => !SERVICE.test(top));
+  const codes: string[] = [];
+  for (let t = it.mainTaxon; t; t = t.parent) codes.unshift(t.code);
+  return codes.slice(2).map((c) => c.replaceAll("_", "-")).join("/") || null;
 }
 
 function toProduct(it: Item): unknown {

@@ -27,3 +27,4 @@
 | 2026-11-12 | [meness-connection-drops](2026-11-12-meness-connection-drops.md) | Парсер Mēness: на раннерах GitHub сайт рвал соединение серией (`terminated`), 3 попыток на ≈105 запросов не хватало; попыток 6, повторы логируются |
 | 2026-11-12 | [db-pull-source-ids](2026-11-12-db-pull-source-ids.md) | `db:pull` падал на внешнем ключе: id магазинов в боевой и локальной БД разные (Barbora 5 и 7), совпавший номер лёг бы не в тот магазин. `source_id` переводится по slug. |
 | 2026-11-13 | [stale-warning-after-schedule-split](2026-11-13-stale-warning-after-schedule-split.md) | После перехода на редкие запуски сайт показал бы «данные устарели» (порог 48 ч), а cron в одной группе `concurrency` отменяли бы друг друга |
+| 2026-11-14 | [meness-taxon-format](2026-11-14-meness-taxon-format.md) | Mēness: сайт убрал `slug` из `productTaxons`, `category()` падала на каждом товаре («не разобрано N из N»); категория теперь из `mainTaxon`. |

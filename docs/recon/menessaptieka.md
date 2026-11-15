@@ -18,7 +18,7 @@ Accept: application/json
 - Фильтры в `meta.filters` (бренды со счётчиками, `priceRange`, `catalogPromotions`), `meta.availableTaxons`. Параметры фильтрации не проверялись (можно искать, как отобрать только акции).
 
 ## Поля товара (`data[]`)
-`code` (внутренний артикул, стабилен), `name`, `slug`, `enabled`, `bundle`, `mainTaxon`, `productTaxons[{name,slug}]` (путь категории, например `vitamini-un-mineralvielas/vitamini/d-vitamins`), `attributeValues[]` (brand, unit-of-measure, form, receipt, otc-medicine, food-supplement, compensation, ...), `defaultVariant`:
+`code` (внутренний артикул, стабилен), `name`, `slug`, `enabled`, `bundle`, `mainTaxon`, `mainTaxon` с цепочкой `parent` (категория; с 13.11.2026 `productTaxons` содержит только `{id}`, без slug), `attributeValues[]` (brand, unit-of-measure, form, receipt, otc-medicine, food-supplement, compensation, ...), `defaultVariant`:
 - `prices.price` (в центах: 899 = 8,99 €), `prices.originalPrices[]`, `prices.discountPercentages[]`, `prices.startsAt` / `endsAt` (период акции, `"2026-10-01 00:00:00"`), `prices.lowest30DayPrice`, цена по карте лояльности `loyaltyCatalogPromotion*`.
 - `stock`, `inStock`, `barcode`.
 
