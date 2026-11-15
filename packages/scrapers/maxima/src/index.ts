@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { type Offer, type ScrapeResult, offerSchema, rigaIso, uniqueOffers } from "@bestprice/core";
+import { type Offer, type ScrapeResult, offerSchema, rigaIso, uniqueOffers, fetchRetry } from "@bestprice/core";
 
 const ORIGIN = "https://www.maxima.lv";
 // Тот же запрос, что сайт делает по кнопке «ещё»: JSON {html, totalItems}, в html готовые плитки.
@@ -9,7 +9,6 @@ const ORIGIN = "https://www.maxima.lv";
 const API = `${ORIGIN}/ajax/salesloadmore?sort_by=newest&limit=5000&ajax=1`;
 // Карточек товаров на сайте нет: все плитки ведут на страницу акций.
 const PAGE = `${ORIGIN}/piedavajumi`;
-const USER_AGENT = "BestPriceBot (personal project)";
 const CARD = "Ar PALDIES karti";
 const MAX_INVALID = 0.05;
 
@@ -111,27 +110,11 @@ export function parse(html: string): ScrapeResult {
   return { offers: uniqueOffers(offers), invalid };
 }
 
-const ATTEMPTS = 3;
-const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Запрос один и весит ≈4 МБ: единичный обрыв («terminated», 2026-10-29) нельзя делать фатальным.
 // Повторяем сетевые ошибки (в том числе обрыв при чтении тела), 5xx и 429; остальные 4xx повтор не лечит.
-async function get(retryMs: number): Promise<{ html?: unknown; totalItems?: unknown }> {
-  for (let attempt = 1; ; attempt++) {
-    let failure: unknown;
-    try {
-      const res = await fetch(API, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(60_000) });
-      if (res.ok) return await res.json();
-      failure = new Error(`Maxima: HTTP ${res.status}`);
-      if (res.status < 500 && res.status !== 429) throw failure;
-    } catch (e) {
-      if (e === failure) throw e;
-      failure = e;
-    }
-    if (attempt === ATTEMPTS) throw failure;
-    await wait(retryMs * attempt);
-  }
-}
+type Body = { html?: unknown; totalItems?: unknown };
+const get = async (retryMs: number) => (await fetchRetry(API, { name: "Maxima", read: (t) => JSON.parse(t) as Body, retryMs }))!;
 
 export async function scrape(opts: { retryMs?: number } = {}): Promise<ScrapeResult> {
   const body = await get(opts.retryMs ?? 3000);

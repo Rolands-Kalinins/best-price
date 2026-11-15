@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { type Offer, type ScrapeResult, offerSchema, rigaIso, uniqueOffers } from "@bestprice/core";
+import { type Offer, type ScrapeResult, offerSchema, rigaIso, uniqueOffers, fetchRetry, requireShare } from "@bestprice/core";
 
 const ORIGIN = "https://barbora.lv";
 // Внутренний JSON-API магазина, тот же запрос, что сайт делает по кнопке «Rādīt vairāk». Без cookies, голым fetch (проверено 2026-10-31).
@@ -9,10 +9,10 @@ const API = `${ORIGIN}/proxy/api/v1/inventory/collection`;
 const LIMIT = 200;
 // Akcijas: цены со скидкой для всех (1752 на 2026-10-31). Paldies cena: цены по карте Paldies, срока нет (1934). Общих позиций нет.
 const COLLECTIONS = ["50XV", "GAUV"];
-const USER_AGENT = "BestPriceBot (personal project)";
 // Как у Maxima: одинаковое условие нужно, чтобы одна и та же акция двух магазинов получила один ключ товара (docs/PLAN.md, «Сопоставление»).
 const CARD = "Ar PALDIES karti";
 const MAX_INVALID = 0.05;
+const MIN_FIELD_SHARE = 0.9;
 const MAX_MISSING = 0.05;
 
 type Item = {
@@ -128,26 +128,10 @@ export function parse(items: unknown[], trees: unknown[]): ScrapeResult {
   return { offers: uniqueOffers(offers), invalid };
 }
 
-const ATTEMPTS = 3;
-const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Повторяем сетевые ошибки (в том числе обрыв при чтении тела), 5xx и 429; остальные 4xx повтор не лечит (как у Maxima: findings/maxima-fetch-no-retry).
-async function get(url: string, retryMs: number): Promise<{ count?: unknown; inventories?: unknown; categoryTree?: unknown }> {
-  for (let attempt = 1; ; attempt++) {
-    let failure: unknown;
-    try {
-      const res = await fetch(url, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(60_000) });
-      if (res.ok) return await res.json();
-      failure = new Error(`Barbora: HTTP ${res.status}`);
-      if (res.status < 500 && res.status !== 429) throw failure;
-    } catch (e) {
-      if (e === failure) throw e;
-      failure = e;
-    }
-    if (attempt === ATTEMPTS) throw failure;
-    await wait(retryMs * attempt);
-  }
-}
+type Body = { count?: unknown; inventories?: unknown; categoryTree?: unknown };
+const get = async (url: string, retryMs: number) => (await fetchRetry(url, { name: "Barbora", read: (t) => JSON.parse(t) as Body, retryMs }))!;
 
 async function collection(id: string, retryMs: number): Promise<{ items: unknown[]; tree: unknown }> {
   const items: unknown[] = [];
@@ -182,5 +166,8 @@ export async function scrape(opts: { retryMs?: number } = {}): Promise<ScrapeRes
     throw new Error(`Barbora: не разобрано ${result.invalid} из ${tiles} акций, формат мог измениться`);
   }
   if (result.offers.length === 0) throw new Error("Barbora: ни одной акции, формат мог измениться");
+  // Поле есть почти у всех товаров (живой прогон 2026-11-15: ≥ 0,99); провал доли = формат поменялся, а необязательное поле молча стало null.
+  requireShare("Barbora", result.offers, "category", (o) => o.category, MIN_FIELD_SHARE);
+  requireShare("Barbora", result.offers, "imageUrl", (o) => o.imageUrl, MIN_FIELD_SHARE);
   return result;
 }

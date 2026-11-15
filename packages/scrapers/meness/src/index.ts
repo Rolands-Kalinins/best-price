@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { type Product, type ProductScrapeResult, productSchema, rigaIso, uniqueProducts } from "@bestprice/core";
+import { type Product, type ProductScrapeResult, productSchema, rigaIso, uniqueProducts, fetchRetry, requireShare } from "@bestprice/core";
 
 const SHOP = "https://e-menessaptieka.lv";
 // Открытый JSON-API магазина, тот же запрос, что делает сайт. Без cookies, голым fetch (проверено 2026-11-01).
@@ -8,8 +8,8 @@ const SHOP = "https://e-menessaptieka.lv";
 const API = "https://api.e-menessaptieka.lv/api/v2/shop/search/products";
 const IMAGES = "https://api.e-menessaptieka.lv/media/image/";
 const PER_PAGE = 100;
-const USER_AGENT = "BestPriceBot (personal project)";
 const MAX_INVALID = 0.05;
+const MIN_FIELD_SHARE = 0.9;
 const CARD = "Ar karti «Veselība»";
 // Каталог ≈10 200 товаров; оборванный обход выглядел бы успехом, поэтому порог.
 const MIN_PRODUCTS = 9000;
@@ -100,27 +100,11 @@ export function parse(items: unknown[]): ProductScrapeResult {
 }
 
 // 6 попыток: на раннерах GitHub сайт изредка рвёт соединение серией (11–12.11 три попытки подряд не хватило, findings/2026-11-12-meness-connection-drops).
-const ATTEMPTS = 6;
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Повторяем сетевые ошибки, 5xx и 429; остальные 4xx повтор не лечит (findings/maxima-fetch-no-retry).
-async function get(url: string, retryMs: number): Promise<{ meta?: { totalItems?: unknown; lastPage?: unknown }; data?: unknown }> {
-  for (let attempt = 1; ; attempt++) {
-    let failure: unknown;
-    try {
-      const res = await fetch(url, { headers: { "User-Agent": USER_AGENT, Accept: "application/json" }, signal: AbortSignal.timeout(60_000) });
-      if (res.ok) return await res.json();
-      failure = new Error(`Mēness: HTTP ${res.status}`);
-      if (res.status < 500 && res.status !== 429) throw failure;
-    } catch (e) {
-      if (e === failure) throw e;
-      failure = e;
-    }
-    if (attempt === ATTEMPTS) throw failure;
-    console.warn(`Mēness: повтор ${attempt}/${ATTEMPTS - 1} (${url.slice(API.length)}): ${failure instanceof Error ? `${failure.message} ${(failure.cause as Error | undefined)?.message ?? ""}` : failure}`);
-    await wait(retryMs * attempt);
-  }
-}
+type Body = { meta?: { totalItems?: unknown; lastPage?: unknown }; data?: unknown };
+const get = async (url: string, retryMs: number) => (await fetchRetry(url, { name: "Mēness", read: (t) => JSON.parse(t) as Body, retryMs, attempts: 6, headers: { Accept: "application/json" } }))!;
 
 // Поиск отдаёт не больше 10 000 результатов (Elasticsearch: from + size <= 10000, иначе HTTP 400), а в каталоге 10 221 товар.
 // Поэтому обходим по ценовым диапазонам в центах (price[min], price[max], границы включены, повтор на стыке убирает uniqueProducts): в каждом меньше 10 000.
@@ -172,5 +156,8 @@ export async function scrape(opts: { retryMs?: number; pauseMs?: number; minProd
   if (result.products.length < min) {
     throw new Error(`Mēness: всего ${result.products.length} товаров, ожидалось от ${min}`);
   }
+  // Поле есть почти у всех товаров (живой прогон 2026-11-15: ≥ 0,99); провал доли = формат поменялся, а необязательное поле молча стало null.
+  requireShare("Mēness", result.products, "category", (p) => p.category, MIN_FIELD_SHARE);
+  requireShare("Mēness", result.products, "brand", (p) => p.brand, MIN_FIELD_SHARE);
   return result;
 }

@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { type Offer, type ScrapeResult, offerSchema, rigaIso } from "@bestprice/core";
+import { type Offer, type ScrapeResult, offerSchema, rigaIso, fetchRetry } from "@bestprice/core";
 
 const ORIGIN = "https://www.rimi.lv";
 // Список акций: SSR-HTML, cookies не нужны. pageSize сервер режет до 100 (на 2026-10-27 было 3912 плиток, 40 страниц).
@@ -7,10 +7,8 @@ const ORIGIN = "https://www.rimi.lv";
 const LIST = `${ORIGIN}/e-veikals/lv/akcijas-piedavajumi`;
 const PAGE_SIZE = 100;
 const MAX_PAGES = 100;
-const USER_AGENT = "BestPriceBot (personal project)";
 const CARD = "Ar MansRimi karti";
 const MAX_INVALID = 0.05;
-const ATTEMPTS = 3;
 
 export type Period = { startsAt: string | null; endsAt: string | null };
 
@@ -108,22 +106,7 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 // Таймаут: зависший запрос не должен подвесить прогон на ~4 тыс. запросов. Но одиночный сбой сети или медленный ответ
 // (один таймаут уже убил запуск в GitHub Actions) не должен ронять весь прогон: три попытки с нарастающей паузой.
 // Повторяем сетевые ошибки и HTTP 5xx/429; остальные 4xx (403, 404) повтор не исправит.
-async function get(url: string, retryMs: number): Promise<string> {
-  for (let attempt = 1; ; attempt++) {
-    let failure: unknown;
-    try {
-      const res = await fetch(url, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(30_000) });
-      if (res.ok) return await res.text();
-      failure = new Error(`Rimi: HTTP ${res.status} ${url}`);
-      if (res.status < 500 && res.status !== 429) throw failure;
-    } catch (e) {
-      if (e === failure) throw e;
-      failure = e;
-    }
-    if (attempt === ATTEMPTS) throw failure;
-    await wait(retryMs * attempt);
-  }
-}
+const get = async (url: string, retryMs: number) => (await fetchRetry(url, { name: "Rimi", read: (t) => t, retryMs, timeoutMs: 30_000 }))!;
 
 // known: периоды уже сохранённых действующих акций (по externalId), чтобы не ходить за карточкой повторно.
 // Порядок на сервере нестабилен (один проход теряет ~1% товаров, а часть показывает дважды), поэтому проходов несколько.
