@@ -3,7 +3,7 @@
 import { MAX_SEARCH_CHARS, PAGE_SIZE } from "@bestprice/core";
 import { Check, Search, SlidersHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { type ReactNode, useEffect, useRef, useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 
 const chip =
@@ -63,6 +63,7 @@ export function FeedFilters<Q extends Base>({
   sortLabels,
   total,
   cleared,
+  landing,
 }: {
   feed: ReturnType<typeof useFeed<Q>>;
   query: Q;
@@ -77,6 +78,8 @@ export function FeedFilters<Q extends Base>({
   total: string;
   // Значения всех фильтров «выключено»: их ставит кнопка «Сбросить».
   cleared: Partial<Q>;
+  // Блок начала раздела (чистая страница): поле поиска крупнее, под ним этот блок, строка категорий скрыта (её заменяют плитки блока).
+  landing?: ReactNode;
 }) {
   // На телефоне чипы свёрнуты: иначе они занимают первый экран, и товаров не видно.
   const [open, setOpen] = useState(false);
@@ -108,7 +111,7 @@ export function FeedFilters<Q extends Base>({
             ref={input}
             defaultValue={query.q}
             onChange={search}
-            className={cn(field, "w-full pr-3 pl-9")}
+            className={cn(field, "w-full pr-3 pl-9", landing && "h-12 text-base")}
           />
         </div>
         <button
@@ -123,6 +126,8 @@ export function FeedFilters<Q extends Base>({
           {active > 0 && <span className="tabular-nums">({active})</span>}
         </button>
       </div>
+
+      {landing}
 
       <div id="feed-filters" className={cn("space-y-3", !open && "max-md:hidden")}>
         <div role="group" aria-label="Магазины" className="flex flex-wrap gap-2">
@@ -151,7 +156,10 @@ export function FeedFilters<Q extends Base>({
           ref={cats}
           role="group"
           aria-label="Категории"
-          className="relative -mx-4 flex gap-2 overflow-x-auto pr-12 pb-1 pl-4 [mask-image:linear-gradient(to_right,#000_calc(100%-2.5rem),transparent)] [scrollbar-width:thin]"
+          className={cn(
+            "relative -mx-4 flex gap-2 overflow-x-auto pr-12 pb-1 pl-4 [mask-image:linear-gradient(to_right,#000_calc(100%-2.5rem),transparent)] [scrollbar-width:thin]",
+            landing && "hidden",
+          )}
         >
           {[{ slug: null, name: "Все категории" }, ...categories].map((c) => (
             <button

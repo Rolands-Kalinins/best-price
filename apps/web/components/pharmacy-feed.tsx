@@ -1,9 +1,10 @@
 "use client";
 
-import { type GroupMember, MAX_OFFERS, PAGE_SIZE, PHARMACY_CATEGORIES, type PharmacyQuery, type PharmacySort } from "@bestprice/core";
+import { type GroupMember, isLanding, MAX_OFFERS, PAGE_SIZE, PHARMACY_CATEGORIES, type PharmacyQuery, type PharmacySort } from "@bestprice/core";
 import Link from "next/link";
 import { FeedFilters, useFeed } from "@/components/feed-filters";
 import { PharmacyCard, type PharmacyRow, type StoreMap } from "@/components/pharmacy-card";
+import { PharmacyLanding } from "@/components/pharmacy-landing";
 import { buttonVariants } from "@/components/ui/button";
 import { num } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -65,6 +66,7 @@ export function PharmacyFeed({
         sortLabels={SORT_LABELS}
         total={num(total)}
         cleared={{ store: null, cat: null, sale: false, card: false }}
+        landing={isLanding(query) ? <PharmacyLanding onPick={feed.update} /> : undefined}
       />
 
       {products.length ? (

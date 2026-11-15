@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { MAX_OFFERS, PAGE_SIZE } from "./offer-view";
-import { cardActive, freshSince, groupMembers, parsePharmacyQuery, priceSummary, storeColor } from "./pharmacy-view";
+import { cardActive, freshSince, groupMembers, isLanding, parsePharmacyQuery, priceSummary, storeColor } from "./pharmacy-view";
 
 const q = (s: string) => parsePharmacyQuery(new URLSearchParams(s));
 
@@ -61,4 +61,10 @@ test("storeColor: цвет по slug аптеки, неизвестная апт
 
 test("priceSummary: аптек столько, сколько разных source_id (два товара одной аптеки в группе не удваивают счёт)", () => {
   assert.equal(priceSummary([{ price: 2, source_id: 1 }, { price: 4, source_id: 1 }, { price: 3, source_id: 2 }]).count, 2);
+});
+
+test("isLanding: чистая страница — без поиска, категории, аптеки и переключателей; сортировка и страница не в счёт", () => {
+  assert.equal(isLanding(q("")), true);
+  assert.equal(isLanding(q("sort=price&n=120")), true);
+  for (const s of ["q=vit", "store=2", "cat=pets", "sale=1", "card=1"]) assert.equal(isLanding(q(s)), false, s);
 });

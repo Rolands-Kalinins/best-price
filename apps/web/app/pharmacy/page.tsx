@@ -1,4 +1,4 @@
-import { freshSince, groupMembers, parsePharmacyQuery, searchGroups, searchOrClause } from "@bestprice/core";
+import { freshSince, groupMembers, isLanding, parsePharmacyQuery, searchGroups, searchOrClause } from "@bestprice/core";
 import { redirect } from "next/navigation";
 import { PharmacyFeed } from "@/components/pharmacy-feed";
 import { SiteHeader } from "@/components/site-header";
@@ -77,13 +77,13 @@ export default async function PharmacyPage({ searchParams }: { searchParams: Pro
   const stores = (sourcesRes.data ?? []).map((s) => ({ ...s, lastRun: lastRun.get(s.id) ?? null }));
   const rows = productsRes.data ?? [];
   const total = productsRes.count ?? rows.length;
-  const unfiltered = !query.q && query.store === null && !query.cat && !query.sale && !query.card;
+  const unfiltered = isLanding(query);
 
   return (
     <>
       <SiteHeader email={auth.user.email ?? ""} isAdmin={adminRes.data === true} />
       <main id="main" className="mx-auto w-full max-w-7xl space-y-4 p-4">
-        <h1 className="text-2xl font-semibold">Аптеки</h1>
+        <h1 className="text-2xl font-semibold">{unfiltered ? "Сравните цены в аптеках Латвии" : "Аптеки"}</h1>
         <StoreStatus stores={stores} />
         {total === 0 && unfiltered ? (
           <p className="text-muted-foreground py-12 text-center text-sm">
