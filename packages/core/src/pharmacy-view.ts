@@ -81,3 +81,8 @@ const STORE_COLORS: Record<string, string> = { benu: "#16a34a", apotheka: "#dc26
 export function storeColor(slug: string): string {
   return STORE_COLORS[slug] ?? "#9ca3af";
 }
+
+/** Чистая страница «Аптеки»: ничего не выбрано. Сортировка и число показанных карточек выбором не считаются. Тогда показывается блок начала (поиск, примеры, плитки категорий). */
+export function isLanding(q: PharmacyQuery): boolean {
+  return !q.q && q.store === null && !q.cat && !q.sale && !q.card;
+}
