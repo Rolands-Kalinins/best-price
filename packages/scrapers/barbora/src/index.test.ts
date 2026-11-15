@@ -155,7 +155,7 @@ test("scrape: обрыв соединения повторяется, посто
   const real = globalThis.fetch;
   let calls = 0;
   const drop = () => Promise.reject(new TypeError("terminated"));
-  const ok = () => Promise.resolve(Response.json({ count: 2, inventories: akcijas.inventories.slice(0, 2), categoryTree: [] }));
+  const ok = () => Promise.resolve(Response.json({ count: 2, inventories: akcijas.inventories.slice(0, 2), categoryTree: akcijas.categoryTree }));
   const replies = [drop, drop, ok, ok];
   globalThis.fetch = (() => replies[calls++]()) as typeof fetch;
   try {
@@ -174,6 +174,16 @@ test("scrape: обрыв соединения повторяется, посто
     replies.splice(0, 3, () => Promise.resolve(new Response("", { status: 403 })));
     await assert.rejects(scrape({ retryMs: 0 }), /HTTP 403/);
     assert.equal(calls, 1);
+  } finally {
+    globalThis.fetch = real;
+  }
+});
+
+test("scrape: категория пропала у всех акций (дерево пустое) — сбой с именем поля, а не тихий успех", async () => {
+  const real = globalThis.fetch;
+  globalThis.fetch = (() => Promise.resolve(Response.json({ count: 2, inventories: akcijas.inventories.slice(0, 2), categoryTree: [] }))) as typeof fetch;
+  try {
+    await assert.rejects(scrape({ retryMs: 0 }), /поле category есть у 0 из 2/);
   } finally {
     globalThis.fetch = real;
   }

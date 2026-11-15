@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { type Product, type ProductScrapeResult, productSchema, rigaIso, uniqueProducts } from "@bestprice/core";
+import { type Product, type ProductScrapeResult, productSchema, rigaIso, uniqueProducts, fetchRetry } from "@bestprice/core";
 
 const ORIGIN = "https://www.euroaptieka.lv";
 // Страницы списков (/l/...) рисует браузер (в HTML заглушки), /api/* закрыт (403), поэтому берём карточки товаров из sitemap:
@@ -8,7 +8,6 @@ const ORIGIN = "https://www.euroaptieka.lv";
 const SITEMAP = `${ORIGIN}/sitemap/products.xml`;
 // Раздел акций: его плитки (рисуются на сервере, ≈3 МБ) показывают цену по клубной карте, её в карточке нет.
 const AKCIJAS = `${ORIGIN}/l/akcijas`;
-const USER_AGENT = "BestPriceBot (personal project)";
 const MAX_INVALID = 0.05;
 // В sitemap 6 608 латышских адресов; оборванный обход выглядел бы успехом, поэтому порог.
 const MIN_PRODUCTS = 6000;
@@ -117,28 +116,11 @@ export function parseCardPrices(html: string): Map<string, CardPrice> {
   return out;
 }
 
-const ATTEMPTS = 3;
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // null: 404 (товар убрали после выхода sitemap). Повторяем сетевые ошибки, 5xx и 429 (findings/maxima-fetch-no-retry).
 // Остальные 4xx, в том числе 403, сразу ошибка: сайт блокирует запросы, обходить защиту не будем (решение владельца).
-async function get(url: string, retryMs: number): Promise<string | null> {
-  for (let attempt = 1; ; attempt++) {
-    let failure: unknown;
-    try {
-      const res = await fetch(url, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(60_000) });
-      if (res.ok) return await res.text();
-      if (res.status === 404) return null;
-      failure = new Error(`Euroaptieka: HTTP ${res.status} ${url}`);
-      if (res.status < 500 && res.status !== 429) throw failure;
-    } catch (e) {
-      if (e === failure) throw e;
-      failure = e;
-    }
-    if (attempt === ATTEMPTS) throw failure;
-    await wait(retryMs * attempt);
-  }
-}
+const get = (url: string, retryMs: number) => fetchRetry(url, { name: "Euroaptieka", read: (t) => t, retryMs, gone: [404] });
 
 export async function scrape(opts: { retryMs?: number; pauseMs?: number; concurrency?: number; minProducts?: number } = {}): Promise<ProductScrapeResult> {
   const retryMs = opts.retryMs ?? 3000;
