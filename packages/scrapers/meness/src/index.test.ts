@@ -5,7 +5,13 @@ import { parse, scrape } from "./index";
 
 type Item = Record<string, any>;
 const fixture = JSON.parse(readFileSync("fixtures/products.json", "utf8")) as { meta: Item; data: Item[] };
-const [sale, plain] = fixture.data;
+// С 13.11.2026 API отдаёт productTaxons без slug (только id), а категорию цепочкой mainTaxon.parent с кодами через «_».
+const taxon = (codes: string[]): Item | null => codes.reduce<Item | null>((parent, code) => ({ code, parent }), null);
+const withTaxon = (it: Item, ...codes: string[]): Item => ({ ...structuredClone(it), productTaxons: [{ id: 1 }], mainTaxon: taxon(["menessaptieka_master", "all_products", ...codes]) });
+const [sale, plain] = [
+  withTaxon(fixture.data[0], "skaistumam", "kermena_adas_kopsana", "kremji_losjoni_un_ellas"),
+  withTaxon(fixture.data[1], "vitamini_un_mineralvielas", "mineralvielu_kompleksi", "kolagens"),
+];
 const clone = <T>(x: T): T => structuredClone(x);
 
 test("parse: товар с акцией — цена в центах, старая цена, срок по Риге, ссылка, картинка, категория меню сайта", () => {
@@ -22,7 +28,7 @@ test("parse: товар с акцией — цена в центах, стара
   assert.equal(p.endsAt, "2026-11-01T21:59:00.000Z");
   assert.equal(p.url, `https://e-menessaptieka.lv/p/${sale.slug}-1162270`);
   assert.equal(p.imageUrl, `https://api.e-menessaptieka.lv/media/image/${sale.images[0].path}`);
-  // В productTaxons деревья Moonmart и прочие; берём самый глубокий путь из меню магазина, при равенстве первый.
+  // Путь из mainTaxon без служебных корней, «_» → «-» (формат категорий в БД прежний).
   assert.equal(p.category, "skaistumam/kermena-adas-kopsana/kremji-losjoni-un-ellas");
   assert.equal(p.prescription, false);
   assert.equal(p.inStock, true);
@@ -38,12 +44,13 @@ test("parse: товар без акции — старой цены и срок�
   assert.equal(p.category, "vitamini-un-mineralvielas/mineralvielu-kompleksi/kolagens");
 });
 
-test("parse: нет веток верхнего меню — берём другую ветку магазина, а не служебные деревья (Moonmart, menessaptieka, mv-…)", () => {
-  const p = clone(plain);
-  p.productTaxons = ["menessaptieka/visas-preces", "moonmart-lv/visas-preces", "mv-higiena-un-veseliba/vate", "higienas-preces/vates-kocini", "higienas-preces", "moonmart"].map((slug) => ({ slug }));
-  assert.equal(parse([p]).products[0].category, "higienas-preces/vates-kocini");
-  p.productTaxons = [{ slug: "menessaptieka/visas-preces" }, { slug: "moonmart" }];
-  assert.equal(parse([p]).products[0].category, null);
+test("parse: категория из mainTaxon; без неё или только служебные корни — null", () => {
+  assert.equal(parse([withTaxon(plain, "higienas_preces", "vates_kocini")]).products[0].category, "higienas-preces/vates-kocini");
+  const bare = clone(plain);
+  bare.mainTaxon = taxon(["menessaptieka_master", "all_products"]);
+  assert.equal(parse([bare]).products[0].category, null);
+  delete bare.mainTaxon;
+  assert.equal(parse([bare]).products[0].category, null);
 });
 
 test("parse: цена по карте «Veselība» с периодом; у товара без неё поля пустые", () => {
