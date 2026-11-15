@@ -3,6 +3,7 @@ export * from "./ai-usage";
 export * from "./categories-data";
 export * from "./category";
 export * from "./database.types";
+export * from "./fetch-retry";
 export * from "./gemini";
 export * from "./leaflet-view";
 export * from "./offer-edit";

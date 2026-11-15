@@ -1,11 +1,10 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { type Offer, type ScrapeResult, fold, offerSchema, uniqueOffers } from "@bestprice/core";
+import { type Offer, type ScrapeResult, fold, offerSchema, uniqueOffers, fetchRetry } from "@bestprice/core";
 
 const ORIGIN = "https://e-latts.lv";
 // Раздел «Akcijas» интернет-магазина LaTS: серверный HTML без JS и cookies, 40 плиток на страницу (разведка 2026-10-31: 573 плитки, 15 страниц).
 // /robots.txt закрывает только служебный /_dgv/. Sitemap и API нет, счётчика товаров на странице нет: конец списка — пустая страница.
 const SALE = `${ORIGIN}/products.sale.ppl`;
-const USER_AGENT = "BestPriceBot (personal project)";
 const MAX_PAGES = 100; // 15 страниц сейчас; предохранитель от бесконечного цикла, если сайт перестанет отдавать пустую страницу
 const MAX_INVALID = 0.05;
 // Обычно 438 акций (2026-10-31). Меньше половины — скорее всего обход оборвался (страница с ошибкой и кодом 200 выглядит как конец списка).
@@ -75,26 +74,10 @@ export function parse(html: string): ScrapeResult {
   return { offers: uniqueOffers(offers), invalid };
 }
 
-const ATTEMPTS = 3;
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Повторяем сетевые ошибки, 5xx и 429; остальные 4xx повтор не лечит (findings/maxima-fetch-no-retry).
-async function get(url: string, retryMs: number): Promise<string> {
-  for (let attempt = 1; ; attempt++) {
-    let failure: unknown;
-    try {
-      const res = await fetch(url, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(60_000) });
-      if (res.ok) return await res.text();
-      failure = new Error(`e-latts: HTTP ${res.status}`);
-      if (res.status < 500 && res.status !== 429) throw failure;
-    } catch (e) {
-      if (e === failure) throw e;
-      failure = e;
-    }
-    if (attempt === ATTEMPTS) throw failure;
-    await wait(retryMs * attempt);
-  }
-}
+const get = async (url: string, retryMs: number) => (await fetchRetry(url, { name: "e-latts", read: (t) => t, retryMs }))!;
 
 export async function scrape(opts: { retryMs?: number; pauseMs?: number; minOffers?: number } = {}): Promise<ScrapeResult> {
   const pages: string[] = [];

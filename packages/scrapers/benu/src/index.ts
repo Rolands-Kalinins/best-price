@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { type Product, type ProductScrapeResult, productSchema, rigaIso, uniqueProducts } from "@bestprice/core";
+import { type Product, type ProductScrapeResult, productSchema, rigaIso, uniqueProducts, fetchRetry, requireShare } from "@bestprice/core";
 
 // Каталог сайта (benu.lv) рисуется из поиска Luigi's Box: открытый JSON, тот же запрос, что делает сайт. Без cookies, голым fetch (проверено 2026-11-01).
 // tracker_id вшит в HTML страниц. size не больше 200 (иначе 400), окно результатов 10 000, total_hits выше не показывает.
@@ -9,8 +9,8 @@ const API = "https://live.luigisbox.com/search?tracker_id=232949-269228&f[]=type
 const SHOP = "https://www.benu.lv";
 const PER_PAGE = 200;
 const WINDOW = 10_000;
-const USER_AGENT = "BestPriceBot (personal project)";
 const MAX_INVALID = 0.05;
+const MIN_FIELD_SHARE = 0.9;
 const CARD = "Ar Benu karti";
 // Каталог в выборке ≈6 070; оборванный обход выглядел бы успехом, поэтому порог.
 const MIN_PRODUCTS = 4500;
@@ -93,26 +93,11 @@ export function parse(hits: unknown[], now = new Date()): ProductScrapeResult {
   return { products: uniqueProducts(products), invalid };
 }
 
-const ATTEMPTS = 4;
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Повторяем сетевые ошибки, 5xx и 429 (сайт отвечал «Retry later» при частых запросах); остальные 4xx повтор не лечит (findings/maxima-fetch-no-retry).
-async function get(url: string, retryMs: number): Promise<{ results?: { total_hits?: unknown; hits?: unknown } }> {
-  for (let attempt = 1; ; attempt++) {
-    let failure: unknown;
-    try {
-      const res = await fetch(url, { headers: { "User-Agent": USER_AGENT, Accept: "application/json" }, signal: AbortSignal.timeout(60_000) });
-      if (res.ok) return await res.json();
-      failure = new Error(`Benu: HTTP ${res.status}`);
-      if (res.status < 500 && res.status !== 429) throw failure;
-    } catch (e) {
-      if (e === failure) throw e;
-      failure = e;
-    }
-    if (attempt === ATTEMPTS) throw failure;
-    await wait(retryMs * attempt);
-  }
-}
+type Body = { results?: { total_hits?: unknown; hits?: unknown } };
+const get = async (url: string, retryMs: number) => (await fetchRetry(url, { name: "Benu", read: (t) => JSON.parse(t) as Body, retryMs, attempts: 4, headers: { Accept: "application/json" } }))!;
 
 export async function scrape(opts: { retryMs?: number; pauseMs?: number; minProducts?: number; perPage?: number; now?: Date } = {}): Promise<ProductScrapeResult> {
   const retryMs = opts.retryMs ?? 5000;
@@ -146,5 +131,8 @@ export async function scrape(opts: { retryMs?: number; pauseMs?: number; minProd
   if (result.products.length < min) {
     throw new Error(`Benu: всего ${result.products.length} товаров, ожидалось от ${min}`);
   }
+  // Поле есть почти у всех товаров (живой прогон 2026-11-15: ≥ 0,99); провал доли = формат поменялся, а необязательное поле молча стало null.
+  requireShare("Benu", result.products, "category", (p) => p.category, MIN_FIELD_SHARE);
+  requireShare("Benu", result.products, "ean", (p) => p.ean, MIN_FIELD_SHARE);
   return result;
 }

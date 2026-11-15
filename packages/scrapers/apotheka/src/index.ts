@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { type Product, type ProductScrapeResult, productSchema, uniqueProducts } from "@bestprice/core";
+import { type Product, type ProductScrapeResult, productSchema, uniqueProducts, fetchRetry } from "@bestprice/core";
 
 // Apotheka (apotheka.lv): Magento с React-интерфейсом, серверный рендер. Разведка 2026-11-01 (docs/recon/apotheka.md).
 // 1) Список /produkti?p=N (34 товара на страницу, ≈180 страниц, ≈6 175 товаров) отдаёт товары встроенным JSON: цена, <del> старая цена,
@@ -9,7 +9,6 @@ import { type Product, type ProductScrapeResult, productSchema, uniqueProducts }
 const SHOP = "https://www.apotheka.lv";
 const LIST = `${SHOP}/produkti`;
 const SITEMAP = `${SHOP}/sitemap_lv.xml`;
-const USER_AGENT = "BestPriceBot (personal project)";
 const MAX_INVALID = 0.05;
 const CARD = "Reģistrētiem lietotājiem";
 // В списке + карточках ≈7 500 товаров; оборванный обход выглядел бы успехом, поэтому порог.
@@ -111,27 +110,10 @@ export function productUrls(xml: string): string[] {
   return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]).filter((u) => /-pmm\d+lv$/i.test(u));
 }
 
-const ATTEMPTS = 4;
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Повторяем сетевые ошибки, 5xx и 429; остальные 4xx повтор не лечит (findings/maxima-fetch-no-retry). gone: 404 вернуть null (карточку убрали).
-async function get(url: string, retryMs: number, gone = false): Promise<string | null> {
-  for (let attempt = 1; ; attempt++) {
-    let failure: unknown;
-    try {
-      const res = await fetch(url, { headers: { "User-Agent": USER_AGENT }, signal: AbortSignal.timeout(60_000) });
-      if (res.ok) return await res.text();
-      if (gone && (res.status === 404 || res.status === 410)) return null;
-      failure = new Error(`Apotheka: HTTP ${res.status}`);
-      if (res.status < 500 && res.status !== 429) throw failure;
-    } catch (e) {
-      if (e === failure) throw e;
-      failure = e;
-    }
-    if (attempt === ATTEMPTS) throw failure;
-    await wait(retryMs * attempt);
-  }
-}
+const get = (url: string, retryMs: number, gone = false) => fetchRetry(url, { name: "Apotheka", read: (t) => t, retryMs, attempts: 4, gone: gone ? [404, 410] : undefined });
 
 function listPage(html: string): { products: Item[]; last: number; count: number } {
   for (const m of html.matchAll(/<script type="application\/json"[^>]*>([\s\S]*?)<\/script>/g)) {
