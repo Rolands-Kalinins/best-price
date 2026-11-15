@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { MAX_OFFERS, PAGE_SIZE } from "./offer-view";
-import { cardActive, freshSince, groupMembers, parsePharmacyQuery } from "./pharmacy-view";
+import { cardActive, freshSince, groupMembers, parsePharmacyQuery, priceSummary, storeColor } from "./pharmacy-view";
 
 const q = (s: string) => parsePharmacyQuery(new URLSearchParams(s));
 
@@ -43,4 +43,22 @@ test("groupMembers: по номеру группы, от дешёвых", () => 
   const g = groupMembers([member(1, 9), member(2, 3), member(3, 5), member(4, 7, 2)]);
   assert.deepEqual(g.get(1)?.map((m) => m.id), [2, 3, 1]);
   assert.deepEqual(g.get(2)?.map((m) => m.id), [4]);
+});
+
+test("priceSummary: от и до, число аптек, разброс в процентах от самой дешёвой", () => {
+  assert.deepEqual(priceSummary([{ price: 8.39, source_id: 1 }, { price: 9.7, source_id: 2 }, { price: 15.49, source_id: 3 }]), { min: 8.39, max: 15.49, count: 3, spreadPct: 85 });
+});
+
+test("priceSummary: одна аптека и одинаковые цены — разброса нет", () => {
+  assert.deepEqual(priceSummary([{ price: 5, source_id: 1 }]), { min: 5, max: 5, count: 1, spreadPct: 0 });
+  assert.equal(priceSummary([{ price: 5, source_id: 1 }, { price: 5, source_id: 2 }]).spreadPct, 0);
+});
+
+test("storeColor: цвет по slug аптеки, неизвестная аптека — серый", () => {
+  assert.notEqual(storeColor("benu"), storeColor("apotheka"));
+  assert.equal(storeColor("new-store"), storeColor(""));
+});
+
+test("priceSummary: аптек столько, сколько разных source_id (два товара одной аптеки в группе не удваивают счёт)", () => {
+  assert.equal(priceSummary([{ price: 2, source_id: 1 }, { price: 4, source_id: 1 }, { price: 3, source_id: 2 }]).count, 2);
 });

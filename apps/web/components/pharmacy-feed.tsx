@@ -3,7 +3,7 @@
 import { type GroupMember, MAX_OFFERS, PAGE_SIZE, PHARMACY_CATEGORIES, type PharmacyQuery, type PharmacySort } from "@bestprice/core";
 import Link from "next/link";
 import { FeedFilters, useFeed } from "@/components/feed-filters";
-import { PharmacyCard, type PharmacyRow } from "@/components/pharmacy-card";
+import { PharmacyCard, type PharmacyRow, type StoreMap } from "@/components/pharmacy-card";
 import { buttonVariants } from "@/components/ui/button";
 import { num } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -42,11 +42,11 @@ export function PharmacyFeed({
   products: PharmacyRow[];
   total: number;
   members: Record<number, GroupMember[]>;
-  stores: { id: number; name: string }[];
+  stores: { id: number; name: string; slug: string }[];
   query: PharmacyQuery;
 }) {
   const feed = useFeed(query, href);
-  const storeName = new Map(stores.map((s) => [s.id, s.name]));
+  const storeMap: StoreMap = new Map(stores.map((s) => [s.id, { name: s.name, slug: s.slug }]));
 
   return (
     <section className="space-y-4">
@@ -75,7 +75,7 @@ export function PharmacyFeed({
           >
             {products.map((p) => (
               <li key={p.id} className="flex">
-                <PharmacyCard product={p} storeName={storeName.get(p.source_id) ?? ""} members={p.group_id === null ? undefined : members[p.group_id]} stores={storeName} />
+                <PharmacyCard product={p} members={p.group_id === null ? undefined : members[p.group_id]} stores={storeMap} />
               </li>
             ))}
           </ul>
