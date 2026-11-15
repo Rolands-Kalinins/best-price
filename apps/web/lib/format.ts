@@ -14,3 +14,11 @@ export function ago(iso: string) {
   if (min < 60 * 24) return rtf.format(-Math.round(min / 60), "hour");
   return rtf.format(-Math.round(min / 60 / 24), "day");
 }
+
+const pluralRu = new Intl.PluralRules("ru");
+
+/** Слово по числу: plural(2, "аптека", "аптеки", "аптек"). */
+export const plural = (n: number, one: string, few: string, many: string) => {
+  const r = pluralRu.select(n);
+  return r === "one" ? one : r === "few" ? few : many;
+};

@@ -1,5 +1,5 @@
 // Чистые функции страницы «Аптеки»: используются интерфейсом, тестируются отдельно.
-import { MAX_OFFERS, PAGE_SIZE } from "./offer-view";
+import { MAX_OFFERS, PAGE_SIZE, priceGap } from "./offer-view";
 import { PHARMACY_CATEGORIES } from "./pharmacy-categories";
 
 export type PharmacySort = "discount" | "price" | "name";
@@ -65,4 +65,19 @@ export function groupMembers(rows: GroupMember[]): Map<number, GroupMember[]> {
     out.set(r.group_id, [...(out.get(r.group_id) ?? []), r]);
   }
   return out;
+}
+
+/** Сводка по ценам товара в аптеках: от, до, сколько разных аптек, на сколько процентов дорогая выше дешёвой. Список не пустой. */
+export function priceSummary(members: { price: number; source_id: number }[]): { min: number; max: number; count: number; spreadPct: number } {
+  const prices = members.map((m) => m.price);
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  return { min, max, count: new Set(members.map((m) => m.source_id)).size, spreadPct: priceGap(max, min).pct };
+}
+
+// Цвет точки аптеки по slug из public.sources. ponytail: словарь в коде; новая аптека получает серый, цвет добавляется сюда.
+const STORE_COLORS: Record<string, string> = { benu: "#16a34a", apotheka: "#dc2626", euroaptieka: "#0891b2", meness: "#ea580c" };
+
+export function storeColor(slug: string): string {
+  return STORE_COLORS[slug] ?? "#9ca3af";
 }

@@ -12,7 +12,7 @@ export const instant = false;
 
 // Без служебных search и external_id: ответ с сотнями карточек остаётся лёгким. Должны совпадать с PharmacyRow в components/pharmacy-card.tsx.
 const COLUMNS =
-  "id, source_id, group_id, title, brand, price, old_price, discount, card_price, card_condition, card_starts_at, card_ends_at, prescription, url, image_url" as const;
+  "id, source_id, group_id, title, brand, price, old_price, discount, card_price, card_condition, card_starts_at, card_ends_at, prescription, image_url" as const;
 
 export default async function PharmacyPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const supabase = await createClient();
