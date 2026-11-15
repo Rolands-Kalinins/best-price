@@ -1,13 +1,30 @@
 "use client";
 
 import { type GroupMember, isLanding, MAX_OFFERS, PAGE_SIZE, PHARMACY_CATEGORIES, type PharmacyQuery, type PharmacySort } from "@bestprice/core";
+import { Baby, Coffee, Droplets, Leaf, type LucideIcon, Package, PawPrint, Pill, Sparkles, Stethoscope } from "lucide-react";
 import Link from "next/link";
 import { FeedFilters, useFeed } from "@/components/feed-filters";
 import { PharmacyCard, type PharmacyRow, type StoreMap } from "@/components/pharmacy-card";
-import { PharmacyLanding } from "@/components/pharmacy-landing";
+import { FeedLanding } from "@/components/feed-landing";
 import { buttonVariants } from "@/components/ui/button";
 import { num } from "@/lib/format";
 import { cn } from "@/lib/utils";
+
+// Латышские запросы: русский словарь поиска аптек знает не все слова («ибупрофен» ничего не находит). Хиты на 2026-11-15: 12–246 товаров.
+const EXAMPLES = ["ibuprofēns", "paracetamols", "magnijs", "omega-3", "melatonīns", "kolagēns"];
+
+const ICONS: Record<string, LucideIcon> = {
+  medicine: Pill,
+  supplements: Leaf,
+  "tea-food": Coffee,
+  hygiene: Droplets,
+  skincare: Sparkles,
+  baby: Baby,
+  medical: Stethoscope,
+  pets: PawPrint,
+};
+// Плитки для всех категорий аптек; у новой категории без иконки запасная.
+const TILES = PHARMACY_CATEGORIES.map((c) => ({ slug: c.slug, name: c.name, Icon: ICONS[c.slug] ?? Package }));
 
 const SORT_LABELS: Record<PharmacySort, string> = {
   discount: "Сначала выгодные",
@@ -66,7 +83,7 @@ export function PharmacyFeed({
         sortLabels={SORT_LABELS}
         total={num(total)}
         cleared={{ store: null, cat: null, sale: false, card: false }}
-        landing={isLanding(query) ? <PharmacyLanding onPick={feed.update} /> : undefined}
+        landing={isLanding(query) ? <FeedLanding examples={EXAMPLES} tiles={TILES} onPick={feed.update} /> : undefined}
       />
 
       {products.length ? (

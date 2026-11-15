@@ -1,4 +1,4 @@
-import { activeFilter, parseQuery, priceGap, searchGroups, searchOrClause, storePrices } from "@bestprice/core";
+import { activeFilter, isOfferLanding, parseQuery, priceGap, searchGroups, searchOrClause, storePrices } from "@bestprice/core";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { buttonVariants } from "@/components/ui/button";
@@ -100,13 +100,13 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
   if (query.all) toggled.delete("all");
   else toggled.set("all", "1");
   const compareHref = `/grocery${toggled.size ? `?${toggled}` : ""}`;
-  const unfiltered = !query.q && query.store === null && !query.cat && !query.cond && !query.scope;
+  const unfiltered = isOfferLanding(query);
 
   return (
     <>
       <SiteHeader email={auth.user.email ?? ""} isAdmin={adminRes.data === true} />
       <main id="main" className="mx-auto w-full max-w-7xl space-y-4 p-4">
-        <h1 className="text-2xl font-semibold">Акции</h1>
+        <h1 className="text-2xl font-semibold">{unfiltered ? "Сравните акции магазинов Латвии" : "Акции"}</h1>
         <StoreStatus stores={stores} />
         {total === 0 && unfiltered ? (
           <p className="text-muted-foreground py-12 text-center text-sm">

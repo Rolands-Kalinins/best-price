@@ -1,13 +1,31 @@
 "use client";
 
-import { CATEGORIES, MAX_OFFERS, PAGE_SIZE, type OfferQuery, type OfferSort } from "@bestprice/core";
+import { CATEGORIES, isOfferLanding, MAX_OFFERS, PAGE_SIZE, type OfferQuery, type OfferSort } from "@bestprice/core";
+import { Apple, Beef, Candy, Croissant, CupSoda, type LucideIcon, Milk, Sparkles, Wheat } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { FeedFilters, useFeed } from "@/components/feed-filters";
+import { FeedLanding } from "@/components/feed-landing";
 import { OfferCard, type OfferRow } from "@/components/offer-card";
 import { buttonVariants } from "@/components/ui/button";
 import { num } from "@/lib/format";
 import { cn } from "@/lib/utils";
+
+// Русский словарь поиска знает эти слова (молок→pien, сыр→sier, кофе→kafij…). Хиты на 2026-11-15: 44–567 акций.
+const EXAMPLES = ["молоко", "сыр", "кофе", "шоколад", "хлеб", "Milka"];
+
+// Плитки для 8 крупных продуктовых категорий; остальные категории остаются в строке чипов (keepCategories).
+const ICONS: Record<string, LucideIcon> = {
+  dairy: Milk,
+  "meat-fish": Beef,
+  produce: Apple,
+  bakery: Croissant,
+  drinks: CupSoda,
+  "sweets-snacks": Candy,
+  pantry: Wheat,
+  beauty: Sparkles,
+};
+const TILES = CATEGORIES.flatMap((c) => (ICONS[c.slug] ? [{ slug: c.slug, name: c.name, Icon: ICONS[c.slug] }] : []));
 
 const SORT_LABELS: Record<OfferSort, string> = {
   discount: "Сначала выгодные",
@@ -48,7 +66,7 @@ export function OfferFeed({
   compare?: ReactNode;
 }) {
   const feed = useFeed(query, href);
-  const storeName = new Map(stores.map((s) => [s.id, s.name]));
+  const storeName = new Map(stores.map((s) => [s.id, s.name]));
 
   return (
     <section className="space-y-4">
@@ -67,6 +85,8 @@ export function OfferFeed({
         sortLabels={SORT_LABELS}
         total={num(total)}
         cleared={{ store: null, cat: null, cond: false, scope: false }}
+        landing={isOfferLanding(query) ? <FeedLanding examples={EXAMPLES} tiles={TILES} onPick={feed.update} /> : undefined}
+        keepCategories
       />
 
       {compare}

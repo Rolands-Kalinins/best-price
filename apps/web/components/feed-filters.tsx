@@ -64,6 +64,7 @@ export function FeedFilters<Q extends Base>({
   total,
   cleared,
   landing,
+  keepCategories,
 }: {
   feed: ReturnType<typeof useFeed<Q>>;
   query: Q;
@@ -80,6 +81,8 @@ export function FeedFilters<Q extends Base>({
   cleared: Partial<Q>;
   // Блок начала раздела (чистая страница): поле поиска крупнее, под ним этот блок, строка категорий скрыта (её заменяют плитки блока).
   landing?: ReactNode;
+  // Плитки блока начала покрывают не все категории: строку чипов оставляем видимой.
+  keepCategories?: boolean;
 }) {
   // На телефоне чипы свёрнуты: иначе они занимают первый экран, и товаров не видно.
   const [open, setOpen] = useState(false);
@@ -158,7 +161,7 @@ export function FeedFilters<Q extends Base>({
           aria-label="Категории"
           className={cn(
             "relative -mx-4 flex gap-2 overflow-x-auto pr-12 pb-1 pl-4 [mask-image:linear-gradient(to_right,#000_calc(100%-2.5rem),transparent)] [scrollbar-width:thin]",
-            landing && "hidden",
+            landing && !keepCategories && "hidden",
           )}
         >
           {[{ slug: null, name: "Все категории" }, ...categories].map((c) => (
