@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { CATEGORIES } from "./categories-data";
 import { changedCategories } from "./category";
-import { PHARMACY_CATEGORIES, PHARMACY_TO_GROCERY } from "./pharmacy-categories";
+import { PHARMACY_CATEGORIES } from "./pharmacy-categories";
 
 const cat = (category: string | null, title = "") => [...changedCategories(PHARMACY_CATEGORIES, [{ id: 1, title, category, cat: null }]).keys()][0];
 
@@ -35,15 +35,6 @@ test("категории аптек: разделы Euroaptieka", () => {
 test("категории аптек: без пути решает название, иначе other", () => {
   assert.equal(cat(null, "TENA Discreet uroloģiskie ieliktņi, 6 gab."), "hygiene");
   assert.equal(cat(null, "Kaut kas nezināms"), "other");
-});
-
-test("каждая категория аптеки привязана к продуктовой (или null), и такая продуктовая существует", () => {
-  const grocery = new Set(CATEGORIES.map((c) => c.slug));
-  for (const c of PHARMACY_CATEGORIES) {
-    assert.ok(c.slug in PHARMACY_TO_GROCERY, `нет привязки для ${c.slug}`);
-    const g = PHARMACY_TO_GROCERY[c.slug];
-    assert.ok(g === null || grocery.has(g), `${c.slug} → ${g}: такой продуктовой категории нет`);
-  }
 });
 
 test("категории аптек: разделы Benu (слаги из названий разделов сайта)", () => {

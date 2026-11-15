@@ -1,4 +1,4 @@
-import { freshSince, groupMembers, isLanding, parsePharmacyQuery, searchGroups, searchOrClause } from "@bestprice/core";
+import { freshSince, groupMembers, isLanding, parsePharmacyQuery, searchTerms } from "@bestprice/core";
 import { redirect } from "next/navigation";
 import { PharmacyFeed } from "@/components/pharmacy-feed";
 import { SiteHeader } from "@/components/site-header";
@@ -40,11 +40,8 @@ export default async function PharmacyPage({ searchParams }: { searchParams: Pro
       .or(`card_starts_at.is.null,card_starts_at.lte.${iso}`)
       .or(`card_ends_at.is.null,card_ends_at.gt.${iso}`);
   }
-  // Каждое слово ищется по столбцу search (название и бренд без диакритики); русское слово из словаря даёт группу латышских основ.
-  for (const g of searchGroups(query.q)) {
-    const or = searchOrClause(g);
-    products = or ? products.or(or) : products.like("search", `%${g[0]}%`);
-  }
+  // Каждое слово ищется по столбцу search (название и бренд без диакритики); маски like searchTerms уже убрал.
+  for (const w of searchTerms(query.q)) products = products.like("search", `%${w}%`);
   // id вторым ключом, иначе «Показать ещё» может повторять и терять строки.
   const ordered =
     query.sort === "discount"

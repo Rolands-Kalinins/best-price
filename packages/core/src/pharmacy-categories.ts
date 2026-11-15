@@ -13,15 +13,3 @@ export const PHARMACY_CATEGORIES: readonly Category[] = [
   { slug: "medical", name: "Медицинские товары", stems: ["medicinas-preces", "analizu", "testi", "tests", "termometr", "plaksteri", "pirma-palidziba", "ortopedisk", "saites", "masku", "slirc", "insulin", "^adat", "^adu", "^brilles", "tonometr", "inhalator", "teips", "cimdi", "kontaktlec", "fiksators", "omron", "dexcom"] },
   { slug: "pets", name: "Товары для животных", stems: ["majdzivni", "dzivniek", "kaki", "suniem", "^kaku", "^sunu", "bandit", "applaws", "^hills", "rabbit", "rodent"] },
 ];
-
-/** Связь с продуктовыми категориями (CATEGORIES), чтобы сравнивать аптечный товар с продуктовым магазином по смыслу. null: у продуктов аналога нет. */
-export const PHARMACY_TO_GROCERY: Record<string, string | null> = {
-  medicine: "health",
-  supplements: "health",
-  "tea-food": "drinks",
-  hygiene: "beauty",
-  skincare: "beauty",
-  baby: "kids",
-  medical: null,
-  pets: "pets",
-};

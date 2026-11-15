@@ -6,7 +6,7 @@
 
 | Группа | Магазины | Статус |
 |---|---|---|
-| Продукты (`grocery.*`) | Maxima, Rimi, Barbora, Etop, Lidl, e-LaTS | работает |
+| Продукты (`grocery.*`) | Maxima, Rimi, Barbora, Etop, Lidl | работает |
 | Аптеки (`pharmacy.*`, предложение) | Mēness aptieka, Benu, Apotheka, Euroaptieka | реализованы (Mēness, Euroaptieka, Benu, Apotheka) |
 | Косметика (`cosmetics.*`, предложение) | Drogas, Douglas | разведаны |
 
