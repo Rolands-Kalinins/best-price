@@ -178,3 +178,17 @@ test("scrape: товаров меньше ожидаемого минимума 
     m.restore();
   }
 });
+
+test("scrape: штрихкод пропал у всех товаров (поле переименовали) — сбой с именем поля, а не тихий успех", async () => {
+  const noEan = (id: number) => {
+    const h = withId(id);
+    delete h.attributes.ean;
+    return h;
+  };
+  const m = mockFetch([page([noEan(1), noEan(2)], 2)]);
+  try {
+    await assert.rejects(scrape(opts), /поле ean есть у 0 из 2/);
+  } finally {
+    m.restore();
+  }
+});

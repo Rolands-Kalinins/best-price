@@ -169,3 +169,17 @@ test("scrape: неожиданный формат ответа — ошибка"
     m.restore();
   }
 });
+
+test("scrape: бренд пропал у всех товаров (атрибут переименовали) — сбой с именем поля, а не тихий успех", async () => {
+  const noBrand = (code: string) => {
+    const it = withCode(code) as Record<string, unknown>;
+    it.attributeValues = ((it.attributeValues ?? []) as { attribute?: { code?: string } }[]).filter((a) => a.attribute?.code !== "brand");
+    return it as Item;
+  };
+  const m = mockFetch([probe(2), page([noBrand("1"), noBrand("2")], 1, 1, 2)]);
+  try {
+    await assert.rejects(scrape(opts), /поле brand есть у 0 из 2/);
+  } finally {
+    m.restore();
+  }
+});
