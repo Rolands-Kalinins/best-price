@@ -25,6 +25,9 @@ on:
         default: all
         options: [all, lidl, maxima, barbora, e-latts, rimi, etop, meness, euroaptieka, benu, apotheka]
 
+permissions:
+  contents: read
+
 # Один запуск за раз: двойной клик по кнопке в админке не даст двух одинаковых парсеров.
 # Группа своя у каждого cron: в одной группе ждёт только один запуск и новый отменяет прежнего,
 # а в ночь на понедельник совпадают четыре cron (общий, Rimi, аптеки, Lidl). Ручные запуски делят группу `manual`.
