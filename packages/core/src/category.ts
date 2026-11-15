@@ -1,5 +1,5 @@
 // Категории товаров: Gemini один раз предложил список и латышские основы, человек правит
-// categories-data.ts, а раскладывает код, без запросов к модели. Основа, как в ru-lv.ts: a-z и пробелы, «^» = с начала слова.
+// categories-data.ts, а раскладывает код, без запросов к модели. Основа: a-z и пробелы, «^» = с начала слова.
 import { SEARCH_FROM, SEARCH_TO } from "./offer-view";
 
 export type Category = { slug: string; name: string; stems: string[] };

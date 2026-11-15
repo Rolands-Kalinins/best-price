@@ -11,8 +11,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { num } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-// Русский словарь поиска знает эти слова (молок→pien, сыр→sier, кофе→kafij…). Хиты на 2026-11-15: 44–567 акций.
-const EXAMPLES = ["молоко", "сыр", "кофе", "шоколад", "хлеб", "Milka"];
+// Поиск только латышский. Хиты на 2026-11-15: 44–288 акций.
+const EXAMPLES = ["piens", "siers", "kafija", "šokolāde", "maize", "Milka"];
 
 // Плитки для 8 крупных продуктовых категорий; остальные категории остаются в строке чипов (keepCategories).
 const ICONS: Record<string, LucideIcon> = {
@@ -74,7 +74,7 @@ export function OfferFeed({
         feed={feed}
         query={query}
         searchLabel="Поиск по акциям"
-        placeholder="Поиск: молоко, piens, Milka…"
+        placeholder="Поиск: piens, siers, Milka…"
         allStores="Все магазины"
         stores={stores}
         toggles={[

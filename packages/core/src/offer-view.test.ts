@@ -1,8 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
-import { activeFilter, discountPercent, endsSoon, isOfferLanding, isStale, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchGroups, searchOrClause, searchTerms, storePrices, MAX_SEARCH_WORDS, MAX_SEARCH_CHARS } from "./offer-view";
-import { RU_LV } from "./ru-lv";
+import { activeFilter, discountPercent, endsSoon, isOfferLanding, isStale, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchTerms, storePrices, MAX_SEARCH_WORDS, MAX_SEARCH_CHARS } from "./offer-view";
 
 test("safeHttpUrl: наша миниатюра /grocery/img/<магазин>/<ключ> разрешена, любой другой относительный путь нет", () => {
   assert.equal(safeHttpUrl("/grocery/img/1/ab12cd"), "/grocery/img/1/ab12cd");
@@ -68,35 +67,6 @@ test("searchTerms: без регистра и диакритики, по сло�
   assert.deepEqual(searchTerms("50% a_b c\\d *"), ["50", "a", "b", "c", "d"]);
 });
 
-test("searchGroups: русское слово раскрывается в латышские основы, остальное как есть", () => {
-  assert.deepEqual(searchGroups("молоко"), [["pien"]]);
-  assert.deepEqual(searchGroups("Молочный  Valio"), [["pien"], ["valio"]]);
-  assert.deepEqual(searchGroups("Мёд"), [["medus"]]); // ё = е
-  assert.deepEqual(searchGroups("колбаса"), [["desa"]]);
-  assert.deepEqual(searchGroups("лимонад"), [["limonad"]]); // длинный ключ побеждает «лимон»
-  assert.deepEqual(searchGroups("лимон"), [["citron"]]);
-  assert.deepEqual(searchGroups("масло"), [["sviest", "saulespuku", "olivu"]]);
-  assert.deepEqual(searchGroups("Šokolāde"), [["sokolade"]]);
-  assert.deepEqual(searchGroups("абракадабра"), [["абракадабра"]]); // нет в словаре: ищется как есть
-  assert.deepEqual(searchGroups("  "), []);
-});
-
-test("RU_LV: основы латышские, безопасны для or() PostgREST", () => {
-  for (const [ru, lv] of Object.entries(RU_LV)) {
-    assert.match(ru, /^[а-яе]+$/, ru);
-    assert.ok(lv.length > 0, ru);
-    for (const w of lv) assert.match(w, /^\^?[a-z]{3,}( [a-z]+)*$/, `${ru}: ${w}`); // без запятых, скобок и точек: or() их не переживёт
-  }
-});
-
-test("searchOrClause: обычное слово — null, группа и «^» — условия or()", () => {
-  assert.equal(searchOrClause(["valio"]), null);
-  assert.equal(searchOrClause(["pien"]), null);
-  assert.equal(searchOrClause(["sviest", "malta gala"]), "search.like.%sviest%,search.like.%malta gala%");
-  assert.equal(searchOrClause(["^sula"]), "search.like.sula%,search.like.% sula%");
-  assert.equal(searchOrClause(["^pica", "coca"]), "search.like.pica%,search.like.% pica%,search.like.%coca%");
-});
-
 test("searchTerms: «^» из ввода убирается, пользователь не включит поиск с начала слова", () => {
   assert.deepEqual(searchTerms("^sula a,b"), ["sula", "a,b"]);
 });
@@ -148,16 +118,6 @@ test("isStale: данные старше 48 часов устарели", () => 
   assert.equal(isStale("2026-10-26T11:59:00Z", now, 192), true);
 });
 
-test("searchGroups: пользовательский текст никогда не попадает в or() (запятые, скобки, точки, кавычки)", () => {
-  for (const q of ["a,b", "x),(y", "a.b.c", `"q"`, "a%b", "x'y;--", "(a)", "молоко,валио"]) {
-    for (const g of searchGroups(q)) {
-      const or = searchOrClause(g);
-      // or() бывает только у словарной группы (основы из RU_LV), а слова из ввода идут через like() и экранируются библиотекой.
-      if (or) for (const s of g) assert.match(s, /^\^?[a-z]{3,}( [a-z]+)*$/, `${q}: ${s}`);
-    }
-  }
-});
-
 test("searchTerms: длинный ввод обрезается (иначе адрес запроса к БД не влезает в лимит и страница падает)", () => {
   assert.ok(searchTerms("а ".repeat(5000)).length <= MAX_SEARCH_WORDS);
   assert.ok(searchTerms("x".repeat(5000)).join("").length <= MAX_SEARCH_CHARS);
@@ -169,4 +129,14 @@ test("isOfferLanding: чистая страница акций — без пои
   assert.equal(isOfferLanding(q("")), true);
   assert.equal(isOfferLanding(q("sort=price&n=120&all=1")), true);
   for (const s of ["q=piens", "store=2", "cat=dairy", "cond=1", "scope=1"]) assert.equal(isOfferLanding(q(s)), false, s);
+});
+
+test("searchTerms: слова из ввода не содержат масок like и «^» (запятые и скобки безопасны: слово идёт одним параметром like, не в or())", () => {
+  for (const q of ["a,b", "x),(y", "a.b.c", `"q"`, "a%b", "x'y;--", "(a)", "^sula", "50% a_b c\d *"]) {
+    for (const t of searchTerms(q)) assert.doesNotMatch(t, /[%_\*^]/, `${q}: ${t}`);
+  }
+});
+
+test("searchTerms: русское слово не переводится, ищется как есть (русского поиска нет)", () => {
+  assert.deepEqual(searchTerms("Молоко Valio"), ["молоко", "valio"]);
 });

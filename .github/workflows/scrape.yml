@@ -6,7 +6,7 @@ on:
     # GitHub опаздывает на 5–6 часов, поэтому запуск ночью: к утру данные есть.
     # Минута 17, а не 0: круглые часы самые загруженные.
     - cron: "17 22 * * *"
-    # Экономия минут Actions (лимит 2000 в месяц на приватный репозиторий). Строка в `if:` у job'ов должна совпадать с cron дословно.
+    # Каждому магазину своя частота (данные меняются с разной скоростью), поэтому несколько cron. Строка в `if:` у job'ов должна совпадать с cron дословно.
     # Rimi: акции стартуют в пн, ср, чт и вс (по Риге), поэтому ночью с вс, вт, ср и сб на пн, ср, чт и вс.
     - cron: "27 22 * * 0,2,3,6"
     # Аптеки (Apotheka ≈57 мин, Euroaptieka ≈34 мин): сроков акций в данных нет, цены меняются редко, поэтому 3 раза в неделю (ночью на пн, ср, пт).
@@ -23,7 +23,7 @@ on:
         description: Какой парсер запустить
         type: choice
         default: all
-        options: [all, lidl, maxima, barbora, e-latts, rimi, etop, meness, euroaptieka, benu, apotheka]
+        options: [all, lidl, maxima, barbora, rimi, etop, meness, euroaptieka, benu, apotheka]
 
 permissions:
   contents: read
@@ -214,31 +214,6 @@ jobs:
         with:
           name: apotheka-debug
           path: packages/scrapers/apotheka/debug
-          retention-days: 7
-
-  # Раздел «Akcijas» интернет-магазина LaTS: ≈16 запросов с паузой 0,2 с, живой прогон ≈15 секунд (2026-10-31).
-  e-latts:
-    # Только вручную: e-latts.lv отвечает GitHub Actions 403 (блокирует адреса дата-центров, с ПК 200; запуск 2026-10-31). Ночью парсер идёт с ПК (FR-31, scripts/scrape-e-latts.ps1), в «all» не входит, чтобы не слать ночные письма о сбое.
-    if: github.event_name == 'workflow_dispatch' && inputs.source == 'e-latts'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @bestprice/scraper-e-latts scrape
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: https://wwccnhrzraqexagweocw.supabase.co
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: e-latts-debug
-          path: packages/scrapers/e-latts/debug
           retention-days: 7
 
   rimi:
