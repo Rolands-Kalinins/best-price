@@ -13,7 +13,7 @@ const tile =
 export function LandingExamples({ examples, onPick }: { examples: string[]; onPick: Pick }) {
   return (
     <div role="group" aria-label="Примеры запросов" className="flex flex-wrap items-center gap-2 text-sm">
-      <span className="text-primary-foreground/80">Например:</span>
+      <span className="text-primary-foreground/90">Например:</span>
       {examples.map((e) => (
         <button
           key={e}
