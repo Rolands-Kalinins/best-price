@@ -1,6 +1,6 @@
 "use client";
 
-import { CATEGORIES, isOfferLanding, MAX_OFFERS, PAGE_SIZE, type OfferQuery, type OfferSort } from "@bestprice/core";
+import { CATEGORIES, hasCyrillic, isOfferLanding, MAX_OFFERS, PAGE_SIZE, type OfferQuery, type OfferSort } from "@bestprice/core";
 import { Apple, Beef, Candy, Croissant, CupSoda, type LucideIcon, Milk, Sparkles, Wheat } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -121,6 +121,7 @@ export function OfferFeed({
       ) : (
         <div className="flex flex-col items-center gap-3 py-12 text-center">
           <p className="text-muted-foreground text-sm">Ничего не найдено по этим фильтрам. Сбросьте их кнопкой выше.</p>
+          {hasCyrillic(query.q) && <p className="text-muted-foreground text-sm">Поиск идёт по латышским названиям, например «{EXAMPLES[0]}».</p>}
         </div>
       )}
     </section>

@@ -1,6 +1,6 @@
 "use client";
 
-import { type GroupMember, isLanding, MAX_OFFERS, PAGE_SIZE, PHARMACY_CATEGORIES, type PharmacyQuery, type PharmacySort } from "@bestprice/core";
+import { type GroupMember, hasCyrillic, isLanding, MAX_OFFERS, PAGE_SIZE, PHARMACY_CATEGORIES, type PharmacyQuery, type PharmacySort } from "@bestprice/core";
 import { Baby, Coffee, Droplets, Leaf, type LucideIcon, Package, PawPrint, Pill, Sparkles, Stethoscope } from "lucide-react";
 import Link from "next/link";
 import { FeedFilters, useFeed } from "@/components/feed-filters";
@@ -117,6 +117,7 @@ export function PharmacyFeed({
       ) : (
         <div className="flex flex-col items-center gap-3 py-12 text-center">
           <p className="text-muted-foreground text-sm">Ничего не найдено по этим фильтрам. Сбросьте их кнопкой выше.</p>
+          {hasCyrillic(query.q) && <p className="text-muted-foreground text-sm">Поиск идёт по латышским названиям, например «{EXAMPLES[0]}».</p>}
         </div>
       )}
     </section>

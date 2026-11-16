@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
-import { activeFilter, discountPercent, endsSoon, isOfferLanding, isStale, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchTerms, storePrices, MAX_SEARCH_WORDS, MAX_SEARCH_CHARS } from "./offer-view";
+import { activeFilter, discountPercent, endsSoon, hasCyrillic, isOfferLanding, isStale, offerDiscount, parseQuery, priceGap, SEARCH_FROM, SEARCH_TO, safeHttpUrl, searchTerms, storePrices, MAX_SEARCH_WORDS, MAX_SEARCH_CHARS } from "./offer-view";
 
 test("safeHttpUrl: наша миниатюра /grocery/img/<магазин>/<ключ> разрешена, любой другой относительный путь нет", () => {
   assert.equal(safeHttpUrl("/grocery/img/1/ab12cd"), "/grocery/img/1/ab12cd");
@@ -139,4 +139,13 @@ test("searchTerms: слова из ввода не содержат масок l
 
 test("searchTerms: русское слово не переводится, ищется как есть (русского поиска нет)", () => {
   assert.deepEqual(searchTerms("Молоко Valio"), ["молоко", "valio"]);
+});
+
+test("hasCyrillic: русский ввод распознаётся (для подсказки «поиск латышский»), латышский и цифры нет", () => {
+  assert.equal(hasCyrillic("молоко"), true);
+  assert.equal(hasCyrillic("piens молоко"), true);
+  assert.equal(hasCyrillic("Ёж"), true);
+  assert.equal(hasCyrillic("piens"), false);
+  assert.equal(hasCyrillic("šokolāde 2,5%"), false);
+  assert.equal(hasCyrillic(""), false);
 });
