@@ -2,13 +2,13 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { runScrape } from "./scrape-run";
 
-// Поддельный клиент: sources → {id: 7}, scrape_runs.insert пишет в журнал.
-function fakeSb(logError: string | null = null) {
+// Поддельный клиент: sources → {id: 7, enabled}, scrape_runs.insert пишет в журнал.
+function fakeSb(logError: string | null = null, enabled = true) {
   const log: Record<string, unknown>[] = [];
   const sb = {
     from: (table: string) =>
       table === "sources"
-        ? { select: () => ({ eq: () => ({ single: async () => ({ data: { id: 7 }, error: null }) }) }) }
+        ? { select: () => ({ eq: () => ({ single: async () => ({ data: { id: 7, enabled }, error: null }) }) }) }
         : { insert: async (row: Record<string, unknown>) => (log.push(row), { error: logError ? { message: logError } : null }) },
   };
   return { sb: sb as never, log };
@@ -38,6 +38,17 @@ test("ошибка не-Error сериализуется в JSON", async () => {
   const { sb, log } = fakeSb();
   await runScrape({ slug: "x", label: "X", noun: "акций", sb, say: quiet, work: async () => { throw { message: "pg" }; } });
   assert.equal(log[0].error, '{"message":"pg"}');
+});
+
+test("источник выключен (sources.enabled = false): work не вызывается, журнал пуст, результат true", async () => {
+  const { sb, log } = fakeSb(null, false);
+  const said: string[] = [];
+  let called = false;
+  const ok = await runScrape({ slug: "x", label: "X", noun: "акций", sb, say: (m) => said.push(m), work: async () => ((called = true), { count: 1, invalid: 0 }) });
+  assert.equal(ok, true); // пропуск намеренный, не сбой: письмо GitHub не нужно
+  assert.equal(called, false);
+  assert.equal(log.length, 0);
+  assert.match(said.join(), /выключен/);
 });
 
 test("сбой записи журнала тоже даёт false", async () => {
