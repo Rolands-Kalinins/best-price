@@ -3,6 +3,7 @@ import { ChevronRight, CreditCard, ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { cache } from "react";
 import { SiteHeader } from "@/components/site-header";
 import { buttonVariants } from "@/components/ui/button";
 import { ZoomImage } from "@/components/zoom-image";
@@ -15,7 +16,18 @@ export const instant = false;
 
 const COLUMNS = "id, group_id, source_id, title, brand, cat, price, old_price, discount, card_price, card_condition, card_starts_at, card_ends_at, prescription, url, image_url, last_seen_at" as const;
 
-export const metadata: Metadata = { title: "Сравнение цен" };
+// Один запрос товара на страницу и на generateMetadata (cache живёт в пределах запроса).
+const getProduct = cache(async (id: number) => {
+  const supabase = await createClient();
+  return supabase.schema("pharmacy").from("products").select(COLUMNS).eq("id", id).eq("in_stock", true).gt("last_seen_at", freshSince(new Date())).maybeSingle();
+});
+
+// Название товара в заголовке вкладки: история, закладки и вкладки различимы. Нет товара или доступа: общий заголовок.
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const id = Number((await params).id);
+  const title = Number.isSafeInteger(id) && id > 0 ? (await getProduct(id)).data?.title : null;
+  return { title: title || "Сравнение цен" };
+}
 
 export default async function PharmacyProductPage({ params }: { params: Promise<{ id: string }> }) {
   const id = Number((await params).id);
@@ -27,7 +39,7 @@ export default async function PharmacyProductPage({ params }: { params: Promise<
 
   const now = new Date();
   const [productRes, sourcesRes, memberRes, adminRes] = await Promise.all([
-    supabase.schema("pharmacy").from("products").select(COLUMNS).eq("id", id).eq("in_stock", true).gt("last_seen_at", freshSince(now)).maybeSingle(),
+    getProduct(id),
     supabase.from("sources").select("id, name, slug").eq("module", "pharmacy").eq("enabled", true),
     supabase.rpc("is_member"),
     supabase.rpc("is_admin"),
