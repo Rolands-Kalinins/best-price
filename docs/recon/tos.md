@@ -4,7 +4,7 @@
 
 | Магазин | Источник | Вывод |
 |---|---|---|
-| Mēness | `e-menessaptieka.lv/lietosanas-noteikumi`, п. 1.9.1 | **Запрещены боты, скраперы и скрипты.** Парсер выключен 2026-11-16 (`sources.enabled = false`, job в `scrape.yml` отключён). Включать только с письменным разрешением. |
+| Mēness | `e-menessaptieka.lv/lietosanas-noteikumi`, п. 1.9.1 | **Запрещены боты, скраперы и скрипты.** Парсер выключен 2026-11-16 (`sources.enabled = false`, job в `scrape.yml` отключён), данные удалены из боевой БД (бэкап `backups/2026-11-16-before-meness-purge/`, см. CHANGELOG 2.24.2.1). Включать только с письменным разрешением. |
 | Apotheka | `apotheka.lv/apothekalv-lietosanas-noteikumi`, п. 2.2 | Скрапинг не упомянут, но запрещено копирование и использование информации и фото без разрешения, с ответственностью за убытки. Двусмысленно; владелец выясняет, пока магазин оставлен. |
 | Euroaptieka | `euroaptieka.lv/noteikumi` | Запрета не найдено. Читать целиком не стали. |
 | Benu | `benu.lv/lietosanas-noteikumi` | Запрета не найдено. Читать целиком не стали. |
