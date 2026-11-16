@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { isPublicPath } from "@bestprice/core";
 import { NextResponse, type NextRequest } from "next/server";
 
 // Обновляет сессию Supabase и отправляет неавторизованных на /login.
@@ -23,9 +24,8 @@ export async function proxy(request: NextRequest) {
 
   const { data } = await supabase.auth.getClaims();
   const { pathname } = request.nextUrl;
-  const isPublic = pathname === "/login" || pathname.startsWith("/auth/");
 
-  if (!data?.claims && !isPublic) {
+  if (!data?.claims && !isPublicPath(pathname)) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
   return response;

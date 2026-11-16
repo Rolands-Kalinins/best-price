@@ -17,3 +17,4 @@ export * from "./pharmacy-view";
 export * from "./product";
 export * from "./riga";
 export * from "./scrape-schedule";
+export * from "./public-path";
