@@ -112,3 +112,8 @@ export function isStale(iso: string, now: Date, hours = 48): boolean {
 export function isOfferLanding(q: OfferQuery): boolean {
   return !q.q && q.store === null && !q.cat && !q.cond && !q.scope;
 }
+
+/** В вводе есть кириллица: поиск латышский, русское слово ничего не найдёт, пустая выдача объясняет это подсказкой. */
+export function hasCyrillic(q: string): boolean {
+  return /[Ѐ-ӿ]/.test(q);
+}
