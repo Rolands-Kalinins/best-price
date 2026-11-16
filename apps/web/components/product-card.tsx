@@ -31,9 +31,9 @@ export function ProductCard({ title, offers, storeName }: { title: string; offer
                 )}
               </span>
               <span className="text-right">
-                <span className={i === 0 ? "text-primary block text-lg font-bold tabular-nums" : "block text-base font-semibold tabular-nums"}>{eur(o.price)}</span>
+                <span className={i === 0 ? "font-price text-primary block text-lg font-bold tabular-nums" : "font-price block text-base font-semibold tabular-nums"}>{eur(o.price)}</span>
                 <span className="text-muted-foreground block text-xs tabular-nums">
-                  {i === 0 ? "дешевле всего" : gap.eur === 0 ? "та же цена" : `+${eur(gap.eur)} (+${gap.pct}%)`}
+                  {i === 0 ? "дешевле всего" : gap.eur === 0 ? "та же цена" : <span className="font-price">{`+${eur(gap.eur)} (+${gap.pct}%)`}</span>}
                 </span>
               </span>
             </>
