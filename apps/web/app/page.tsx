@@ -16,7 +16,7 @@ export default async function Home() {
   if (isMember) redirect("/grocery");
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-sm flex-col items-center justify-center gap-4 p-4 text-center">
+    <main className="mx-auto flex flex-1 max-w-sm flex-col items-center justify-center gap-4 p-4 text-center">
       <h1 className="text-2xl font-semibold">Доступ закрыт</h1>
       <p className="text-muted-foreground text-sm">
         У этого аккаунта нет адреса email, а доступ выдаётся по нему. Войдите другим аккаунтом Google.

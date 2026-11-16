@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Sofia_Sans } from "next/font/google";
+import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 
 // Кириллица для интерфейса, latin-ext для латышских названий товаров.
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           К содержимому
         </a>
         {children}
+        <SiteFooter />
       </body>
     </html>
   );

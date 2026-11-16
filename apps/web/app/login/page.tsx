@@ -59,7 +59,7 @@ function LoginForm() {
   };
 
   return (
-    <main className="flex min-h-dvh items-center justify-center p-4">
+    <main className="flex flex-1 items-center justify-center p-4">
       <div className="bg-card w-full max-w-sm space-y-6 rounded-2xl border p-8 text-center">
         <span className="bg-accent text-primary mx-auto flex size-14 items-center justify-center rounded-2xl">
           <ShoppingBasket className="size-7" aria-hidden />
