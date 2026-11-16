@@ -5,7 +5,6 @@ import { Apple, Beef, Candy, Croissant, CupSoda, type LucideIcon, Milk, Sparkles
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { FeedFilters, useFeed } from "@/components/feed-filters";
-import { FeedLanding } from "@/components/feed-landing";
 import { OfferCard, type OfferRow } from "@/components/offer-card";
 import { buttonVariants } from "@/components/ui/button";
 import { num } from "@/lib/format";
@@ -58,12 +57,14 @@ export function OfferFeed({
   stores,
   query,
   compare,
+  status,
 }: {
   offers: OfferRow[];
   total: number;
   stores: { id: number; name: string }[];
   query: OfferQuery;
   compare?: ReactNode;
+  status?: ReactNode;
 }) {
   const feed = useFeed(query, href);
   const storeName = new Map(stores.map((s) => [s.id, s.name]));
@@ -85,7 +86,8 @@ export function OfferFeed({
         sortLabels={SORT_LABELS}
         total={num(total)}
         cleared={{ store: null, cat: null, cond: false, scope: false }}
-        landing={isOfferLanding(query) ? <FeedLanding examples={EXAMPLES} tiles={TILES} onPick={feed.update} /> : undefined}
+        landing={isOfferLanding(query) ? { heading: "Сравните акции магазинов Латвии", examples: EXAMPLES, tiles: TILES } : undefined}
+        status={status}
         keepCategories
       />
 
