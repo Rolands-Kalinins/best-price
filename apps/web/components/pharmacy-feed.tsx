@@ -3,9 +3,9 @@
 import { type GroupMember, hasCyrillic, isLanding, MAX_OFFERS, PAGE_SIZE, PHARMACY_CATEGORIES, type PharmacyQuery, type PharmacySort } from "@bestprice/core";
 import { Baby, Coffee, Droplets, Leaf, type LucideIcon, Package, PawPrint, Pill, Sparkles, Stethoscope } from "lucide-react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { FeedFilters, useFeed } from "@/components/feed-filters";
 import { PharmacyCard, type PharmacyRow, type StoreMap } from "@/components/pharmacy-card";
-import { FeedLanding } from "@/components/feed-landing";
 import { buttonVariants } from "@/components/ui/button";
 import { num } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -56,12 +56,14 @@ export function PharmacyFeed({
   members,
   stores,
   query,
+  status,
 }: {
   products: PharmacyRow[];
   total: number;
   members: Record<number, GroupMember[]>;
   stores: { id: number; name: string; slug: string }[];
   query: PharmacyQuery;
+  status?: ReactNode;
 }) {
   const feed = useFeed(query, href);
   const storeMap: StoreMap = new Map(stores.map((s) => [s.id, { name: s.name, slug: s.slug }]));
@@ -83,7 +85,8 @@ export function PharmacyFeed({
         sortLabels={SORT_LABELS}
         total={num(total)}
         cleared={{ store: null, cat: null, sale: false, card: false }}
-        landing={isLanding(query) ? <FeedLanding examples={EXAMPLES} tiles={TILES} onPick={feed.update} /> : undefined}
+        landing={isLanding(query) ? { heading: "Сравните цены в аптеках Латвии", examples: EXAMPLES, tiles: TILES } : undefined}
+        status={status}
       />
 
       {products.length ? (

@@ -80,15 +80,16 @@ export default async function PharmacyPage({ searchParams }: { searchParams: Pro
     <>
       <SiteHeader email={auth.user.email ?? ""} isAdmin={adminRes.data === true} />
       <main id="main" className="mx-auto w-full max-w-7xl space-y-4 p-4">
-        <h1 className="text-2xl font-semibold">{unfiltered ? "Сравните цены в аптеках Латвии" : "Аптеки"}</h1>
-        <StoreStatus stores={stores} />
+        {/* Лозунг на чистой странице живёт в зелёном баннере ленты (feed-filters.tsx); без ленты (товаров нет) и при фильтрах заголовок здесь. */}
+        {(!unfiltered || total === 0) && <h1 className="text-2xl font-semibold">{unfiltered ? "Сравните цены в аптеках Латвии" : "Аптеки"}</h1>}
+        {total === 0 && unfiltered && <StoreStatus stores={stores} />}
         {total === 0 && unfiltered ? (
           <p className="text-muted-foreground py-12 text-center text-sm">
             Товаров пока нет: парсеры аптек ещё не запускались. Состояние запусков показано выше.
           </p>
         ) : (
           // Чипы аптек только для тех, у кого был успешный запуск: пустой чип ничего не покажет.
-          <PharmacyFeed products={rows} total={total} members={members} stores={stores.filter((s) => s.lastRun)} query={query} />
+          <PharmacyFeed products={rows} total={total} members={members} stores={stores.filter((s) => s.lastRun)} query={query} status={<StoreStatus stores={stores} />} />
         )}
       </main>
     </>

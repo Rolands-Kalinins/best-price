@@ -4,6 +4,7 @@ import { MAX_SEARCH_CHARS, PAGE_SIZE } from "@bestprice/core";
 import { Check, Search, SlidersHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef, useState, useTransition } from "react";
+import { type Landing, LandingExamples, LandingTiles } from "@/components/feed-landing";
 import { cn } from "@/lib/utils";
 
 const chip =
@@ -64,6 +65,7 @@ export function FeedFilters<Q extends Base>({
   total,
   cleared,
   landing,
+  status,
   keepCategories,
 }: {
   feed: ReturnType<typeof useFeed<Q>>;
@@ -79,8 +81,10 @@ export function FeedFilters<Q extends Base>({
   total: string;
   // Значения всех фильтров «выключено»: их ставит кнопка «Сбросить».
   cleared: Partial<Q>;
-  // Блок начала раздела (чистая страница): поле поиска крупнее, под ним этот блок, строка категорий скрыта (её заменяют плитки блока).
-  landing?: ReactNode;
+  // Баннер и плитки начала раздела (чистая страница): лозунг, поле поиска и примеры в зелёном блоке, плитки категорий под ним. Строка категорий скрыта (её заменяют плитки).
+  landing?: Landing;
+  // Строка состояния парсеров: на чистой странице под баннером, иначе над поиском.
+  status?: ReactNode;
   // Плитки блока начала покрывают не все категории: строку чипов оставляем видимой.
   keepCategories?: boolean;
 }) {
@@ -99,38 +103,44 @@ export function FeedFilters<Q extends Base>({
   // Фрагмент, а не обёртка: sticky держится только внутри родителя, а им должна быть вся лента.
   return (
     <>
-      {/* Строка поиска закреплена под шапкой: к фильтрам можно вернуться из любого места длинной ленты. */}
-      <div className="bg-background/95 sticky top-14 z-10 -mx-4 flex gap-2 px-4 py-2 backdrop-blur">
-        <div className="relative flex-1">
-          <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" aria-hidden />
-          <input
-            type="search"
-            name="q"
-            maxLength={MAX_SEARCH_CHARS}
-            autoComplete="off"
-            spellCheck={false}
-            aria-label={searchLabel}
-            placeholder={placeholder}
-            ref={input}
-            defaultValue={query.q}
-            onChange={search}
-            className={cn(field, "w-full pr-3 pl-9", landing && "h-12 text-base")}
-          />
+      {/* Порядок и позиции детей не меняются между режимами: поле поиска не пересоздаётся при уходе с чистой страницы, иначе пропал бы фокус посреди набора. */}
+      {landing ? null : status}
+      {/* Чистая страница: зелёный баннер с лозунгом, поиском и примерами. Иначе строка поиска закреплена под шапкой: к фильтрам можно вернуться из любого места длинной ленты. */}
+      <div className={landing ? "bg-primary text-primary-foreground space-y-4 rounded-2xl p-5 sm:p-8" : "bg-background/95 sticky top-14 z-10 -mx-4 px-4 py-2 backdrop-blur"}>
+        {landing ? <h1 className="font-heading text-2xl sm:text-3xl">{landing.heading}</h1> : null}
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" aria-hidden />
+            <input
+              type="search"
+              name="q"
+              maxLength={MAX_SEARCH_CHARS}
+              autoComplete="off"
+              spellCheck={false}
+              aria-label={searchLabel}
+              placeholder={placeholder}
+              ref={input}
+              defaultValue={query.q}
+              onChange={search}
+              className={cn(field, "w-full pr-3 pl-9", landing && "text-foreground h-12 text-base")}
+            />
+          </div>
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls="feed-filters"
+            onClick={() => setOpen(!open)}
+            className={cn(field, "flex shrink-0 items-center gap-2 font-medium md:hidden", landing && "text-foreground h-12", active > 0 && "border-primary")}
+          >
+            <SlidersHorizontal className="size-4" aria-hidden />
+            <span className="max-[359px]:sr-only">Фильтры</span>
+            {active > 0 && <span className="tabular-nums">({active})</span>}
+          </button>
         </div>
-        <button
-          type="button"
-          aria-expanded={open}
-          aria-controls="feed-filters"
-          onClick={() => setOpen(!open)}
-          className={cn(field, "flex shrink-0 items-center gap-2 font-medium md:hidden", active > 0 && "border-primary")}
-        >
-          <SlidersHorizontal className="size-4" aria-hidden />
-          <span className="max-[359px]:sr-only">Фильтры</span>
-          {active > 0 && <span className="tabular-nums">({active})</span>}
-        </button>
+        {landing ? <LandingExamples examples={landing.examples} onPick={(p) => update(p as Partial<Q>)} /> : null}
       </div>
-
-      {landing}
+      {landing ? status : null}
+      {landing ? <LandingTiles tiles={landing.tiles} onPick={(p) => update(p as Partial<Q>)} /> : null}
 
       <div id="feed-filters" className={cn("space-y-3", !open && "max-md:hidden")}>
         <div role="group" aria-label="Магазины" className="flex flex-wrap gap-2">

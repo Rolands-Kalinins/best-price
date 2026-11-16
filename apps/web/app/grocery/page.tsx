@@ -102,8 +102,9 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
     <>
       <SiteHeader email={auth.user.email ?? ""} isAdmin={adminRes.data === true} />
       <main id="main" className="mx-auto w-full max-w-7xl space-y-4 p-4">
-        <h1 className="text-2xl font-semibold">{unfiltered ? "Сравните акции магазинов Латвии" : "Акции"}</h1>
-        <StoreStatus stores={stores} />
+        {/* Лозунг на чистой странице живёт в зелёном баннере ленты (feed-filters.tsx); без ленты (товаров нет) и при фильтрах заголовок здесь. */}
+        {(!unfiltered || total === 0) && <h1 className="text-2xl font-semibold">{unfiltered ? "Сравните акции магазинов Латвии" : "Акции"}</h1>}
+        {total === 0 && unfiltered && <StoreStatus stores={stores} />}
         {total === 0 && unfiltered ? (
           <p className="text-muted-foreground py-12 text-center text-sm">
             Сейчас нет действующих акций. Состояние запусков показано выше.
@@ -115,6 +116,7 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
             total={offersRes.count ?? offers.length}
             stores={stores.filter((s) => s.lastRun)}
             query={query}
+            status={<StoreStatus stores={stores} />}
             compare={
               products.length > 0 && (
                 <section aria-label="Сравнение цен" className="space-y-3">
