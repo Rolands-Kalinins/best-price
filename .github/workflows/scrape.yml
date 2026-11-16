@@ -23,7 +23,7 @@ on:
         description: Какой парсер запустить
         type: choice
         default: all
-        options: [all, lidl, maxima, barbora, rimi, etop, meness, euroaptieka, benu, apotheka]
+        options: [all, lidl, maxima, barbora, rimi, etop, euroaptieka, benu, apotheka]
 
 permissions:
   contents: read
@@ -117,7 +117,8 @@ jobs:
   # Интернет-аптека Mēness: весь каталог (≈10 200 товаров) в пяти ценовых диапазонах, ≈105 запросов по ≈3.7 МБ с паузой 0,4 с, живой прогон ≈5 минут (2026-11-01).
   # Если сайт начнёт блокировать адреса GitHub, магазин снимаем с сайта, а не обходим защиту (решение владельца).
   meness:
-    if: github.event.schedule == '17 22 * * *' || inputs.source == 'all' || inputs.source == 'meness'
+    # ВЫКЛЮЧЕН 2026-11-16: п. 1.9.1 условий e-menessaptieka.lv запрещает скраперы и боты (docs/recon/tos.md). Включать только с письменным разрешением магазина.
+    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
