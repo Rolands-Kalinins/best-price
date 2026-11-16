@@ -6,7 +6,7 @@ export type ScrapeContext = { sb: SupabaseClient<Database>; sourceId: number; st
 
 /**
  * Общий запуск парсера: находит источник по slug, выполняет work и пишет итог в scrape_runs, и при успехе, и при сбое (FR-13).
- * work возвращает число записанных и отброшенных строк. Результат false = сбой парсера или журнала: run.ts ставит ненулевой код
+ * Если sources.enabled = false, work не вызывается и результат true. work возвращает число записанных и отброшенных строк. Результат false = сбой парсера или журнала: run.ts ставит ненулевой код
  * выхода, workflow падает, GitHub шлёт письмо (FR-15).
  */
 export async function runScrape(o: {
@@ -19,8 +19,13 @@ export async function runScrape(o: {
 }): Promise<boolean> {
   const sb = o.sb ?? createClient<Database>(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
   const say = o.say ?? console.log;
-  const { data: source, error: sourceError } = await sb.from("sources").select("id").eq("slug", o.slug).single();
+  const { data: source, error: sourceError } = await sb.from("sources").select("id, enabled").eq("slug", o.slug).single();
   if (sourceError) throw sourceError;
+  // Выключенный магазин (например, из-за запрета в ToS) не парсим. Это не сбой: true, в scrape_runs ничего не пишем.
+  if (!source.enabled) {
+    say(`${o.label}: источник выключен (sources.enabled = false), парсер не запущен`);
+    return true;
+  }
 
   const startedAt = new Date().toISOString();
   let count = 0;
