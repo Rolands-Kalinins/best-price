@@ -1,11 +1,24 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono, Sofia_Sans } from "next/font/google";
 import "./globals.css";
 
 // Кириллица для интерфейса, latin-ext для латышских названий товаров.
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin", "latin-ext", "cyrillic"],
+});
+
+// Заголовки: те же subsets, что у Inter (русский интерфейс, латышские названия в заголовках товаров).
+const sofia = Sofia_Sans({
+  variable: "--font-sofia",
+  subsets: ["latin", "latin-ext", "cyrillic"],
+  weight: "600", // заголовки только font-semibold и font-medium (оба дают 600), 700 не нужен
+});
+
+// Цены: только цифры, запятая и «€», кириллица не нужна. Переменный шрифт: обычная цена 600/700, старая цена 400.
+const mono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -22,7 +35,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ru" className={`${inter.variable} h-full antialiased`}>
+    <html lang="ru" className={`${inter.variable} ${sofia.variable} ${mono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <a
           href="#main"

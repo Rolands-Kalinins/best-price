@@ -99,7 +99,7 @@ export default async function PharmacyProductPage({ params }: { params: Promise<
             <p className="text-muted-foreground text-sm">
               {sum.count > 1 ? (
                 <>
-                  Цена от <b className="text-foreground tabular-nums">{eur(sum.min)}</b> до <b className="text-foreground tabular-nums">{eur(sum.max)}</b> · {num(sum.count)}{" "}
+                  Цена от <b className="font-price text-foreground tabular-nums">{eur(sum.min)}</b> до <b className="font-price text-foreground tabular-nums">{eur(sum.max)}</b> · {num(sum.count)}{" "}
                   {plural(sum.count, "аптека", "аптеки", "аптек")} · разница до <b className="text-foreground">{sum.spreadPct}%</b>
                 </>
               ) : (
@@ -128,7 +128,7 @@ export default async function PharmacyProductPage({ params }: { params: Promise<
                     {card && (
                       <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-xs">
                         <CreditCard className="size-3 shrink-0" aria-hidden />
-                        <span className="tabular-nums">{eur(m.card_price!)}</span> по карте
+                        <span className="font-price tabular-nums">{eur(m.card_price!)}</span> по карте
                         {m.card_ends_at && <> до {shortDate(m.card_ends_at)}</>}
                         {m.card_condition && <> · {m.card_condition}</>}
                       </p>
@@ -137,14 +137,14 @@ export default async function PharmacyProductPage({ params }: { params: Promise<
                   <div className="text-right">
                     <p className="flex items-baseline justify-end gap-2">
                       {m.discount && m.old_price && (
-                        <s className="text-muted-foreground text-sm tabular-nums">
+                        <s className="font-price text-muted-foreground text-sm tabular-nums">
                           <span className="sr-only">Было </span>
                           {eur(m.old_price)}
                         </s>
                       )}
-                      <span className={cn("font-mono text-xl font-bold tabular-nums", i === 0 && "text-primary")}>{eur(m.price)}</span>
+                      <span className={cn("font-price text-xl font-bold tabular-nums", i === 0 && "text-primary")}>{eur(m.price)}</span>
                     </p>
-                    {i > 0 && <p className="text-muted-foreground text-xs tabular-nums">{gap.eur === 0 ? "та же цена" : `+${eur(gap.eur)} (+${gap.pct}%)`}</p>}
+                    {i > 0 && <p className={cn("text-muted-foreground text-xs tabular-nums", gap.eur !== 0 && "font-price")}>{gap.eur === 0 ? "та же цена" : `+${eur(gap.eur)} (+${gap.pct}%)`}</p>}
                   </div>
                   {href && (
                     <a

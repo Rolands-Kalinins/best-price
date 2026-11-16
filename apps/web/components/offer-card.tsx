@@ -70,8 +70,8 @@ export function OfferCard({ offer: o, storeName }: { offer: OfferRow; storeName:
             <span className="text-muted-foreground text-sm">Скидка на бренд или категорию</span>
           ) : (
             <>
-              <span className="text-xl font-bold tabular-nums">{eur(o.price)}</span>
-              {pct && o.old_price && <s className="text-muted-foreground text-sm tabular-nums">
+              <span className="font-price text-xl font-bold tabular-nums">{eur(o.price)}</span>
+              {pct && o.old_price && <s className="font-price text-muted-foreground text-sm tabular-nums">
                   <span className="sr-only">Было </span>
                   {eur(o.old_price)}
                 </s>}
@@ -80,7 +80,7 @@ export function OfferCard({ offer: o, storeName }: { offer: OfferRow; storeName:
         </div>
         {o.unit_price && (
           <p className="text-muted-foreground text-xs tabular-nums">
-            {eur(o.unit_price)}/{o.unit === "l" ? "л" : "кг"}
+            <span className="font-price">{eur(o.unit_price)}</span>/{o.unit === "l" ? "л" : "кг"}
           </p>
         )}
         {o.condition && (

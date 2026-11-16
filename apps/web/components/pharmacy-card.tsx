@@ -69,12 +69,12 @@ export function PharmacyCard({ product: p, members, stores }: { product: Pharmac
           </Link>
         </h2>
         <div className="mt-auto flex flex-wrap items-baseline gap-x-2 pt-2">
-          <span className="text-xl font-bold tabular-nums">
-            {cheapest && <span className="text-muted-foreground mr-1 text-sm font-medium">от</span>}
+          <span className="font-price text-xl font-bold tabular-nums">
+            {cheapest && <span className="text-muted-foreground mr-1 font-sans text-sm font-medium">от</span>}
             {eur(p.price)}
           </span>
           {p.discount && p.old_price && (
-            <s className="text-muted-foreground text-sm tabular-nums">
+            <s className="font-price text-muted-foreground text-sm tabular-nums">
               <span className="sr-only">Было </span>
               {eur(p.old_price)}
             </s>
@@ -88,7 +88,7 @@ export function PharmacyCard({ product: p, members, stores }: { product: Pharmac
         )}
         {range && others > 0 && (
           <p className="text-muted-foreground text-xs tabular-nums">
-            ещё в {others} {plural(others, "аптеке", "аптеках", "аптеках")} · {range.min === range.max ? eur(range.min) : `${eur(range.min)}–${eur(range.max)}`}
+            ещё в {others} {plural(others, "аптеке", "аптеках", "аптеках")} · <span className="font-price">{range.min === range.max ? eur(range.min) : `${eur(range.min)}–${eur(range.max)}`}</span>
           </p>
         )}
         {card && p.card_price !== null && (
@@ -97,7 +97,7 @@ export function PharmacyCard({ product: p, members, stores }: { product: Pharmac
             className="bg-accent text-accent-foreground mt-1 flex flex-wrap items-center gap-x-1 gap-y-0.5 self-start rounded-md px-2 py-1 text-xs font-medium"
           >
             <CreditCard className="size-3 shrink-0" aria-hidden />
-            <span className="tabular-nums">{eur(p.card_price)}</span> по карте
+            <span className="font-price tabular-nums">{eur(p.card_price)}</span> по карте
             {p.card_ends_at && <span className="text-muted-foreground font-normal">до {shortDate(p.card_ends_at)}</span>}
           </p>
         )}

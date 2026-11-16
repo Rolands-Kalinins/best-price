@@ -16,7 +16,7 @@ export function SiteHeader({ email, isAdmin = false }: { email: string; isAdmin?
   return (
     <header className="bg-background/90 border-b sticky top-0 z-20 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-        <Link href="/grocery" className="flex items-center gap-2 rounded-lg font-semibold outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
+        <Link href="/grocery" className="font-heading flex items-center gap-2 rounded-lg font-semibold outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
           <ShoppingBasket className="text-primary size-5" aria-hidden />
           <span translate="no">BestPrice</span>
         </Link>
