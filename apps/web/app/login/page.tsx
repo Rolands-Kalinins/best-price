@@ -1,6 +1,7 @@
 "use client";
 
 import { ShoppingBasket } from "lucide-react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -76,6 +77,13 @@ function LoginForm() {
         <Button onClick={signIn} disabled={pending} size="lg" className="min-h-11 w-full">
           {pending ? "Перехожу в Google…" : "Войти через Google"}
         </Button>
+        <p className="text-muted-foreground text-xs">
+          Какие данные мы храним:{" "}
+          <Link href="/privacy" className="hover:text-foreground underline underline-offset-2">
+            политика конфиденциальности
+          </Link>
+          .
+        </p>
         {devLogin && <PasswordForm />}
       </div>
     </main>
