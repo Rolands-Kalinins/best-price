@@ -121,7 +121,7 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
               products.length > 0 && (
                 <section aria-label="Сравнение цен" className="space-y-3">
                   <h2 className="text-lg font-semibold">Где дешевле ({products.length})</h2>
-                  {/* В страницу идут только первые карточки: все 200 с картинками давали 2,5 МБ HTML. На телефоне видны 3, шире 6. */}
+                  {/* В страницу идут только первые карточки: все 200 с картинками давали 2,5 МБ HTML (сейчас 557 карточек, `?all=1` ≈ 7 МБ). На телефоне видны 3, шире 6. */}
                   <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {(query.all ? products : products.slice(0, 6)).map((p, i) => (
                       <li key={p.id} className={cn("flex *:w-full", i >= 3 && !query.all && "max-sm:hidden")}>
@@ -150,8 +150,11 @@ export default async function GroceryPage({ searchParams }: { searchParams: Prom
 }
 
 // Товары, найденные в нескольких магазинах (products ведёт `pnpm --filter @bestprice/matcher match`). При поиске берём только те,
-// у которых нашлась подходящая акция; то же при выбранной категории. ponytail: потолок 200 товаров и 1000 подходящих акций с product_id
-// (сейчас связанных акций ~230 всего); пагинация, когда сравниваемых товаров станет больше.
+// у которых нашлась подходящая акция; то же при выбранной категории. ponytail: потолок PRODUCTS_LIMIT товаров и 1000 подходящих акций с product_id
+// (сейчас ~560 товаров и ~1150 акций в карточках); пагинация, когда сравниваемых товаров станет больше. Потолок режет по id до отсева «меньше двух
+// магазинов» и до сортировки по разнице цен: при его превышении счётчик «Где дешевле» занижен (было 199 вместо 557 при потолке 200).
+// 1000 — максимум строк одного ответа PostgREST; список id акций для `not.in` в ленте (≈7 КБ при 1150 акциях) упрётся в длину адреса раньше.
+const PRODUCTS_LIMIT = 1000;
 async function productsQuery(supabase: Awaited<ReturnType<typeof createClient>>, q: string, cat: string | null) {
   const terms = searchTerms(q);
   let ids: number[] | null = null;
@@ -170,7 +173,7 @@ async function productsQuery(supabase: Awaited<ReturnType<typeof createClient>>,
     .select(PRODUCT_COLUMNS)
     .or(activeFilter(new Date()), { referencedTable: "offers" })
     .order("id")
-    .limit(200);
+    .limit(PRODUCTS_LIMIT);
   if (ids) products = products.in("id", ids);
   return products;
 }
