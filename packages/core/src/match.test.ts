@@ -233,3 +233,46 @@ test("конфликты: решение «разные» внутри одно�
   const r = m(items, [{ keyA: a, keyB: b, same: true }, { keyA: a, keyB: c, same: true }, { keyA: b, keyB: c, same: false }]);
   assert.deepEqual(r.conflicts, [{ keyA: c, keyB: b }]);
 });
+
+// Правила без точки (backtest по решениям админа и корпусу ключей, docs/findings/2026-11-20-match-rules-backtest.md).
+const looseBrands = new Set(["adazu", "squashies", "capri sun", "colgate", "crystal gummies"]);
+const l = (items: MatchItem[], decisions: MatchDecision[] = []) => buildMatches(items, looseBrands, decisions);
+
+test("служебное слово только с одной стороны не мешает (garšu, stavpaka, skeles, vīriešiem)", () => {
+  const r = l([item(1, 2, "Čipsi Ādažu Draugu paka 180g"), item(2, 5, "Čipsi Ādažu Draugu garšu paka 180g")]);
+  assert.deepEqual(r.groups.map((g) => g.offerIds), [[1, 2]]);
+  for (const w of ["stavpaka", "skeles", "vīriešiem"]) {
+    assert.equal(l([item(1, 2, "Čipsi Ādažu Draugu paka 180g"), item(2, 5, `Čipsi Ādažu Draugu paka ${w} 180g`)]).groups.length, 1, w);
+  }
+});
+
+test("служебное слово не склеивает разные вкусы", () => {
+  const r = l([item(1, 2, "Čipsi Ādažu Draugu garšu paka tomātu 180g"), item(2, 5, "Čipsi Ādažu Draugu paka sieru 180g")]);
+  assert.deepEqual(r.groups, []);
+});
+
+test("обрезанное слово без точки объединяется с полным, если оно реже полного в корпусе (konf и konfektes)", () => {
+  const items = [
+    item(1, 2, "Konf Squashies 120g"), item(2, 5, "Konfektes Squashies 120g"),
+    item(3, 2, "Konfektes Capri Sun 147g"), item(4, 5, "Konfektes Crystal Gummies 80g"), // корпус: konfektes встречается чаще, чем konf
+  ];
+  assert.deepEqual(l(items).groups.map((g) => g.offerIds), [[1, 2]]);
+});
+
+test("если короткое слово в корпусе чаще длинного, это настоящее слово, а не сокращение (white и whitening)", () => {
+  const items = [
+    item(1, 2, "Zobu pasta Colgate White 75ml"), item(2, 5, "Zobu pasta Colgate Whitening 75ml"),
+    item(3, 2, "Zobu pasta Colgate White 100ml"), item(4, 5, "Zobu pasta Colgate White 125ml"), // корпус: white чаще whitening
+  ];
+  assert.deepEqual(l(items).groups, []);
+});
+
+test("слишком короткое начало не считается сокращением, и решение админа «разные» сильнее правила", () => {
+  const short = [item(1, 2, "Zobu pasta Colgate Ox 75ml"), item(2, 5, "Zobu pasta Colgate Oxi 75ml"), item(3, 2, "Zobu pasta Colgate Oxi 100ml"), item(4, 5, "Zobu pasta Colgate Oxi 125ml")];
+  assert.deepEqual(l(short).groups, []);
+  const items = [
+    item(1, 2, "Konf Squashies 120g"), item(2, 5, "Konfektes Squashies 120g"),
+    item(3, 2, "Konfektes Capri Sun 147g"), item(4, 5, "Konfektes Crystal Gummies 80g"),
+  ];
+  assert.deepEqual(l(items, [{ keyA: "squashies|120g||konf", keyB: "squashies|120g||konfektes", same: false }]).groups, []);
+});

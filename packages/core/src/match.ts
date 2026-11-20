@@ -50,6 +50,23 @@ export function softEqual(a: string[], b: string[], abbr: Set<string>): boolean 
   });
 }
 
+// Служебные слова, которые магазины пишут не везде («garšu», «stavpaka»): только с одной стороны они ключи не различают.
+// Список из решений админа (backtest 2026-11-20): везде «тот же», ни одной ошибки среди «разных». «kastite» не вошло: кофе «kastīte» админ развёл.
+const SIDE_NOISE = new Set(["garsu", "skeles", "stavpaka", "viriesiem"]);
+
+// Правила без точки для ключей одной корзины. (1) Слова, различающиеся только служебным словом. (2) Одно слово обрезано магазином («konf» и «konfektes»):
+// короткое — начало длинного, не короче 3 букв, и встречается в корпусе реже длинного. Частое короткое слово — настоящее слово («white» и «whitening»,
+// «color» и «colorist»), при равенстве частот тоже не склеиваем. freq — в скольких ключах сегодняшних акций встречается слово.
+// ponytail: freq зависит от корпуса, пара на границе (3 и 4 ключа) может переключаться между запусками; нужен словарь, если станет мешать.
+export function looseEqual(a: string[], b: string[], freq: ReadonlyMap<string, number>): boolean {
+  const ra = a.filter((t) => !b.includes(t) && !SIDE_NOISE.has(t));
+  const rb = b.filter((t) => !a.includes(t) && !SIDE_NOISE.has(t));
+  if (ra.length === 0 && rb.length === 0) return true;
+  if (ra.length !== 1 || rb.length !== 1) return false;
+  const [x, y] = ra[0].length <= rb[0].length ? [ra[0], rb[0]] : [rb[0], ra[0]];
+  return /^[a-z]+$/.test(x + y) && x.length >= 3 && y.startsWith(x) && (freq.get(x) ?? 0) < (freq.get(y) ?? 0);
+}
+
 export function normalizeBrand(brand: string): string {
   return tokenize(norm(brand)).join(" ");
 }
@@ -132,12 +149,14 @@ export function buildMatches(items: MatchItem[], brands: Set<string>, decisions:
   const buckets = new Map<string, string[]>();
   for (const [k, v] of byKey) buckets.set(v.prefix, [...(buckets.get(v.prefix) ?? []), k]);
   const soft: { keyA: string; keyB: string }[] = [];
+  const freq = new Map<string, number>();
+  for (const v of byKey.values()) for (const t of v.tokens) freq.set(t, (freq.get(t) ?? 0) + 1);
   for (const keys of buckets.values()) {
     for (let i = 0; i < keys.length; i++) {
       for (let j = i + 1; j < keys.length; j++) {
         const a = byKey.get(keys[i])!, b = byKey.get(keys[j])!;
         if (decided.has(pair(keys[i], keys[j])) || root(keys[i]) === root(keys[j])) continue;
-        if (!softEqual(a.tokens, b.tokens, new Set([...a.abbr, ...b.abbr]))) continue;
+        if (!softEqual(a.tokens, b.tokens, new Set([...a.abbr, ...b.abbr])) && !looseEqual(a.tokens, b.tokens, freq)) continue;
         // Склейка не должна соединить ключи, которые админ развёл («разные»), даже через посредника.
         const ra = root(keys[i]), rb = root(keys[j]);
         if (denied.some(([x, y]) => (root(x) === ra && root(y) === rb) || (root(x) === rb && root(y) === ra))) continue;
