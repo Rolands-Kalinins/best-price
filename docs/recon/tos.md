@@ -6,6 +6,7 @@
 |---|---|---|
 | Mēness | `e-menessaptieka.lv/lietosanas-noteikumi`, п. 1.9.1 | **Запрещены боты, скраперы и скрипты.** Парсер выключен 2026-11-16 (`sources.enabled = false`, job в `scrape.yml` отключён), данные удалены из боевой БД (бэкап `backups/2026-11-16-before-meness-purge/`, см. CHANGELOG 2.24.2.1). Включать только с письменным разрешением. |
 | Apotheka | `apotheka.lv/apothekalv-lietosanas-noteikumi`, п. 2.2 | Скрапинг не упомянут, но запрещено копирование и использование информации и фото без разрешения, с ответственностью за убытки. Двусмысленно; владелец выясняет, пока магазин оставлен. |
+| Drogas | `drogas.lv/lv/eveikala-noteikumi` (абзац об ИС), robots `/api/v2/` | **RED (2026-11-20).** В коммерческих целях без согласия запрещено копировать содержимое и «izveidot arhīvu vai datubāzi» из него; заявлены «datubāžu tiesības»; robots www закрывает `/api/v2/`; Akamai блокирует обычные запросы. **Решение владельца 2026-11-20: от Drogas отказались**, парсер не делаем; вернуться только с письменным разрешением (`drogas@drogas.lv`). Подробно: `docs/recon/drogas-legal.md`. |
 | Euroaptieka | `euroaptieka.lv/noteikumi` | Запрета не найдено. Читать целиком не стали. |
 | Benu | `benu.lv/lietosanas-noteikumi` | Запрета не найдено. Читать целиком не стали. |
 | Barbora | `barbora.lv/info-pages/interneta-veikala-lietosanas-noteikumi` | Запрета не найдено. |
